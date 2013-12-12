@@ -5,12 +5,15 @@ import (
 	//"net/http"
 	"runtime"
 	"sync"
-	//"time"
+	"time"
 )
 
 import "code.google.com/p/gcfg"
 
 type Config struct {
+	Basic struct {
+		Threads int
+	}
 	CSV           ReaderCSVConfig
 	ElasticSearch WriterElasticSearchConfig
 }
@@ -19,6 +22,8 @@ type Collector struct {
 	config Config
 	lines  chan map[string]string
 	wait   sync.WaitGroup
+	writer Writer
+	reader Reader
 }
 
 func (self *Collector) Configure() {
@@ -30,19 +35,28 @@ func (self *Collector) Configure() {
 
 func (self *Collector) ReadFile() {
 	reader := NewReaderCSV(self.config.CSV)
-	reader.ReadIntoChannel(self.lines)
+	go reader.ReadIntoChannel(self.lines)
+
+	for {
+		time.Sleep(1 * time.Second)
+		PrintWriterStats(3, self.writer)
+	}
+
+	self.wait.Wait()
+
 }
 
 func (self *Collector) Boot() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	writer := NewWriterElasticSearch(self.config.ElasticSearch)
+	self.writer = NewWriterElasticSearch(self.config.ElasticSearch)
 
-	self.lines = make(chan map[string]string, 24)
+	threads := self.config.Basic.Threads
+	self.lines = make(chan map[string]string, threads)
 
-	for i := 0; i < 24; i++ {
+	for i := 0; i < threads; i++ {
 		self.wait.Add(1)
-		go writer.WriteFromChannel(self.lines, self.wait)
+		go self.writer.WriteFromChannel(self.lines, self.wait)
 	}
 
 }

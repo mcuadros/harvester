@@ -17,10 +17,11 @@ type WriterElasticSearchConfig struct {
 }
 
 type WriterElasticSearch struct {
-	failed  int32
-	created int32
-	config  WriterElasticSearchConfig
-	url     string
+	failed      int
+	created     int
+	transferred int
+	config      WriterElasticSearchConfig
+	url         string
 }
 
 func NewWriterElasticSearch(config WriterElasticSearchConfig) *WriterElasticSearch {
@@ -34,19 +35,16 @@ func NewWriterElasticSearch(config WriterElasticSearchConfig) *WriterElasticSear
 func (self *WriterElasticSearch) ResetCounters() {
 	self.created = 0
 	self.failed = 0
+	self.transferred = 0
 }
-func (self *WriterElasticSearch) PrintAndResetCounters() {
-	fmt.Println(fmt.Sprintf("Created %d document(s), Failed %d times(s)",
-		self.created,
-		self.failed))
 
-	self.ResetCounters()
+func (self *WriterElasticSearch) GetCounters() (int, int, int) {
+	return self.created, self.failed, self.transferred
 }
 
 func (self *WriterElasticSearch) SetConfig(config WriterElasticSearchConfig) {
 	self.config = config
 	self.url = self.getIndexURL()
-
 }
 
 func (self *WriterElasticSearch) WriteFromChannel(channel chan map[string]string, wait sync.WaitGroup) {
@@ -59,9 +57,6 @@ func (self *WriterElasticSearch) WriteFromChannel(channel chan map[string]string
 		}
 
 		count++
-		if count%500 == 0 {
-			self.PrintAndResetCounters()
-		}
 	}
 
 	wait.Done()
@@ -103,6 +98,7 @@ func (self *WriterElasticSearch) encodeToJSON(record map[string]string) string {
 		fmt.Println("error:", err)
 	}
 
+	self.transferred += len(json)
 	return string(json)
 }
 
