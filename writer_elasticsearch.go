@@ -69,12 +69,24 @@ func (self *WriterElasticSearch) WriteFromChannel(channel chan map[string]string
 func (self *WriterElasticSearch) postRecordToIndex(record map[string]string) bool {
 	buffer := strings.NewReader(self.encodeToJSON(record))
 	resp, err := http.Post(self.url, "application/json", buffer)
+	defer resp.Body.Close()
+
 	if err != nil {
 		fmt.Println("error:", err)
 		return false
 	}
 
 	if resp.StatusCode == 201 {
+		return true
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println("error:", err)
+		return false
+	}
+
+	if body {
 		return true
 	}
 
