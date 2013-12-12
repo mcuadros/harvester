@@ -38,9 +38,9 @@ func (self *Collector) Boot() {
 
 	writer := NewWriterElasticSearch(self.config.ElasticSearch)
 
-	self.lines = make(chan map[string]string)
+	self.lines = make(chan map[string]string, 24)
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 24; i++ {
 		self.wait.Add(1)
 		go writer.WriteFromChannel(self.lines, self.wait)
 	}
