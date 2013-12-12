@@ -3,18 +3,21 @@ package collector
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
 import "github.com/gwenn/yacr"
 
 type ReaderCSVConfig struct {
-	File   string
-	Fields string
+	File    string
+	Fields  string
+	Pattern string
 }
 
 type ReaderCSV struct {
 	file    string
+	pattern string
 	header  []string
 	counter int32
 }
@@ -32,12 +35,32 @@ func (self *ReaderCSV) SetConfig(config ReaderCSVConfig) {
 	}
 
 	self.file = config.File
+	self.pattern = config.Pattern
 }
 
 func (self *ReaderCSV) ReadIntoChannel(channel chan map[string]string) {
-	file, err := os.Open(self.file)
+	//if ok := self.file; ok {
+	//	self.readFileInChannel(self.file, channel)
+	//} else {
+	files, err := filepath.Glob(self.pattern)
 	if err != nil {
-		panic(fmt.Sprintf("open %s: %v", self.file, err))
+		panic(fmt.Sprintf("open %s: %v", self.pattern, err))
+	}
+
+	for _, file := range files {
+		self.readFileInChannel(file, channel)
+	}
+
+	fmt.Println(files)
+	//}
+}
+
+func (self *ReaderCSV) readFileInChannel(filename string, channel chan map[string]string) {
+	GetLogger().Info("Processing '%s'", filename)
+
+	file, err := os.Open(filename)
+	if err != nil {
+		GetLogger().Error("open %s: %v", self.file, err)
 	}
 
 	defer file.Close()
