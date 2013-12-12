@@ -39,20 +39,20 @@ func (self *ReaderCSV) SetConfig(config ReaderCSVConfig) {
 }
 
 func (self *ReaderCSV) ReadIntoChannel(channel chan map[string]string) {
-	//if ok := self.file; ok {
-	//	self.readFileInChannel(self.file, channel)
-	//} else {
-	files, err := filepath.Glob(self.pattern)
-	if err != nil {
-		panic(fmt.Sprintf("open %s: %v", self.pattern, err))
-	}
+	if self.file != "" {
+		self.readFileInChannel(self.file, channel)
+	} else {
+		files, err := filepath.Glob(self.pattern)
+		if err != nil {
+			panic(fmt.Sprintf("open %s: %v", self.pattern, err))
+		}
 
-	for _, file := range files {
-		self.readFileInChannel(file, channel)
-	}
+		for _, file := range files {
+			self.readFileInChannel(file, channel)
+		}
 
-	fmt.Println(files)
-	//}
+		fmt.Println(files)
+	}
 }
 
 func (self *ReaderCSV) readFileInChannel(filename string, channel chan map[string]string) {
@@ -66,14 +66,16 @@ func (self *ReaderCSV) readFileInChannel(filename string, channel chan map[strin
 	defer file.Close()
 
 	reader := yacr.DefaultReader(file)
-
+	headers := len(self.header)
 	row := make(map[string]string)
 	for reader.Scan() {
 		if reader.EmptyLine() { // skip empty line (or line comment)
 			continue
 		}
 
-		row[self.header[len(row)]] = reader.Text()
+		if len(row) < headers {
+			row[self.header[len(row)]] = reader.Text()
+		}
 
 		if reader.EndOfRecord() {
 			self.emitRecord(channel, row)
