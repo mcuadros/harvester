@@ -3,6 +3,7 @@ package collector
 import (
 	"encoding/json"
 	"fmt"
+	"ioutil"
 	"net/http"
 	"strings"
 	"sync"
