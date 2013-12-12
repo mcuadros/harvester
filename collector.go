@@ -14,6 +14,7 @@ type Config struct {
 	Basic struct {
 		Threads int
 	}
+	Logger        LoggerConfig
 	CSV           ReaderCSVConfig
 	ElasticSearch WriterElasticSearchConfig
 }
@@ -39,7 +40,7 @@ func (self *Collector) ReadFile() {
 
 	for {
 		time.Sleep(1 * time.Second)
-		PrintWriterStats(3, self.writer)
+		GetLogger().PrintWriterStats(3, self.writer)
 	}
 
 	self.wait.Wait()
@@ -47,6 +48,9 @@ func (self *Collector) ReadFile() {
 }
 
 func (self *Collector) Boot() {
+	NewLogger(self.config.Logger)
+	GetLogger().Info("Starting ...")
+	GetLogger().Debug("Number of max. process %d", runtime.NumCPU())
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	self.writer = NewWriterElasticSearch(self.config.ElasticSearch)
@@ -58,5 +62,7 @@ func (self *Collector) Boot() {
 		self.wait.Add(1)
 		go self.writer.WriteFromChannel(self.lines, self.wait)
 	}
+
+	GetLogger().Debug("Started %d thread(s)", threads)
 
 }

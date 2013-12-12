@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+	"time"
 )
 
 type WriterElasticSearchConfig struct {
@@ -64,7 +65,8 @@ func (self *WriterElasticSearch) WriteFromChannel(channel chan map[string]string
 
 func (self *WriterElasticSearch) postRecordToIndex(record map[string]string) bool {
 	buffer := strings.NewReader(self.encodeToJSON(record))
-	client := &http.Client{}
+	transport := &http.Transport{ResponseHeaderTimeout: time.Second * 45}
+	client := &http.Client{Transport: transport}
 	req, err := http.NewRequest("POST", self.url, buffer)
 
 	// NOTE this !!
@@ -73,7 +75,7 @@ func (self *WriterElasticSearch) postRecordToIndex(record map[string]string) boo
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println("error:", err)
+		GetLogger().Error(err)
 		return false
 	}
 
@@ -81,7 +83,7 @@ func (self *WriterElasticSearch) postRecordToIndex(record map[string]string) boo
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println("error:", err)
+		GetLogger().Error(err)
 		return false
 	}
 
@@ -95,7 +97,7 @@ func (self *WriterElasticSearch) postRecordToIndex(record map[string]string) boo
 func (self *WriterElasticSearch) encodeToJSON(record map[string]string) string {
 	json, err := json.MarshalIndent(record, " ", "    ")
 	if err != nil {
-		fmt.Println("error:", err)
+		GetLogger().Error(err)
 	}
 
 	self.transferred += len(json)

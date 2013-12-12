@@ -23,7 +23,6 @@ func NewReaderCSV(config ReaderCSVConfig) *ReaderCSV {
 	reader := new(ReaderCSV)
 	reader.SetConfig(config)
 
-	fmt.Print(reader.header)
 	return reader
 }
 
