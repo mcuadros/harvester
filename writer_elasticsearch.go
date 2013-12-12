@@ -3,7 +3,7 @@ package collector
 import (
 	"encoding/json"
 	"fmt"
-	"ioutil"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"sync"
@@ -87,7 +87,7 @@ func (self *WriterElasticSearch) postRecordToIndex(record map[string]string) boo
 		return false
 	}
 
-	if body {
+	if len(body) > 0 {
 		return true
 	}
 
