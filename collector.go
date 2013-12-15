@@ -2,12 +2,12 @@ package collector
 
 import (
 	"fmt"
-	//"net/http"
 	"runtime"
 	"sync"
 	"time"
 )
 
+import "github.com/mcuadros/collector/format"
 import "code.google.com/p/gcfg"
 
 type Config struct {
@@ -15,7 +15,7 @@ type Config struct {
 		Threads int
 	}
 	Logger        LoggerConfig
-	CSV           FormatCSVConfig
+	CSV           format.CSVConfig
 	Reader        ReaderConfig
 	ElasticSearch WriterElasticSearchConfig
 }
@@ -36,7 +36,7 @@ func (self *Collector) Configure() {
 }
 
 func (self *Collector) ReadFile() {
-	format := NewFormatCSV(self.config.CSV)
+	format := format.NewCSV(self.config.CSV)
 
 	reader := NewReader(self.config.Reader)
 	reader.SetFormat(format)

@@ -1,17 +1,17 @@
-package collector
+package format
 
 import (
 	"bytes"
 	"strings"
 )
 
-type FormatCSVConfig struct {
+type CSVConfig struct {
 	Fields    string
 	Quoted    bool
 	Separator byte
 }
 
-type FormatCSV struct {
+type CSV struct {
 	fields    []string
 	quoted    bool
 	quote     byte
@@ -19,14 +19,14 @@ type FormatCSV struct {
 	separator byte
 }
 
-func NewFormatCSV(config FormatCSVConfig) *FormatCSV {
-	format := new(FormatCSV)
+func NewCSV(config CSVConfig) *CSV {
+	format := new(CSV)
 	format.SetConfig(config)
 
 	return format
 }
 
-func (self *FormatCSV) SetConfig(config FormatCSVConfig) {
+func (self *CSV) SetConfig(config CSVConfig) {
 	for _, field := range strings.Split(config.Fields, ",") {
 		self.fields = append(self.fields, field)
 	}
@@ -37,7 +37,7 @@ func (self *FormatCSV) SetConfig(config FormatCSVConfig) {
 	self.trim = false
 }
 
-func (self *FormatCSV) Parse(line string) map[string]string {
+func (self *CSV) Parse(line string) map[string]string {
 	record := make(map[string]string)
 	chars := []byte(line)
 
