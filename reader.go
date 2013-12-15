@@ -18,7 +18,7 @@ type Reader struct {
 	pattern string
 	header  []string
 	counter int32
-	format  *FormatCSV
+	format  Format
 }
 
 func NewReader(config ReaderConfig) *Reader {
@@ -33,7 +33,7 @@ func (self *Reader) SetConfig(config ReaderConfig) {
 	self.pattern = config.Pattern
 }
 
-func (self *Reader) SetFormat(format *FormatCSV) {
+func (self *Reader) SetFormat(format Format) {
 	self.format = format
 }
 
