@@ -15,7 +15,8 @@ type Config struct {
 		Threads int
 	}
 	Logger        LoggerConfig
-	CSV           ReaderCSVConfig
+	CSV           FormatCSVConfig
+	Reader        ReaderConfig
 	ElasticSearch WriterElasticSearchConfig
 }
 
@@ -35,16 +36,23 @@ func (self *Collector) Configure() {
 }
 
 func (self *Collector) ReadFile() {
-	reader := NewReaderCSV(self.config.CSV)
-	go reader.ReadIntoChannel(self.lines)
+	format := NewFormatCSV(self.config.CSV)
 
+	reader := NewReader(self.config.Reader)
+	reader.SetFormat(format)
+
+	go reader.ReadIntoChannel(self.lines)
+	go self.PrintStatus()
+
+	self.wait.Wait()
+
+}
+
+func (self *Collector) PrintStatus() {
 	for {
 		time.Sleep(1 * time.Second)
 		GetLogger().PrintWriterStats(3, self.writer)
 	}
-
-	self.wait.Wait()
-
 }
 
 func (self *Collector) Boot() {
