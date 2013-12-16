@@ -29,6 +29,8 @@ TOPLEVEL_PKG := .
 IMPL_LIST := src src/input	#<-- Implementation directories
 CMD_LIST :=	tool #<-- Command directories
 BIN_PATH := bin/collector
+DEPENDENCIES_LIST = code.google.com/p/gcfg github.com/jarod/log4go github.com/ActiveState/tail
+
 
 # List building
 ALL_LIST = $(INT_LIST) $(IMPL_LIST) $(CMD_LIST)
@@ -50,6 +52,7 @@ install: $(INSTALL_LIST)
 test: $(TEST_LIST)
 iref: $(IREF_LIST)
 fmt: $(FMT_TEST)
+  
 
 $(BUILD_LIST): %_build: %_fmt %_iref
 	$(GOBUILD) -o $(BIN_PATH) $(TOPLEVEL_PKG)/$*
@@ -58,7 +61,7 @@ $(CLEAN_LIST): %_clean:
 $(INSTALL_LIST): %_install:
 	$(GOINSTALL) $(TOPLEVEL_PKG)/$*
 $(IREF_LIST): %_iref:
-	$(GODEP) $(TOPLEVEL_PKG)/$*
+	for i in $(DEPENDENCIES_LIST); do $(GOCMD) get $$i; done
 $(TEST_LIST): %_test:
 	$(GOTEST) $(TOPLEVEL_PKG)/$*
 $(FMT_TEST): %_fmt:

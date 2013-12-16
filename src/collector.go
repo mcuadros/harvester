@@ -1,13 +1,13 @@
 package collector
 
 import (
+	"./format"
 	"fmt"
 	"runtime"
 	"sync"
 	"time"
 )
 
-import "github.com/mcuadros/collector/src/format"
 import "code.google.com/p/gcfg"
 
 type Config struct {
