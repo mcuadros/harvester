@@ -16,6 +16,7 @@ type Config struct {
 	}
 	Logger        LoggerConfig
 	CSV           format.CSVConfig
+	RegExp        format.RegExpConfig
 	Reader        ReaderConfig
 	ElasticSearch WriterElasticSearchConfig
 }
