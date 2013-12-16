@@ -8,7 +8,7 @@ import (
 )
 
 func TestTailFile(t *testing.T) {
-	config := TailConfig{File: "../tests/resources/tail.b.txt"}
+	config := TailConfig{File: "../../tests/resources/tail.b.txt"}
 
 	tail := NewTail(config)
 	if tail.IsEOF() {
@@ -16,8 +16,8 @@ func TestTailFile(t *testing.T) {
 	}
 
 	go func(tail *Tail) {
-		filename := "../tests/resources/tail.b.txt"
-		pos := "../tests/resources/.tail.b.txt.pos"
+		filename := "../../tests/resources/tail.b.txt"
+		pos := "../../tests/resources/.tail.b.txt.pos"
 
 		time.Sleep(100 * time.Microsecond)
 		file, _ := os.Create(filename)
@@ -58,7 +58,7 @@ func TestTailFile(t *testing.T) {
 }
 
 func TestTailFileWithPos(t *testing.T) {
-	config := TailConfig{File: "../tests/resources/tail.a.txt"}
+	config := TailConfig{File: "../../tests/resources/tail.a.txt"}
 
 	tail := NewTail(config)
 	if tail.IsEOF() {
@@ -66,7 +66,7 @@ func TestTailFileWithPos(t *testing.T) {
 	}
 
 	go func(tail *Tail) {
-		filename := "../tests/resources/tail.a.txt"
+		filename := "../../tests/resources/tail.a.txt"
 
 		time.Sleep(100 * time.Microsecond)
 		file, _ := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0600)

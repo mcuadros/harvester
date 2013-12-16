@@ -5,7 +5,7 @@ import (
 )
 
 func TestSingleFile(t *testing.T) {
-	config := FileConfig{File: "../tests/resources/plain.a.txt"}
+	config := FileConfig{File: "../../tests/resources/plain.a.txt"}
 
 	file := NewFile(config)
 	if file.IsEOF() {
@@ -16,7 +16,7 @@ func TestSingleFile(t *testing.T) {
 }
 
 func TestPatternGlob(t *testing.T) {
-	config := FileConfig{Pattern: "../tests/resources/plain.*.txt"}
+	config := FileConfig{Pattern: "../../tests/resources/plain.*.txt"}
 
 	file := NewFile(config)
 	if file.IsEOF() {
