@@ -1,79 +1,43 @@
 package collector
 
 import (
-	"bufio"
 	"fmt"
-	"os"
-	"path/filepath"
 )
 
-type ReaderConfig struct {
-	File    string
-	Fields  string
-	Pattern string
-}
-
 type Reader struct {
-	file    string
-	pattern string
-	header  []string
 	counter int32
 	format  Format
+	input   Input
 }
 
-func NewReader(config ReaderConfig) *Reader {
+func NewReader(format Format, input Input) *Reader {
 	reader := new(Reader)
-	reader.SetConfig(config)
+	reader.SetFormat(format)
+	reader.SetInput(input)
 
 	return reader
-}
-
-func (self *Reader) SetConfig(config ReaderConfig) {
-	self.file = config.File
-	self.pattern = config.Pattern
 }
 
 func (self *Reader) SetFormat(format Format) {
 	self.format = format
 }
 
+func (self *Reader) SetInput(input Input) {
+	self.input = input
+}
+
 func (self *Reader) ReadIntoChannel(channel chan map[string]string) {
-	if self.file != "" {
-		self.readFileInChannel(self.file, channel)
-	} else {
-		files, err := filepath.Glob(self.pattern)
-		if err != nil {
-			panic(fmt.Sprintf("open %s: %v", self.pattern, err))
-		}
+	defer close(channel)
 
-		fmt.Println(files)
-		for _, file := range files {
-			self.readFileInChannel(file, channel)
-		}
-	}
-}
-
-func (self *Reader) readFileInChannel(filename string, channel chan map[string]string) {
-	GetLogger().Info("Processing '%s'", filename)
-
-	file, err := os.Open(filename)
-	if err != nil {
-		GetLogger().Error("open %s: %v", self.file, err)
-	}
-
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	var line string
-	for scanner.Scan() {
-		line = scanner.Text()
-
+	for !self.input.IsEOF() {
+		line := self.input.GetLine()
 		row := self.format.Parse(line)
-		self.emitRecord(filename, channel, row)
+
+		self.emitRecord(channel, row)
 	}
 }
 
-func (self *Reader) emitRecord(file string, channel chan map[string]string, row map[string]string) {
+func (self *Reader) emitRecord(channel chan map[string]string, row map[string]string) {
 	if len(row) > 0 {
 		channel <- row
 		self.counter++
