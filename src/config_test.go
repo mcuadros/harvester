@@ -69,3 +69,33 @@ func TestProfiles(t *testing.T) {
 		t.Errorf("FAIL: Invalid count of profiles")
 	}
 }
+
+func TestGetProfile(t *testing.T) {
+	var raw = string(`
+		[output "test"]
+		index = bar
+		[input "test"]
+		type = bar
+		file = foo
+		[format "test"]
+		type = bar
+		fields = foo
+	`)
+
+	config := NewConfig()
+	config.Load(raw)
+
+	profile := config.GetProfile("test")
+
+	if profile.Output.Index != "bar" {
+		t.Errorf("FAIL: Invalid count of profiles")
+	}
+
+	if profile.Input.Type != "bar" {
+		t.Errorf("FAIL: Invalid count of profiles")
+	}
+
+	if profile.Format.Type != "bar" {
+		t.Errorf("FAIL: Invalid count of profiles")
+	}
+}

@@ -8,27 +8,39 @@ import (
 
 import "code.google.com/p/gcfg"
 
+type ProfileConfig struct {
+	Format *FormatConfig
+	Input  *InputConfig
+	Output *OutputConfig
+}
+
+type InputConfig struct {
+	Type string
+	File string
+	input.FileConfig
+	input.TailConfig
+}
+
+type FormatConfig struct {
+	Type string
+	format.CSVConfig
+	format.RegExpConfig
+}
+
+type OutputConfig struct {
+	Type string
+	WriterElasticSearchConfig
+}
+
 type Config struct {
 	Profiles []string
 	Basic    struct {
 		Threads int
 	}
 	Logger LoggerConfig
-	Format map[string]*struct {
-		Type string
-		format.CSVConfig
-		format.RegExpConfig
-	}
-	Input map[string]*struct {
-		Type string
-		File string
-		input.FileConfig
-		input.TailConfig
-	}
-	Output map[string]*struct {
-		Type string
-		WriterElasticSearchConfig
-	}
+	Format map[string]*FormatConfig
+	Input  map[string]*InputConfig
+	Output map[string]*OutputConfig
 }
 
 func NewConfig() *Config {
@@ -53,6 +65,13 @@ func (self *Config) LoadFile(filename string) {
 	}
 
 	self.initialize()
+}
+
+func (self *Config) GetProfile(profile string) ProfileConfig {
+	return ProfileConfig{
+		Format: self.Format[profile],
+		Input:  self.Input[profile],
+		Output: self.Output[profile]}
 }
 
 func (self *Config) initialize() {

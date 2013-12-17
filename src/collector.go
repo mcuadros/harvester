@@ -1,5 +1,6 @@
 package collector
 
+/*
 import (
 	"./format"
 	"fmt"
@@ -10,17 +11,6 @@ import (
 
 import "code.google.com/p/gcfg"
 
-type Config struct {
-	Basic struct {
-		Threads int
-	}
-	Logger        LoggerConfig
-	CSV           format.CSVConfig
-	RegExp        format.RegExpConfig
-	Reader        ReaderConfig
-	ElasticSearch WriterElasticSearchConfig
-}
-
 type Collector struct {
 	config Config
 	lines  chan map[string]string
@@ -28,6 +18,8 @@ type Collector struct {
 	writer Writer
 	reader Reader
 }
+
+/*
 
 func (self *Collector) Configure() {
 	err := gcfg.ReadFileInto(&self.config, "config.ini")
@@ -75,3 +67,4 @@ func (self *Collector) Boot() {
 	GetLogger().Debug("Started %d thread(s)", threads)
 
 }
+*/

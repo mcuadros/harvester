@@ -5,7 +5,6 @@ import (
 )
 
 type RegExpConfig struct {
-	Fields  string
 	Pattern string
 }
 
