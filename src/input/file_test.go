@@ -1,11 +1,11 @@
-package format
+package input
 
 import (
 	"testing"
 )
 
 func TestSingleFile(t *testing.T) {
-	config := FileConfig{File: "../../tests/resources/plain.a.txt"}
+	config := FileConfig{Pattern: "../../tests/resources/plain.a.txt"}
 
 	file := NewFile(config)
 	if file.IsEOF() {

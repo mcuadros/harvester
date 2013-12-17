@@ -1,4 +1,4 @@
-package format
+package input
 
 import (
 	"bufio"
@@ -8,7 +8,6 @@ import (
 )
 
 type FileConfig struct {
-	File    string
 	Pattern string
 }
 
@@ -26,17 +25,13 @@ func NewFile(config FileConfig) *File {
 }
 
 func (self *File) SetConfig(config FileConfig) {
-	if config.File != "" {
-		self.files = append(self.files, self.createBufioReader(config.File))
-	} else if config.Pattern != "" {
-		files, err := filepath.Glob(config.Pattern)
-		if err != nil {
-			panic(fmt.Sprintf("open %s: %v", config.Pattern, err))
-		}
+	files, err := filepath.Glob(config.Pattern)
+	if err != nil {
+		panic(fmt.Sprintf("open %s: %v", config.Pattern, err))
+	}
 
-		for _, file := range files {
-			self.files = append(self.files, self.createBufioReader(file))
-		}
+	for _, file := range files {
+		self.files = append(self.files, self.createBufioReader(file))
 	}
 }
 
