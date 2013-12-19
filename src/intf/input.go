@@ -1,4 +1,4 @@
-package collector
+package intf
 
 type Input interface {
 	GetLine() string

@@ -1,8 +1,13 @@
 package collector
 
 import (
+	. "./intf"
 	"fmt"
 )
+
+type ReaderConfig struct {
+	Input []string
+}
 
 type Reader struct {
 	counter int32

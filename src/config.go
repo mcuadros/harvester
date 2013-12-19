@@ -8,45 +8,23 @@ import (
 
 import "code.google.com/p/gcfg"
 
-type ProfileConfig struct {
-	Format *FormatConfig
-	Input  *InputConfig
-	Output *OutputConfig
-}
-
-type InputConfig struct {
-	Type string
-	File string
-	input.FileConfig
-	input.TailConfig
-}
-
-type FormatConfig struct {
-	Type string
-	format.CSVConfig
-	format.RegExpConfig
-}
-
-type OutputConfig struct {
-	Type string
-	WriterElasticSearchConfig
-}
-
 type Config struct {
-	Profiles []string
-	Basic    struct {
+	Basic struct {
 		Threads int
 	}
-	Logger LoggerConfig
-	Format map[string]*FormatConfig
-	Input  map[string]*InputConfig
-	Output map[string]*OutputConfig
+	Reader        ReaderConfig
+	Logger        LoggerConfig
+	Format_CSV    map[string]*format.CSVConfig
+	Format_RegExp map[string]*format.RegExpConfig
+	Input_File    map[string]*input.FileConfig
+	Input_Tail    map[string]*input.TailConfig
+	ElasticSearch WriterElasticSearchConfig
 }
 
-func NewConfig() *Config {
-	config := new(Config)
+var configInstance *Config = new(Config)
 
-	return config
+func GetConfig() *Config {
+	return configInstance
 }
 
 func (self *Config) Load(ini string) {
@@ -54,8 +32,6 @@ func (self *Config) Load(ini string) {
 	if err != nil {
 		panic(fmt.Sprintf("open config: %v", err))
 	}
-
-	self.initialize()
 }
 
 func (self *Config) LoadFile(filename string) {
@@ -63,58 +39,4 @@ func (self *Config) LoadFile(filename string) {
 	if err != nil {
 		panic(fmt.Sprintf("open config: %v", err))
 	}
-
-	self.initialize()
-}
-
-func (self *Config) GetProfile(profile string) ProfileConfig {
-	return ProfileConfig{
-		Format: self.Format[profile],
-		Input:  self.Input[profile],
-		Output: self.Output[profile]}
-}
-
-func (self *Config) initialize() {
-	self.loadProfiles()
-	self.validate()
-}
-
-func (self *Config) loadProfiles() {
-	keys := make(map[string]bool)
-
-	for key, _ := range self.Format {
-		keys[key] = true
-	}
-
-	for key, _ := range self.Input {
-		keys[key] = true
-	}
-
-	for key, _ := range self.Output {
-		keys[key] = true
-	}
-
-	for key, _ := range keys {
-		self.Profiles = append(self.Profiles, key)
-	}
-}
-
-func (self *Config) validate() {
-	for _, key := range self.Profiles {
-		if _, ok := self.Format[key]; !ok {
-			self.throwInvalidPanic("format", key)
-		}
-
-		if _, ok := self.Input[key]; !ok {
-			self.throwInvalidPanic("input", key)
-		}
-
-		if _, ok := self.Output[key]; !ok {
-			self.throwInvalidPanic("output", key)
-		}
-	}
-}
-
-func (self *Config) throwInvalidPanic(group, key string) {
-	panic(fmt.Sprintf("Missing %s in %s group", group, key))
 }

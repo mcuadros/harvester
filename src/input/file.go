@@ -1,6 +1,7 @@
 package input
 
 import (
+	"../intf"
 	"bufio"
 	"fmt"
 	"os"
@@ -8,23 +9,29 @@ import (
 )
 
 type FileConfig struct {
+	Format  string
 	Pattern string
 }
 
 type File struct {
 	files   []*bufio.Scanner
+	format  intf.Format
 	current int
 	eof     bool
 }
 
-func NewFile(config FileConfig) *File {
+func NewFile(config *FileConfig, format intf.Format) *File {
 	input := new(File)
 	input.SetConfig(config)
 
 	return input
 }
 
-func (self *File) SetConfig(config FileConfig) {
+func (self *File) SetFormat(format intf.Format) {
+	self.format = format
+}
+
+func (self *File) SetConfig(config *FileConfig) {
 	files, err := filepath.Glob(config.Pattern)
 	if err != nil {
 		panic(fmt.Sprintf("open %s: %v", config.Pattern, err))
@@ -33,6 +40,8 @@ func (self *File) SetConfig(config FileConfig) {
 	for _, file := range files {
 		self.files = append(self.files, self.createBufioReader(file))
 	}
+
+	//self.format = GetConfig().GetFormatByKey(config.Format)
 }
 
 func (self *File) createBufioReader(filename string) *bufio.Scanner {

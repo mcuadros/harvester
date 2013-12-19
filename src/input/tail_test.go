@@ -3,17 +3,20 @@ package input
 import (
 	"io"
 	"os"
-	"testing"
 	"time"
 )
 
-func TestTailFile(t *testing.T) {
+import . "launchpad.net/gocheck"
+
+type TailFileSuite struct{}
+
+var _ = Suite(&TailFileSuite{})
+
+func (s *InputFileSuite) TestTailFile(c *C) {
 	config := TailConfig{File: "../../tests/resources/tail.b.txt"}
 
-	tail := NewTail(config)
-	if tail.IsEOF() {
-		t.Errorf("FAIL: Wrong IsEOF behavior")
-	}
+	tail := NewTail(&config, new(MockFormat))
+	c.Check(tail.IsEOF(), Equals, false)
 
 	go func(tail *Tail) {
 		filename := "../../tests/resources/tail.b.txt"
@@ -52,18 +55,15 @@ func TestTailFile(t *testing.T) {
 		}
 	}
 
-	if len(lines) != 20 {
-		t.Errorf("Incorrect number of lines: %d should be %d", len(lines), 20)
-	}
+	c.Check(lines, HasLen, 20)
 }
 
-func TestTailFileWithPos(t *testing.T) {
+func (s *InputFileSuite) TestTailFileWithPos(c *C) {
+
 	config := TailConfig{File: "../../tests/resources/tail.a.txt"}
 
-	tail := NewTail(config)
-	if tail.IsEOF() {
-		t.Errorf("FAIL: Wrong IsEOF behavior")
-	}
+	tail := NewTail(&config, new(MockFormat))
+	c.Check(tail.IsEOF(), Equals, false)
 
 	go func(tail *Tail) {
 		filename := "../../tests/resources/tail.a.txt"
@@ -84,12 +84,10 @@ func TestTailFileWithPos(t *testing.T) {
 	for !tail.IsEOF() {
 		line := tail.GetLine()
 		if line != "" {
-			print(line)
 			lines = append(lines, line)
 		}
 	}
 
-	if len(lines) != 10 {
-		t.Errorf("Incorrect number of lines: %d should be %d", len(lines), 10)
-	}
+	c.Check(lines, HasLen, 10)
+
 }

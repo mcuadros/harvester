@@ -4,98 +4,46 @@ import (
 	"testing"
 )
 
-func TestBasic(t *testing.T) {
+import . "launchpad.net/gocheck"
+
+// Hook up gocheck into the "go test" runner.
+func Test(t *testing.T) { TestingT(t) }
+
+type CofigSuite struct{}
+
+var _ = Suite(&CofigSuite{})
+
+func (s *CofigSuite) TestBasic(c *C) {
 	var raw = string(`
 		[basic]
 		threads = 10
 	`)
 
-	config := NewConfig()
-	config.Load(raw)
+	GetConfig().Load(raw)
 
-	if config.Basic.Threads != 10 {
-		t.Errorf("FAIL: Wrong loaded data")
-	}
+	c.Check(GetConfig().Basic.Threads, Equals, 10)
 }
 
-func TestFormat(t *testing.T) {
+func (s *CofigSuite) TestFormat(c *C) {
 	var raw = string(`
-		[output "test"]
-		index = bar
-		[input "test"]
-		type = bar
-		file = foo
-		[format "test"]
-		type = bar
+		[reader]
+		input = bar
+		input = foo
+
+		[format-csv "foo"]
 		fields = foo
+
+		[input-tail "bar"]
+		file = foo
+		format = myformat
+
+		[input-file "foo"]
+		pattern = foo
+		format = myformat
 	`)
 
-	config := NewConfig()
-	config.Load(raw)
+	GetConfig().Load(raw)
 
-	if config.Format["test"].Type != "bar" {
-		t.Errorf("FAIL: Wrong loaded data")
-	}
-
-	if config.Format["test"].Fields != "foo" {
-		t.Errorf("FAIL: Wrong loaded data")
-	}
-
-	if config.Input["test"].Type != "bar" {
-		t.Errorf("FAIL: Wrong loaded data")
-	}
-
-	if config.Input["test"].File != "foo" {
-		t.Errorf("FAIL: Wrong loaded data")
-	}
-}
-
-func TestProfiles(t *testing.T) {
-	var raw = string(`
-		[output "test"]
-		index = bar
-		[input "test"]
-		type = bar
-		file = foo
-		[format "test"]
-		type = bar
-		fields = foo
-	`)
-
-	config := NewConfig()
-	config.Load(raw)
-
-	if len(config.Profiles) != 1 {
-		t.Errorf("FAIL: Invalid count of profiles")
-	}
-}
-
-func TestGetProfile(t *testing.T) {
-	var raw = string(`
-		[output "test"]
-		index = bar
-		[input "test"]
-		type = bar
-		file = foo
-		[format "test"]
-		type = bar
-		fields = foo
-	`)
-
-	config := NewConfig()
-	config.Load(raw)
-
-	profile := config.GetProfile("test")
-
-	if profile.Output.Index != "bar" {
-		t.Errorf("FAIL: Invalid count of profiles")
-	}
-
-	if profile.Input.Type != "bar" {
-		t.Errorf("FAIL: Invalid count of profiles")
-	}
-
-	if profile.Format.Type != "bar" {
-		t.Errorf("FAIL: Invalid count of profiles")
-	}
+	c.Check(len(GetConfig().Reader.Input), Equals, 2)
+	c.Check(GetConfig().Format_CSV["foo"].Fields, Equals, "foo")
 }

@@ -13,14 +13,14 @@ type RegExp struct {
 	regexp *regexp.Regexp
 }
 
-func NewRegExp(config RegExpConfig) *RegExp {
+func NewRegExp(config *RegExpConfig) *RegExp {
 	format := new(RegExp)
 	format.SetConfig(config)
 
 	return format
 }
 
-func (self *RegExp) SetConfig(config RegExpConfig) {
+func (self *RegExp) SetConfig(config *RegExpConfig) {
 	self.regexp = regexp.MustCompile(config.Pattern)
 }
 

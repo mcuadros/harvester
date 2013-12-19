@@ -19,14 +19,14 @@ type CSV struct {
 	separator byte
 }
 
-func NewCSV(config CSVConfig) *CSV {
+func NewCSV(config *CSVConfig) *CSV {
 	format := new(CSV)
 	format.SetConfig(config)
 
 	return format
 }
 
-func (self *CSV) SetConfig(config CSVConfig) {
+func (self *CSV) SetConfig(config *CSVConfig) {
 	for _, field := range strings.Split(config.Fields, ",") {
 		self.fields = append(self.fields, field)
 	}

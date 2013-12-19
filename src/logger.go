@@ -1,6 +1,7 @@
 package collector
 
 import (
+	. "./intf"
 	"fmt"
 )
 import "github.com/jarod/log4go"
@@ -15,10 +16,10 @@ type Logger struct {
 	log4go log4go.Logger
 }
 
-var instantiated *Logger = nil
+var loggerInstance *Logger = nil
 
 func GetLogger() *Logger {
-	return instantiated
+	return loggerInstance
 }
 
 func NewLogger(config LoggerConfig) {
@@ -39,7 +40,7 @@ func NewLogger(config LoggerConfig) {
 		logger.log4go.AddFilter("stdout", level, log4go.NewConsoleLogWriter())
 	}
 
-	instantiated = logger
+	loggerInstance = logger
 }
 
 func (self *Logger) PrintWriterStats(elapsed int, writer Writer) {

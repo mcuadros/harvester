@@ -1,6 +1,7 @@
 package input
 
 import (
+	"../intf"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -11,6 +12,7 @@ import (
 import "github.com/ActiveState/tail"
 
 type TailConfig struct {
+	Format    string
 	File      string // File to be readed
 	MustExist bool   // Fail early if the file does not exist
 	Poll      bool   // Poll for file changes instead of using inotify
@@ -19,20 +21,25 @@ type TailConfig struct {
 
 type Tail struct {
 	tail    *tail.Tail
+	format  intf.Format
 	file    string
 	posFile string
 	counter int
 	eof     bool
 }
 
-func NewTail(config TailConfig) *Tail {
+func NewTail(config *TailConfig, format intf.Format) *Tail {
 	input := new(Tail)
 	input.SetConfig(config)
 
 	return input
 }
 
-func (self *Tail) SetConfig(config TailConfig) {
+func (self *Tail) SetFormat(format intf.Format) {
+	self.format = format
+}
+
+func (self *Tail) SetConfig(config *TailConfig) {
 	self.file = config.File
 	self.posFile = fmt.Sprintf("%s/.%s.pos", path.Dir(self.file), path.Base(self.file))
 
@@ -49,7 +56,7 @@ func (self *Tail) createTailReader(config tail.Config) {
 	self.tail = tail
 }
 
-func (self *Tail) translateConfig(original TailConfig) tail.Config {
+func (self *Tail) translateConfig(original *TailConfig) tail.Config {
 	config := tail.Config{Follow: true, ReOpen: true}
 
 	if original.MustExist {
