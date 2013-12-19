@@ -1,39 +1,45 @@
 package collector
 
 import (
-	"testing"
+	"./intf"
 )
 
-func TestReadIntoChannel(t *testing.T) {
+import . "launchpad.net/gocheck"
+
+type ReaderSuite struct{}
+
+var _ = Suite(&ReaderSuite{})
+
+func (s *ReaderSuite) TestReadIntoChannelSingleInput(c *C) {
 	channel := make(chan map[string]string, 1)
+	inputs := []intf.Input{new(MockInput)}
 
-	format := new(MockFormat)
-	input := new(MockInput)
-
-	config := NewReader(format, input)
+	config := NewReader(inputs)
 	go config.ReadIntoChannel(channel)
 
 	count := 0
 	for record := range channel {
-		if record["foo"] != "foo" {
-			t.Errorf("FAIL")
-		}
+		c.Check(record["line"], Equals, "foo")
 		count++
 	}
 
-	if count != 4 {
-		t.Errorf("FAIL")
+	c.Check(count, Equals, 4)
+}
+
+func (s *ReaderSuite) TestReadIntoChannelMultipleInputs(c *C) {
+	channel := make(chan map[string]string, 1)
+	inputs := []intf.Input{new(MockInput), new(MockInput), new(MockInput), new(MockInput)}
+
+	config := NewReader(inputs)
+	go config.ReadIntoChannel(channel)
+
+	count := 0
+	for record := range channel {
+		c.Check(record["line"], Equals, "foo")
+		count++
 	}
-}
 
-type MockFormat struct {
-}
-
-func (self *MockFormat) Parse(line string) map[string]string {
-	record := make(map[string]string)
-	record["foo"] = line
-
-	return record
+	c.Check(count, Equals, 16)
 }
 
 type MockInput struct {
@@ -44,6 +50,12 @@ func (self *MockInput) GetLine() string {
 	self.current++
 
 	return string("foo")
+}
+
+func (self *MockInput) GetRecord() map[string]string {
+	line := self.GetLine()
+
+	return map[string]string{"line": line}
 }
 
 func (self *MockInput) IsEOF() bool {

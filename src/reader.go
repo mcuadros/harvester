@@ -3,6 +3,7 @@ package collector
 import (
 	. "./intf"
 	"fmt"
+	"sync"
 )
 
 type ReaderConfig struct {
@@ -11,35 +12,38 @@ type ReaderConfig struct {
 
 type Reader struct {
 	counter int32
-	format  Format
-	input   Input
+	inputs  []Input
+	wait    sync.WaitGroup
 }
 
-func NewReader(format Format, input Input) *Reader {
+func NewReader(inputs []Input) *Reader {
 	reader := new(Reader)
-	reader.SetFormat(format)
-	reader.SetInput(input)
+	reader.SetInputs(inputs)
 
 	return reader
 }
-
-func (self *Reader) SetFormat(format Format) {
-	self.format = format
-}
-
-func (self *Reader) SetInput(input Input) {
-	self.input = input
+func (self *Reader) SetInputs(inputs []Input) {
+	self.inputs = inputs
 }
 
 func (self *Reader) ReadIntoChannel(channel chan map[string]string) {
 	defer close(channel)
 
-	for !self.input.IsEOF() {
-		line := self.input.GetLine()
-		row := self.format.Parse(line)
-
-		self.emitRecord(channel, row)
+	for _, input := range self.inputs {
+		self.wait.Add(1)
+		go self.readInputIntoChannel(input, channel)
 	}
+
+	self.wait.Wait()
+}
+
+func (self *Reader) readInputIntoChannel(input Input, channel chan map[string]string) {
+	for !input.IsEOF() {
+		record := input.GetRecord()
+		self.emitRecord(channel, record)
+	}
+
+	self.wait.Done()
 }
 
 func (self *Reader) emitRecord(channel chan map[string]string, row map[string]string) {

@@ -23,6 +23,7 @@ type File struct {
 func NewFile(config *FileConfig, format intf.Format) *File {
 	input := new(File)
 	input.SetConfig(config)
+	input.SetFormat(format)
 
 	return input
 }
@@ -40,8 +41,6 @@ func (self *File) SetConfig(config *FileConfig) {
 	for _, file := range files {
 		self.files = append(self.files, self.createBufioReader(file))
 	}
-
-	//self.format = GetConfig().GetFormatByKey(config.Format)
 }
 
 func (self *File) createBufioReader(filename string) *bufio.Scanner {
@@ -59,6 +58,11 @@ func (self *File) GetLine() string {
 	}
 
 	return ""
+}
+
+func (self *File) GetRecord() map[string]string {
+	line := self.GetLine()
+	return self.format.Parse(line)
 }
 
 func (self *File) scan() bool {

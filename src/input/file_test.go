@@ -9,7 +9,7 @@ import . "launchpad.net/gocheck"
 type MockFormat struct{}
 
 func (s *MockFormat) Parse(line string) map[string]string {
-	return make(map[string]string)
+	return map[string]string{"foo": "bar"}
 }
 
 // Hook up gocheck into the "go test" runner.
@@ -19,7 +19,17 @@ type InputFileSuite struct{}
 
 var _ = Suite(&InputFileSuite{})
 
-func (s *InputFileSuite) TestSingleFile(c *C) {
+func (s *InputFileSuite) TestGetRecord(c *C) {
+	config := FileConfig{Pattern: "../../tests/resources/plain.a.txt"}
+
+	file := NewFile(&config, new(MockFormat))
+	c.Check(file.IsEOF(), Equals, false)
+
+	record := file.GetRecord()
+	c.Check(record["foo"], Equals, "bar")
+}
+
+func (s *InputFileSuite) TestGetLineWithSingleFile(c *C) {
 	config := FileConfig{Pattern: "../../tests/resources/plain.a.txt"}
 
 	file := NewFile(&config, new(MockFormat))
@@ -28,7 +38,7 @@ func (s *InputFileSuite) TestSingleFile(c *C) {
 	testReader(c, file, 3)
 }
 
-func (s *InputFileSuite) TestPatternGlob(c *C) {
+func (s *InputFileSuite) TestGetLineWithPatternGlob(c *C) {
 	config := FileConfig{Pattern: "../../tests/resources/plain.*.txt"}
 
 	file := NewFile(&config, new(MockFormat))

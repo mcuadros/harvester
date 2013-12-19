@@ -31,6 +31,7 @@ type Tail struct {
 func NewTail(config *TailConfig, format intf.Format) *Tail {
 	input := new(Tail)
 	input.SetConfig(config)
+	input.SetFormat(format)
 
 	return input
 }
@@ -108,6 +109,11 @@ func (self *Tail) GetLine() string {
 		self.eof = true
 		return ""
 	}
+}
+
+func (self *Tail) GetRecord() map[string]string {
+	line := self.GetLine()
+	return self.format.Parse(line)
 }
 
 func (self *Tail) keepPosition() {
