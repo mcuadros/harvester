@@ -58,7 +58,7 @@ func (self *Elasticsearch) PutRecord(record map[string]string) bool {
 		return false
 	}
 
-	if len(body) > 0 && resp.StatusCode == 201 {
+	if len(body) > 0 && resp.StatusCode == http.StatusCreated {
 		return true
 	}
 
