@@ -29,7 +29,7 @@ TOPLEVEL_PKG := .
 IMPL_LIST := src src/input	#<-- Implementation directories
 CMD_LIST :=	tool #<-- Command directories
 BIN_PATH := bin/collector
-DEPENDENCIES_LIST = code.google.com/p/gcfg github.com/jarod/log4go github.com/ActiveState/tail
+DEPENDENCIES_LIST = launchpad.net/gocheck code.google.com/p/gcfg github.com/jarod/log4go github.com/ActiveState/tail
 
 
 # List building
