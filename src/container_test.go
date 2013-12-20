@@ -11,7 +11,7 @@ type ContainerSuite struct{}
 
 var _ = Suite(&ContainerSuite{})
 
-func (s *ContainerSuite) TestGetInputByKey(c *C) {
+func (s *ContainerSuite) TestGetInput(c *C) {
 	var raw = string(`
 		[format-csv "myformat"]
 		fields = foo
@@ -31,7 +31,7 @@ func (s *ContainerSuite) TestGetInputByKey(c *C) {
 	c.Check(GetContainer().GetInput("bar"), FitsTypeOf, &input.Tail{})
 }
 
-func (s *ContainerSuite) TestGetFormatByKey(c *C) {
+func (s *ContainerSuite) TestGetFormat(c *C) {
 	var raw = string(`
 		[input-tail "bar"]
 		file = foo
@@ -48,4 +48,20 @@ func (s *ContainerSuite) TestGetFormatByKey(c *C) {
 
 	c.Check(GetContainer().GetFormat("foo"), FitsTypeOf, &format.CSV{})
 	c.Check(GetContainer().GetFormat("bar"), FitsTypeOf, &format.RegExp{})
+}
+
+func (s *ContainerSuite) TestGetReader(c *C) {
+	var raw = string(`
+		[input-tail "bar"]
+		file = foo
+		format = myformat
+
+		[reader]
+		input = bar
+
+	`)
+
+	GetConfig().Load(raw)
+
+	c.Check(GetContainer().GetReader(), FitsTypeOf, &Reader{})
 }

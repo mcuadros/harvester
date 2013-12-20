@@ -46,3 +46,14 @@ func (self *Container) GetInput(key string) intf.Input {
 	GetLogger().Critical("Unable to find '%s' input definition", key)
 	return nil
 }
+
+func (self *Container) GetReader() *Reader {
+	config := GetConfig().Reader
+
+	inputs := make([]intf.Input, len(config.Input))
+	for i, key := range config.Input {
+		inputs[i] = self.GetInput(key)
+	}
+
+	return NewReader(inputs)
+}
