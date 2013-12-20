@@ -1,8 +1,8 @@
 package input
 
 import (
-	"../intf"
 	"bufio"
+	"collector/intf"
 	"fmt"
 	"os"
 	"path/filepath"

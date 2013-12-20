@@ -1,9 +1,9 @@
 package collector
 
 import (
-	"./format"
-	"./input"
-	"./output"
+	"collector/format"
+	"collector/input"
+	"collector/output"
 	"fmt"
 )
 

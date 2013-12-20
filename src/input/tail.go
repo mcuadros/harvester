@@ -1,7 +1,7 @@
 package input
 
 import (
-	"../intf"
+	"collector/intf"
 	"fmt"
 	"io/ioutil"
 	"os"

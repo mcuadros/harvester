@@ -1,7 +1,7 @@
 package collector
 
 import (
-	"./intf"
+	"collector/intf"
 	"fmt"
 	"strconv"
 	"time"

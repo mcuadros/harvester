@@ -1,10 +1,10 @@
 package collector
 
 import (
-	"./format"
-	"./input"
-	"./intf"
-	"./output"
+	"collector/format"
+	"collector/input"
+	"collector/intf"
+	"collector/output"
 )
 
 type Container struct {

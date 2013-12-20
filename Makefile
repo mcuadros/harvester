@@ -25,10 +25,10 @@ GODEP=$(GOTEST) -i
 GOFMT=gofmt -w
 
 # Package lists
-PACKAGE_NAME := github.com/mcuadros/collector
+PACKAGE_NAME := collector
 TOPLEVEL_PKG := .
 BASE_LIST := src
-IMPL_LIST := src/input
+IMPL_LIST := src/input src/output
 CMD_LIST :=	tool
 BIN_PATH := bin/collector
 DEPENDENCIES_LIST = launchpad.net/gocheck \
@@ -59,7 +59,7 @@ all: iref build
 build: $(BUILD_LIST)
 clean: $(CLEAN_LIST)
 install: $(INSTALL_LIST)
-test: $(TEST_LIST)
+test: iref $(TEST_LIST)
 iref: $(IREF_LIST)
 fmt: $(FMT_TEST)
 
@@ -74,7 +74,6 @@ $(IREF_LIST): %_iref:
 	mkdir -p $(GOPATH)/src
 	mkdir -p $(PACKAGE_BASE)
 	ln -s $(shell pwd)/src $(PACKAGE_PATH) 2> /dev/null || true
-
 	for i in $(DEPENDENCIES_LIST); do $(GOCMD) get $$i; done
 $(TEST_LIST): %_test:
 	$(GOTEST) $(TOPLEVEL_PKG)/$*
