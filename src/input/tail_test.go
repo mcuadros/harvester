@@ -77,7 +77,6 @@ func (s *InputFileSuite) TestTailFileWithPos(c *C) {
 		}
 
 		tail.Stop()
-
 	}(tail)
 
 	lines := make([]string, 0)
@@ -88,7 +87,7 @@ func (s *InputFileSuite) TestTailFileWithPos(c *C) {
 		}
 	}
 
-	c.Check(lines, HasLen, 10)
+	c.Check(len(lines), Equals, 10)
 }
 
 func (s *TailFileSuite) TestGetRecord(c *C) {
@@ -98,16 +97,7 @@ func (s *TailFileSuite) TestGetRecord(c *C) {
 	c.Check(tail.IsEOF(), Equals, false)
 
 	go func(tail *Tail) {
-		filename := "../../tests/resources/tail.a.txt"
-
 		time.Sleep(100 * time.Microsecond)
-		file, _ := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0600)
-
-		for i := 0; i < 10; i++ {
-			time.Sleep(1000 * time.Microsecond)
-			io.WriteString(file, "foo\n")
-		}
-
 		tail.Stop()
 
 	}(tail)
