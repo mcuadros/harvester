@@ -28,7 +28,7 @@ GOFMT=gofmt -w
 PACKAGE_NAME := collector
 TOPLEVEL_PKG := .
 BASE_LIST := src
-IMPL_LIST := src/input src/output
+IMPL_LIST := src/input src/output src/format
 CMD_LIST :=	tool
 BIN_PATH := bin/collector
 DEPENDENCIES_LIST = launchpad.net/gocheck \
@@ -71,7 +71,6 @@ $(CLEAN_LIST): %_clean:
 $(INSTALL_LIST): %_install:
 	$(GOINSTALL) $(TOPLEVEL_PKG)/$*
 $(IREF_LIST): %_iref:
-	mkdir -p $(GOPATH)/src
 	mkdir -p $(PACKAGE_BASE)
 	ln -s $(shell pwd)/src $(PACKAGE_PATH) 2> /dev/null || true
 	for i in $(DEPENDENCIES_LIST); do $(GOCMD) get $$i; done

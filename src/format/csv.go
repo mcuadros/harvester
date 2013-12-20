@@ -7,7 +7,9 @@ import (
 
 type CSVConfig struct {
 	Fields    string
-	Quoted    bool
+	NotQuoted bool
+	Quote     byte
+	Trim      bool
 	Separator byte
 }
 
@@ -31,10 +33,18 @@ func (self *CSV) SetConfig(config *CSVConfig) {
 		self.fields = append(self.fields, field)
 	}
 
-	self.quoted = true
-	self.separator = ','
-	self.quote = '"'
-	self.trim = false
+	self.quoted = !config.NotQuoted
+	self.trim = config.Trim
+
+	self.quote = config.Quote
+	if self.quote == 0 {
+		self.quote = '"'
+	}
+
+	self.separator = config.Separator
+	if self.separator == 0 {
+		self.separator = ','
+	}
 }
 
 func (self *CSV) Parse(line string) map[string]string {
@@ -44,7 +54,7 @@ func (self *CSV) Parse(line string) map[string]string {
 	max := len(self.fields)
 	index := 0
 	quoted := false
-	field := make([]byte, max)
+	field := make([]byte, 0)
 	for _, char := range chars {
 		if self.quoted && char == self.quote {
 			if !quoted {
@@ -58,7 +68,7 @@ func (self *CSV) Parse(line string) map[string]string {
 			}
 
 			record[self.fields[index]] = string(field)
-			field = make([]byte, max)
+			field = make([]byte, 0)
 			index++
 
 			if index >= max {
@@ -70,6 +80,10 @@ func (self *CSV) Parse(line string) map[string]string {
 	}
 
 	if max > index {
+		if self.trim {
+			field = trim(field)
+		}
+
 		record[self.fields[index]] = string(field)
 	}
 
