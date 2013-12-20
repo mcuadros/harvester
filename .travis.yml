@@ -5,4 +5,4 @@ go:
   - 1.2
   - tip
 
-script: make
+script: make test
