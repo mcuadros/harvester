@@ -4,6 +4,7 @@ import (
 	"./format"
 	"./input"
 	"./intf"
+	"./output"
 )
 
 type Container struct {
@@ -56,4 +57,25 @@ func (self *Container) GetReader() *Reader {
 	}
 
 	return NewReader(inputs)
+}
+
+func (self *Container) GetOutput(key string) intf.Output {
+	esConfig, ok := GetConfig().Output_Elasticsearch[key]
+	if ok {
+		return output.NewElasticsearch(esConfig)
+	}
+
+	GetLogger().Critical("Unable to find '%s' output definition", key)
+	return nil
+}
+
+func (self *Container) GetWriter() *Writer {
+	config := GetConfig().Writer
+
+	outputs := make([]intf.Output, len(config.Output))
+	for i, key := range config.Output {
+		outputs[i] = self.GetOutput(key)
+	}
+
+	return NewWriter(outputs)
 }

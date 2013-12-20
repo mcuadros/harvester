@@ -3,6 +3,7 @@ package collector
 import (
 	"./format"
 	"./input"
+	"./output"
 	"fmt"
 )
 
@@ -12,13 +13,14 @@ type Config struct {
 	Basic struct {
 		Threads int
 	}
-	Reader        ReaderConfig
-	Logger        LoggerConfig
-	Format_CSV    map[string]*format.CSVConfig
-	Format_RegExp map[string]*format.RegExpConfig
-	Input_File    map[string]*input.FileConfig
-	Input_Tail    map[string]*input.TailConfig
-	ElasticSearch WriterElasticSearchConfig
+	Reader               ReaderConfig
+	Writer               WriterConfig
+	Logger               LoggerConfig
+	Format_CSV           map[string]*format.CSVConfig
+	Format_RegExp        map[string]*format.RegExpConfig
+	Input_File           map[string]*input.FileConfig
+	Input_Tail           map[string]*input.TailConfig
+	Output_Elasticsearch map[string]*output.ElasticsearchConfig
 }
 
 var configInstance *Config = new(Config)

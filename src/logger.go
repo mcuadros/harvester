@@ -1,8 +1,8 @@
 package collector
 
 import (
-	. "./intf"
-	"fmt"
+/*. "./intf"
+"fmt"*/
 )
 import "github.com/jarod/log4go"
 
@@ -43,6 +43,7 @@ func NewLogger(config LoggerConfig) {
 	loggerInstance = logger
 }
 
+/*
 func (self *Logger) PrintWriterStats(elapsed int, writer Writer) {
 	created, failed, transferred := writer.GetCounters()
 	writer.ResetCounters()
@@ -51,7 +52,7 @@ func (self *Logger) PrintWriterStats(elapsed int, writer Writer) {
 
 	rate := float64(transferred) / 1000 / float64(elapsed)
 	self.log4go.Info(fmt.Sprintf(logFormat, created, failed, rate))
-}
+}*/
 
 func (self *Logger) Info(log interface{}, args ...interface{}) {
 	self.log4go.Info(log, args...)

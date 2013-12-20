@@ -3,6 +3,7 @@ package collector
 import (
 	"./format"
 	"./input"
+	"./output"
 )
 
 import . "launchpad.net/gocheck"
@@ -50,6 +51,17 @@ func (s *ContainerSuite) TestGetFormat(c *C) {
 	c.Check(GetContainer().GetFormat("bar"), FitsTypeOf, &format.RegExp{})
 }
 
+func (s *ContainerSuite) TestGetOutput(c *C) {
+	var raw = string(`
+		[output-elasticsearch "bar"]
+		host = foo
+	`)
+
+	GetConfig().Load(raw)
+
+	c.Check(GetContainer().GetOutput("bar"), FitsTypeOf, &output.Elasticsearch{})
+}
+
 func (s *ContainerSuite) TestGetReader(c *C) {
 	var raw = string(`
 		[input-tail "bar"]
@@ -64,4 +76,19 @@ func (s *ContainerSuite) TestGetReader(c *C) {
 	GetConfig().Load(raw)
 
 	c.Check(GetContainer().GetReader(), FitsTypeOf, &Reader{})
+}
+
+func (s *ContainerSuite) TestGetWriter(c *C) {
+	var raw = string(`
+		[output-elasticsearch "bar"]
+		host = foo
+
+		[writer]
+		output = bar
+
+	`)
+
+	GetConfig().Load(raw)
+
+	c.Check(GetContainer().GetWriter(), FitsTypeOf, &Writer{})
 }
