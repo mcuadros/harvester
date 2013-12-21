@@ -4,6 +4,7 @@ import (
 	"collector/format"
 	"collector/input"
 	"collector/intf"
+	. "collector/logger"
 	"collector/output"
 )
 
@@ -27,7 +28,7 @@ func (self *Container) GetFormat(key string) intf.Format {
 		return format.NewRegExp(regExpConfig)
 	}
 
-	GetLogger().Critical("Unable to find '%s' format definition", key)
+	Critical("Unable to find '%s' format definition", key)
 	return nil
 }
 
@@ -44,7 +45,7 @@ func (self *Container) GetInput(key string) intf.Input {
 		return input.NewTail(tailConfig, format)
 	}
 
-	GetLogger().Critical("Unable to find '%s' input definition", key)
+	Critical("Unable to find '%s' input definition", key)
 	return nil
 }
 
@@ -65,7 +66,7 @@ func (self *Container) GetOutput(key string) intf.Output {
 		return output.NewElasticsearch(esConfig)
 	}
 
-	GetLogger().Critical("Unable to find '%s' output definition", key)
+	Critical("Unable to find '%s' output definition", key)
 	return nil
 }
 
@@ -77,5 +78,5 @@ func (self *Container) GetWriter() *Writer {
 		outputs[i] = self.GetOutput(key)
 	}
 
-	return NewWriter(outputs)
+	return NewWriter(outputs, config.Threads)
 }

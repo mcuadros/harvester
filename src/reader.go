@@ -22,11 +22,16 @@ func NewReader(inputs []Input) *Reader {
 
 	return reader
 }
+
 func (self *Reader) SetInputs(inputs []Input) {
 	self.inputs = inputs
 }
 
-func (self *Reader) ReadIntoChannel(channel chan map[string]string) {
+func (self *Reader) GoReadIntoChannel(channel chan map[string]string) {
+	go self.doReadIntoChannel(channel)
+}
+
+func (self *Reader) doReadIntoChannel(channel chan map[string]string) {
 	defer close(channel)
 
 	for _, input := range self.inputs {

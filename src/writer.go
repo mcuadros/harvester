@@ -6,7 +6,8 @@ import (
 )
 
 type WriterConfig struct {
-	Output []string
+	Output  []string
+	Threads int
 }
 
 type Writer struct {
@@ -14,18 +15,24 @@ type Writer struct {
 	created     int32
 	transferred int32
 	outputs     []Output
+	threads     int
 	isAlive     bool
 }
 
-func NewWriter(output []Output) *Writer {
+func NewWriter(output []Output, threads int) *Writer {
 	writer := new(Writer)
 	writer.SetOutputs(output)
+	writer.SetThreads(threads)
 
 	return writer
 }
 
 func (self *Writer) SetOutputs(outputs []Output) {
 	self.outputs = outputs
+}
+
+func (self *Writer) SetThreads(threads int) {
+	self.threads = threads
 }
 
 func (self *Writer) GetCounters() (int32, int32, int32) {
@@ -42,7 +49,17 @@ func (self *Writer) ResetCounters() {
 	self.transferred = 0
 }
 
-func (self *Writer) WriteFromChannel(channel chan map[string]string) {
+func (self *Writer) GoWriteFromChannel() chan map[string]string {
+	channel := make(chan map[string]string, self.threads)
+
+	for i := 0; i < self.threads; i++ {
+		go self.doWriteFromChannel(channel)
+	}
+
+	return channel
+}
+
+func (self *Writer) doWriteFromChannel(channel chan map[string]string) {
 	self.isAlive = true
 	for record := range channel {
 		self.writeRecordFromChannel(record)

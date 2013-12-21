@@ -13,17 +13,6 @@ type CofigSuite struct{}
 
 var _ = Suite(&CofigSuite{})
 
-func (s *CofigSuite) TestBasic(c *C) {
-	var raw = string(`
-		[basic]
-		threads = 10
-	`)
-
-	GetConfig().Load(raw)
-
-	c.Check(GetConfig().Basic.Threads, Equals, 10)
-}
-
 func (s *CofigSuite) TestFormat(c *C) {
 	var raw = string(`
 		[reader]

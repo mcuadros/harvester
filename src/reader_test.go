@@ -15,7 +15,7 @@ func (s *ReaderSuite) TestReadIntoChannelSingleInput(c *C) {
 	inputs := []intf.Input{new(MockInput)}
 
 	config := NewReader(inputs)
-	go config.ReadIntoChannel(channel)
+	config.GoReadIntoChannel(channel)
 
 	count := 0
 	for record := range channel {
@@ -31,7 +31,7 @@ func (s *ReaderSuite) TestReadIntoChannelMultipleInputs(c *C) {
 	inputs := []intf.Input{new(MockInput), new(MockInput), new(MockInput), new(MockInput)}
 
 	config := NewReader(inputs)
-	go config.ReadIntoChannel(channel)
+	config.GoReadIntoChannel(channel)
 
 	count := 0
 	for record := range channel {

@@ -3,19 +3,18 @@ package collector
 import (
 	"collector/format"
 	"collector/input"
+	"collector/logger"
 	"collector/output"
 	"fmt"
+	"os"
 )
 
 import "code.google.com/p/gcfg"
 
 type Config struct {
-	Basic struct {
-		Threads int
-	}
 	Reader               ReaderConfig
 	Writer               WriterConfig
-	Logger               LoggerConfig
+	Logger               logger.LoggerConfig
 	Format_CSV           map[string]*format.CSVConfig
 	Format_RegExp        map[string]*format.RegExpConfig
 	Input_File           map[string]*input.FileConfig
@@ -32,13 +31,15 @@ func GetConfig() *Config {
 func (self *Config) Load(ini string) {
 	err := gcfg.ReadStringInto(self, ini)
 	if err != nil {
-		panic(fmt.Sprintf("open config: %v", err))
+		fmt.Println("error: cannot parse config", err)
+		os.Exit(1)
 	}
 }
 
 func (self *Config) LoadFile(filename string) {
 	err := gcfg.ReadFileInto(self, filename)
 	if err != nil {
-		panic(fmt.Sprintf("open config: %v", err))
+		fmt.Println("erro:", err)
+		os.Exit(1)
 	}
 }

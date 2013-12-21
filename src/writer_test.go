@@ -14,13 +14,12 @@ type WriterSuite struct{}
 var _ = Suite(&WriterSuite{})
 
 func (s *WriterSuite) TestWriteFromChannelSingleOutput(c *C) {
-	channel := make(chan map[string]string, 1)
 	output := new(MockOutput)
 	output.Return = true
 	outputs := []intf.Output{output}
 
-	writer := NewWriter(outputs)
-	go writer.WriteFromChannel(channel)
+	writer := NewWriter(outputs, 1)
+	channel := writer.GoWriteFromChannel()
 	go func(channel chan map[string]string) {
 		for i := 0; i < 10; i++ {
 			channel <- map[string]string{"foo": fmt.Sprintf("%d", i)}
@@ -44,16 +43,14 @@ func (s *WriterSuite) TestWriteFromChannelSingleOutput(c *C) {
 }
 
 func (s *WriterSuite) TestWriteFromChannelMultipleOutput(c *C) {
-	channel := make(chan map[string]string, 1)
-
 	outputw := new(MockOutput)
 	outputw.Return = true
 	outputf := new(MockOutput)
 	outputf.Return = false
 	outputs := []intf.Output{outputw, outputf}
 
-	writer := NewWriter(outputs)
-	go writer.WriteFromChannel(channel)
+	writer := NewWriter(outputs, 1)
+	channel := writer.GoWriteFromChannel()
 	go func(channel chan map[string]string) {
 		for i := 0; i < 10; i++ {
 			channel <- map[string]string{"foo": fmt.Sprintf("%d", i)}

@@ -1,70 +1,62 @@
 package collector
 
-/*
 import (
-	"./format"
-	"fmt"
+	. "collector/logger"
 	"runtime"
-	"sync"
 	"time"
 )
 
-import "code.google.com/p/gcfg"
-
 type Collector struct {
-	config Config
-	lines  chan map[string]string
-	wait   sync.WaitGroup
-	writer Writer
-	reader Reader
+	writer  *Writer
+	reader  *Reader
+	channel chan map[string]string
 }
 
-/*
+func NewCollector() *Collector {
+	collector := new(Collector)
 
-func (self *Collector) Configure() {
-	err := gcfg.ReadFileInto(&self.config, "config.ini")
-	if err != nil {
-		panic(fmt.Sprintf("open config: %v", err))
-	}
+	return collector
 }
 
-func (self *Collector) ReadFile() {
-	format := format.NewCSV(self.config.CSV)
-
-	reader := NewReader(self.config.Reader)
-	reader.SetFormat(format)
-
-	go reader.ReadIntoChannel(self.lines)
-	go self.PrintStatus()
-
-	self.wait.Wait()
-
-}
-
-func (self *Collector) PrintStatus() {
-	for {
-		time.Sleep(1 * time.Second)
-		GetLogger().PrintWriterStats(3, self.writer)
-	}
+func (self *Collector) Configure(filename string) {
+	GetConfig().LoadFile(filename)
 }
 
 func (self *Collector) Boot() {
-	NewLogger(self.config.Logger)
-	GetLogger().Info("Starting ...")
-	GetLogger().Debug("Number of max. process %d", runtime.NumCPU())
-	runtime.GOMAXPROCS(runtime.NumCPU())
-
-	self.writer = NewWriterElasticSearch(self.config.ElasticSearch)
-
-	threads := self.config.Basic.Threads
-	self.lines = make(chan map[string]string, threads)
-
-	for i := 0; i < threads; i++ {
-		self.wait.Add(1)
-		go self.writer.WriteFromChannel(self.lines, self.wait)
-	}
-
-	GetLogger().Debug("Started %d thread(s)", threads)
-
+	self.configureLogger()
+	self.configureMaxProcs()
+	self.bootWriter()
+	self.bootReader()
 }
-*/
+
+func (self *Collector) configureLogger() {
+	Info("Starting ...")
+}
+
+func (self *Collector) configureMaxProcs() {
+	Info("Number of max. process %d", runtime.NumCPU())
+	runtime.GOMAXPROCS(runtime.NumCPU())
+}
+
+func (self *Collector) bootWriter() {
+	self.writer = GetContainer().GetWriter()
+}
+
+func (self *Collector) bootReader() {
+	self.reader = GetContainer().GetReader()
+}
+
+func (self *Collector) Run() {
+	self.channel = self.writer.GoWriteFromChannel()
+	self.reader.GoReadIntoChannel(self.channel)
+	self.wait()
+}
+
+func (self *Collector) wait() {
+	print(self.writer.IsAlive())
+	for self.writer.IsAlive() {
+		time.Sleep(1 * time.Second)
+		Warning("foo")
+		//GetLogger().PrintWriterStats(3, self.writer)
+	}
+}
