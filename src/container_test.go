@@ -55,10 +55,13 @@ func (s *ContainerSuite) TestGetOutput(c *C) {
 	var raw = string(`
 		[output-elasticsearch "bar"]
 		host = foo
+
+		[output-mongo "foo"]
+		url = mongodb://localhost
 	`)
 
 	GetConfig().Load(raw)
-
+	c.Check(GetContainer().GetOutput("foo"), FitsTypeOf, &output.Mongo{})
 	c.Check(GetContainer().GetOutput("bar"), FitsTypeOf, &output.Elasticsearch{})
 }
 

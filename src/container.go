@@ -66,6 +66,11 @@ func (self *Container) GetOutput(key string) intf.Output {
 		return output.NewElasticsearch(esConfig)
 	}
 
+	mgoConfig, ok := GetConfig().Output_Mongo[key]
+	if ok {
+		return output.NewMongo(mgoConfig)
+	}
+
 	Critical("Unable to find '%s' output definition", key)
 	return nil
 }
