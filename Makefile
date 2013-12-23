@@ -28,8 +28,8 @@ PACKAGE_NAME := collector
 TOPLEVEL_PKG := .
 BASE_LIST := collector
 IMPL_LIST := collector/input collector/output collector/format
-CMD_LIST :=	tool
-BIN_PATH := bin/collector
+CMD_LIST :=	tool/collectord.go
+BIN_PATH := bin
 DEPENDENCIES_LIST = launchpad.net/gocheck \
 code.google.com/p/go.tools/cmd/cover \
 code.google.com/p/gcfg \
@@ -43,7 +43,7 @@ labix.org/v2/mgo/bson
 # List building
 ALL_LIST = $(INT_LIST) $(BASE_LIST) $(IMPL_LIST) $(CMD_LIST)
 
-BUILD_LIST = $(foreach int, $(ALL_LIST), $(int)_build)
+BUILD_LIST = $(foreach int, $(CMD_LIST), $(int)_build)
 CLEAN_LIST = $(foreach int, $(ALL_LIST), $(int)_clean)
 INSTALL_LIST = $(foreach int, $(ALL_LIST), $(int)_install)
 COVERAGE_LIST = $(foreach int, $(BASE_LIST) $(IMPL_LIST), $(int)_coverage)
@@ -63,13 +63,13 @@ export GOPATH
 all: iref test build 
 build: $(BUILD_LIST)
 clean: $(CLEAN_LIST)
-install: $(INSTALL_LIST)
+install: $(BUILD_LIST)
 test: iref $(TEST_LIST)
 coverage: iref $(COVERAGE_LIST)
 iref: $(IREF_LIST)
 
 $(BUILD_LIST): %_build:
-	$(GOBUILD) -o $(BIN_PATH) $(TOPLEVEL_PKG)/$*
+	$(GOBUILD) -o $(subst .go,,$(BIN_PATH)/$(shell basename $(*))) $(TOPLEVEL_PKG)/$*
 $(CLEAN_LIST): %_clean:
 	rm -rf $(GOPATH)/src
 	$(GOCLEAN) $(TOPLEVEL_PKG)/$*
