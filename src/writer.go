@@ -2,6 +2,7 @@ package collector
 
 import (
 	. "collector/intf"
+	. "collector/logger"
 	"sync"
 	"sync/atomic"
 )
@@ -37,18 +38,8 @@ func (self *Writer) SetThreads(threads int32) {
 	self.maxThreads = threads
 }
 
-func (self *Writer) GetCounters() (int32, int32, int32) {
-	return self.created, self.failed, self.transferred
-}
-
 func (self *Writer) IsAlive() bool {
 	return atomic.LoadInt32(&self.threads) != 0
-}
-
-func (self *Writer) ResetCounters() {
-	self.created = 0
-	self.failed = 0
-	self.transferred = 0
 }
 
 func (self *Writer) GoWriteFromChannel() chan map[string]string {
@@ -88,4 +79,24 @@ func (self *Writer) writeRecordIntoOutput(output Output, record map[string]strin
 	}
 
 	wait.Done()
+}
+
+func (self *Writer) GetCounters() (int32, int32, int32) {
+	return self.created, self.failed, self.transferred
+}
+
+func (self *Writer) ResetCounters() {
+	self.created = 0
+	self.failed = 0
+	self.transferred = 0
+}
+
+func (self *Writer) PrintCounters(elapsedSeconds int) {
+	created, failed, _ := self.GetCounters()
+	self.ResetCounters()
+
+	logFormat := "Created %d document(s), failed %d times(s), %g doc/sec"
+
+	rate := float64(created+failed) / float64(elapsedSeconds)
+	Info(logFormat, created, failed, rate)
 }

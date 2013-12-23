@@ -2,7 +2,6 @@ package collector
 
 import (
 	. "collector/intf"
-	"fmt"
 	"sync"
 )
 
@@ -55,8 +54,5 @@ func (self *Reader) emitRecord(channel chan map[string]string, row map[string]st
 	if len(row) > 0 {
 		channel <- row
 		self.counter++
-		if self.counter%1000 == 0 {
-			fmt.Println(fmt.Sprintf("%d", self.counter))
-		}
 	}
 }

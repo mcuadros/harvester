@@ -53,11 +53,10 @@ func (self *Collector) Run() {
 }
 
 func (self *Collector) wait() {
-	print(self.writer.IsAlive())
-	for {
+	for self.writer.IsAlive() {
 		time.Sleep(1 * time.Second)
-		Warning("foo")
-		print(self.writer.IsAlive())
-		//GetLogger().PrintWriterStats(3, self.writer)
+		self.writer.PrintCounters(1)
 	}
+
+	Info("nothing more for read, terminating daemon ...")
 }

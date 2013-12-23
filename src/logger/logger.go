@@ -34,17 +34,6 @@ func NewLogger(config *LoggerConfig) {
 	}
 }
 
-/*
-func (self *Logger) PrintWriterStats(elapsed int, writer Writer) {
-	created, failed, transferred := writer.GetCounters()
-	writer.ResetCounters()
-
-	logFormat := "Created %d document(s), Failed %d times(s), %g"
-
-	rate := float64(transferred) / 1000 / float64(elapsed)
-	self.log4go.Info(fmt.Sprintf(logFormat, created, failed, rate))
-}*/
-
 func Debug(line string, args ...interface{}) {
 	log.Printf(formatLogLine("DEBG", line), args...)
 }
