@@ -21,6 +21,7 @@ type Config struct {
 	Input_Tail           map[string]*input.TailConfig
 	Output_Elasticsearch map[string]*output.ElasticsearchConfig
 	Output_Mongo         map[string]*output.MongoConfig
+	Output_Dummy         map[string]*output.DummyConfig
 }
 
 var configInstance *Config = new(Config)

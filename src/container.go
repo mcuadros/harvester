@@ -71,6 +71,11 @@ func (self *Container) GetOutput(key string) intf.Output {
 		return output.NewMongo(mgoConfig)
 	}
 
+	dummyConfig, ok := GetConfig().Output_Dummy[key]
+	if ok {
+		return output.NewDummy(dummyConfig)
+	}
+
 	Critical("Unable to find '%s' output definition", key)
 	return nil
 }
