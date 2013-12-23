@@ -5,6 +5,7 @@ import (
 	"collector/input"
 	"collector/logger"
 	"collector/output"
+	"collector/processor"
 	"fmt"
 	"os"
 )
@@ -22,6 +23,7 @@ type Config struct {
 	Output_Elasticsearch map[string]*output.ElasticsearchConfig
 	Output_Mongo         map[string]*output.MongoConfig
 	Output_Dummy         map[string]*output.DummyConfig
+	Processor_Anonymize  map[string]*processor.AnonymizeConfig
 }
 
 var configInstance *Config = new(Config)

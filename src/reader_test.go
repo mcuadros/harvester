@@ -14,8 +14,9 @@ func (s *ReaderSuite) TestReadIntoChannelSingleInput(c *C) {
 	channel := make(chan map[string]string, 1)
 	inputs := []intf.Input{new(MockInput)}
 
-	config := NewReader(inputs)
-	config.GoReadIntoChannel(channel)
+	reader := NewReader()
+	reader.SetInputs(inputs)
+	reader.GoReadIntoChannel(channel)
 
 	count := 0
 	for record := range channel {
@@ -30,8 +31,9 @@ func (s *ReaderSuite) TestReadIntoChannelMultipleInputs(c *C) {
 	channel := make(chan map[string]string, 1)
 	inputs := []intf.Input{new(MockInput), new(MockInput), new(MockInput), new(MockInput)}
 
-	config := NewReader(inputs)
-	config.GoReadIntoChannel(channel)
+	reader := NewReader()
+	reader.SetInputs(inputs)
+	reader.GoReadIntoChannel(channel)
 
 	count := 0
 	for record := range channel {

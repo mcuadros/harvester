@@ -15,9 +15,8 @@ type Reader struct {
 	wait    sync.WaitGroup
 }
 
-func NewReader(inputs []Input) *Reader {
+func NewReader() *Reader {
 	reader := new(Reader)
-	reader.SetInputs(inputs)
 
 	return reader
 }

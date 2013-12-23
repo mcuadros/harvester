@@ -6,6 +6,7 @@ import (
 	"collector/intf"
 	. "collector/logger"
 	"collector/output"
+	"collector/processor"
 )
 
 type Container struct {
@@ -57,7 +58,10 @@ func (self *Container) GetReader() *Reader {
 		inputs[i] = self.GetInput(key)
 	}
 
-	return NewReader(inputs)
+	reader := NewReader()
+	reader.SetInputs(inputs)
+
+	return reader
 }
 
 func (self *Container) GetOutput(key string) intf.Output {
@@ -80,6 +84,16 @@ func (self *Container) GetOutput(key string) intf.Output {
 	return nil
 }
 
+func (self *Container) GetPostProcessor(key string) intf.PostProcessor {
+	anonConfig, ok := GetConfig().Processor_Anonymize[key]
+	if ok {
+		return processor.NewAnonymize(anonConfig)
+	}
+
+	Critical("Unable to find '%s' processor definition", key)
+	return nil
+}
+
 func (self *Container) GetWriter() *Writer {
 	config := GetConfig().Writer
 
@@ -88,5 +102,15 @@ func (self *Container) GetWriter() *Writer {
 		outputs[i] = self.GetOutput(key)
 	}
 
-	return NewWriter(outputs, config.Threads)
+	processors := make([]intf.PostProcessor, len(config.Processor))
+	for i, key := range config.Processor {
+		processors[i] = self.GetPostProcessor(key)
+	}
+
+	writer := NewWriter()
+	writer.SetOutputs(outputs)
+	writer.SetProcessors(processors)
+	writer.SetThreads(config.Threads)
+
+	return writer
 }

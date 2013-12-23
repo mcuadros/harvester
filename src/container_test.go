@@ -4,6 +4,7 @@ import (
 	"collector/format"
 	"collector/input"
 	"collector/output"
+	"collector/processor"
 )
 
 import . "launchpad.net/gocheck"
@@ -98,4 +99,15 @@ func (s *ContainerSuite) TestGetWriter(c *C) {
 	GetConfig().Load(raw)
 
 	c.Check(GetContainer().GetWriter(), FitsTypeOf, &Writer{})
+}
+
+func (s *ContainerSuite) TestGetPostProcessor(c *C) {
+	var raw = string(`
+		[processor-anonymize "qux"]
+		fields = true
+	`)
+
+	GetConfig().Load(raw)
+	c.Check(GetContainer().GetPostProcessor("qux"), FitsTypeOf, &processor.Anonymize{})
+
 }

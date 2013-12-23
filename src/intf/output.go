@@ -1,5 +1,5 @@
 package intf
 
 type Output interface {
-	PutRecord(map[string]string) bool
+	PutRecord(record map[string]string) bool
 }

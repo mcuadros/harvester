@@ -8,24 +8,25 @@ import (
 )
 
 type WriterConfig struct {
-	Output  []string
-	Threads int
+	Output    []string
+	Processor []string
+	Threads   int
 }
 
 type Writer struct {
-	failed      int32
-	created     int32
-	transferred int32
-	outputs     []Output
-	maxThreads  int32
-	threads     int32
-	isAlive     bool
+	outputs       []Output
+	processors    []PostProcessor
+	failed        int32
+	created       int32
+	transferred   int32
+	maxThreads    uint32
+	threads       int32
+	isAlive       bool
+	hasProcessors bool
 }
 
-func NewWriter(output []Output, threads int) *Writer {
+func NewWriter() *Writer {
 	writer := new(Writer)
-	writer.SetOutputs(output)
-	writer.SetThreads(int32(threads))
 
 	return writer
 }
@@ -34,8 +35,16 @@ func (self *Writer) SetOutputs(outputs []Output) {
 	self.outputs = outputs
 }
 
-func (self *Writer) SetThreads(threads int32) {
-	self.maxThreads = threads
+func (self *Writer) SetProcessors(processors []PostProcessor) {
+	if len(processors) > 0 {
+		self.hasProcessors = true
+	}
+
+	self.processors = processors
+}
+
+func (self *Writer) SetThreads(threads int) {
+	self.maxThreads = uint32(threads)
 }
 
 func (self *Writer) IsAlive() bool {
@@ -44,7 +53,7 @@ func (self *Writer) IsAlive() bool {
 
 func (self *Writer) GoWriteFromChannel() chan map[string]string {
 	channel := make(chan map[string]string, self.maxThreads)
-	for i := int32(0); i < self.maxThreads; i++ {
+	for i := uint32(0); i < self.maxThreads; i++ {
 		atomic.AddInt32(&self.threads, 1)
 		go self.doWriteFromChannel(channel)
 	}
@@ -72,6 +81,8 @@ func (self *Writer) writeRecordFromChannel(record map[string]string) {
 }
 
 func (self *Writer) writeRecordIntoOutput(output Output, record map[string]string, wait *sync.WaitGroup) {
+	self.applyProcessors(record)
+
 	if output.PutRecord(record) {
 		self.created++
 	} else {
@@ -79,6 +90,14 @@ func (self *Writer) writeRecordIntoOutput(output Output, record map[string]strin
 	}
 
 	wait.Done()
+}
+
+func (self *Writer) applyProcessors(record map[string]string) {
+	if self.hasProcessors {
+		for _, proc := range self.processors {
+			proc.Do(record)
+		}
+	}
 }
 
 func (self *Writer) GetCounters() (int32, int32, int32) {
