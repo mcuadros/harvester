@@ -60,7 +60,7 @@ func (s *ContainerSuite) TestGetOutput(c *C) {
 		url = mongodb://localhost
 
 		[output-dummy "qux"]
-		foo = foo
+		print = true
 	`)
 
 	GetConfig().Load(raw)
