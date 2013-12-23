@@ -1,6 +1,7 @@
 package output
 
 import (
+	. "collector/logger"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -46,7 +47,7 @@ func (self *Elasticsearch) PutRecord(record map[string]string) bool {
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err)
+		Error("HTTP Error %s", err)
 		return false
 	}
 
@@ -68,7 +69,7 @@ func (self *Elasticsearch) PutRecord(record map[string]string) bool {
 func (self *Elasticsearch) encodeToJSON(record map[string]string) string {
 	json, err := json.MarshalIndent(record, " ", "    ")
 	if err != nil {
-		fmt.Println(err)
+		Error("JSON Error %s", err)
 	}
 
 	self.transferred += len(json)

@@ -54,9 +54,10 @@ func (self *Collector) Run() {
 
 func (self *Collector) wait() {
 	print(self.writer.IsAlive())
-	for self.writer.IsAlive() {
+	for {
 		time.Sleep(1 * time.Second)
 		Warning("foo")
+		print(self.writer.IsAlive())
 		//GetLogger().PrintWriterStats(3, self.writer)
 	}
 }

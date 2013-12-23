@@ -1,7 +1,6 @@
 package output
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"testing"
@@ -29,7 +28,6 @@ func (s *ElasticsearchSuite) TestGetRecord(c *C) {
 func parrotHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		body, _ := ioutil.ReadAll(r.Body)
-		fmt.Println(string(body))
 
 		w.WriteHeader(http.StatusCreated)
 		w.Write(body)

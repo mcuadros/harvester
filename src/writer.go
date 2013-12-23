@@ -3,6 +3,7 @@ package collector
 import (
 	. "collector/intf"
 	"sync"
+	"sync/atomic"
 )
 
 type WriterConfig struct {
@@ -15,14 +16,15 @@ type Writer struct {
 	created     int32
 	transferred int32
 	outputs     []Output
-	threads     int
+	maxThreads  int32
+	threads     int32
 	isAlive     bool
 }
 
 func NewWriter(output []Output, threads int) *Writer {
 	writer := new(Writer)
 	writer.SetOutputs(output)
-	writer.SetThreads(threads)
+	writer.SetThreads(int32(threads))
 
 	return writer
 }
@@ -31,8 +33,8 @@ func (self *Writer) SetOutputs(outputs []Output) {
 	self.outputs = outputs
 }
 
-func (self *Writer) SetThreads(threads int) {
-	self.threads = threads
+func (self *Writer) SetThreads(threads int32) {
+	self.maxThreads = threads
 }
 
 func (self *Writer) GetCounters() (int32, int32, int32) {
@@ -40,7 +42,7 @@ func (self *Writer) GetCounters() (int32, int32, int32) {
 }
 
 func (self *Writer) IsAlive() bool {
-	return self.isAlive
+	return atomic.LoadInt32(&self.threads) != 0
 }
 
 func (self *Writer) ResetCounters() {
@@ -50,9 +52,9 @@ func (self *Writer) ResetCounters() {
 }
 
 func (self *Writer) GoWriteFromChannel() chan map[string]string {
-	channel := make(chan map[string]string, self.threads)
-
-	for i := 0; i < self.threads; i++ {
+	channel := make(chan map[string]string, self.maxThreads)
+	for i := int32(0); i < self.maxThreads; i++ {
+		atomic.AddInt32(&self.threads, 1)
 		go self.doWriteFromChannel(channel)
 	}
 
@@ -60,12 +62,11 @@ func (self *Writer) GoWriteFromChannel() chan map[string]string {
 }
 
 func (self *Writer) doWriteFromChannel(channel chan map[string]string) {
-	self.isAlive = true
 	for record := range channel {
 		self.writeRecordFromChannel(record)
 	}
 
-	self.isAlive = false
+	atomic.AddInt32(&self.threads, -1)
 }
 
 func (self *Writer) writeRecordFromChannel(record map[string]string) {

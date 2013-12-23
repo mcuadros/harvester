@@ -74,6 +74,26 @@ func (s *WriterSuite) TestWriteFromChannelMultipleOutput(c *C) {
 
 }
 
+func (s *WriterSuite) TestWriteIsAlive(c *C) {
+	outputw := new(MockOutput)
+	outputw.Return = true
+	outputf := new(MockOutput)
+	outputf.Return = false
+	outputs := []intf.Output{outputw, outputf}
+
+	writer := NewWriter(outputs, 1)
+	channel := writer.GoWriteFromChannel()
+
+	c.Check(writer.IsAlive(), Equals, true)
+
+	time.Sleep(100 * time.Microsecond)
+	c.Check(writer.IsAlive(), Equals, true)
+	close(channel)
+
+	time.Sleep(100 * time.Microsecond)
+	c.Check(writer.IsAlive(), Equals, false)
+}
+
 type MockOutput struct {
 	Count  int
 	Return bool
