@@ -3,7 +3,7 @@ package input
 import (
 	"bufio"
 	"collector/intf"
-	"fmt"
+	. "collector/logger"
 	"os"
 	"path/filepath"
 )
@@ -17,6 +17,7 @@ type File struct {
 	files   []*bufio.Scanner
 	format  intf.Format
 	current int
+	empty   bool
 	eof     bool
 }
 
@@ -35,25 +36,30 @@ func (self *File) SetFormat(format intf.Format) {
 func (self *File) SetConfig(config *FileConfig) {
 	files, err := filepath.Glob(config.Pattern)
 	if err != nil {
-		panic(fmt.Sprintf("open %s: %v", config.Pattern, err))
+		Critical("open %s: %v", config.Pattern, err)
 	}
 
 	for _, file := range files {
 		self.files = append(self.files, self.createBufioReader(file))
+	}
+
+	if len(self.files) == 0 {
+		self.empty = true
+		self.eof = true
 	}
 }
 
 func (self *File) createBufioReader(filename string) *bufio.Scanner {
 	file, err := os.Open(filename)
 	if err != nil {
-		panic(fmt.Sprintln("open %s: %v", filename, err))
+		Critical("open %s: %v", filename, err)
 	}
 
 	return bufio.NewScanner(file)
 }
 
 func (self *File) GetLine() string {
-	if self.scan() {
+	if !self.empty && self.scan() {
 		return self.files[self.current].Text()
 	}
 

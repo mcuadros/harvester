@@ -61,3 +61,12 @@ func testReader(c *C, file *File, count int) {
 
 	c.Check(file.IsEOF(), Equals, true)
 }
+
+func (s *InputFileSuite) TestGetLineWithMissingFile(c *C) {
+	config := FileConfig{Pattern: "../../tests/resources/plain.c.txt"}
+
+	file := NewFile(&config, new(MockFormat))
+
+	c.Check(file.GetLine(), Equals, "")
+	c.Check(file.IsEOF(), Equals, true)
+}
