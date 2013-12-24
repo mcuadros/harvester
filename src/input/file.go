@@ -83,3 +83,6 @@ func (self *File) scan() bool {
 func (self *File) IsEOF() bool {
 	return self.eof
 }
+
+func (self *File) Finish() {
+}

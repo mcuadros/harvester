@@ -50,6 +50,7 @@ func (self *Collector) Run() {
 	self.channel = self.writer.GoWriteFromChannel()
 	self.reader.GoReadIntoChannel(self.channel)
 	self.wait()
+	self.reader.Finish()
 }
 
 func (self *Collector) wait() {

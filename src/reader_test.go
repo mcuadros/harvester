@@ -12,7 +12,8 @@ var _ = Suite(&ReaderSuite{})
 
 func (s *ReaderSuite) TestReadIntoChannelSingleInput(c *C) {
 	channel := make(chan map[string]string, 1)
-	inputs := []intf.Input{new(MockInput)}
+	input := new(MockInput)
+	inputs := []intf.Input{input}
 
 	reader := NewReader()
 	reader.SetInputs(inputs)
@@ -24,12 +25,19 @@ func (s *ReaderSuite) TestReadIntoChannelSingleInput(c *C) {
 		count++
 	}
 
+	reader.Finish()
 	c.Check(count, Equals, 4)
+	c.Check(input.Finished, Equals, true)
 }
 
 func (s *ReaderSuite) TestReadIntoChannelMultipleInputs(c *C) {
 	channel := make(chan map[string]string, 1)
-	inputs := []intf.Input{new(MockInput), new(MockInput), new(MockInput), new(MockInput)}
+	inputA := new(MockInput)
+	inputB := new(MockInput)
+	inputC := new(MockInput)
+	inputD := new(MockInput)
+
+	inputs := []intf.Input{inputA, inputB, inputC, inputD}
 
 	reader := NewReader()
 	reader.SetInputs(inputs)
@@ -41,15 +49,22 @@ func (s *ReaderSuite) TestReadIntoChannelMultipleInputs(c *C) {
 		count++
 	}
 
+	reader.Finish()
 	c.Check(count, Equals, 16)
+	c.Check(inputA.Finished, Equals, true)
+	c.Check(inputB.Finished, Equals, true)
+	c.Check(inputC.Finished, Equals, true)
+	c.Check(inputD.Finished, Equals, true)
+
 }
 
 type MockInput struct {
-	current int
+	Current  int
+	Finished bool
 }
 
 func (self *MockInput) GetLine() string {
-	self.current++
+	self.Current++
 
 	return string("foo")
 }
@@ -61,9 +76,12 @@ func (self *MockInput) GetRecord() map[string]string {
 }
 
 func (self *MockInput) IsEOF() bool {
-	if self.current > 3 {
+	if self.Current > 3 {
 		return true
 	}
 
 	return false
+}
+func (self *MockInput) Finish() {
+	self.Finished = true
 }

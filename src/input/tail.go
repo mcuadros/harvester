@@ -2,11 +2,13 @@ package input
 
 import (
 	"collector/intf"
+	. "collector/logger"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
 	"strconv"
+	"sync"
 )
 
 import "github.com/ActiveState/tail"
@@ -26,6 +28,7 @@ type Tail struct {
 	posFile string
 	counter int
 	eof     bool
+	wait    sync.WaitGroup
 }
 
 func NewTail(config *TailConfig, format intf.Format) *Tail {
@@ -51,7 +54,7 @@ func (self *Tail) createTailReader(config tail.Config) {
 
 	tail, err := tail.TailFile(self.file, config)
 	if err != nil {
-		panic(fmt.Sprintf("tail %s: %v", self.file, err))
+		Critical("tail %s: %v", self.file, err)
 	}
 
 	self.tail = tail
@@ -88,12 +91,12 @@ func (self *Tail) readPosition() int64 {
 
 	positionRaw, err := ioutil.ReadFile(self.posFile)
 	if err != nil {
-		panic(fmt.Sprintf("read %s: %v", self.posFile, err))
+		Critical("read %s: %v", self.posFile, err)
 	}
 
 	position, err := strconv.ParseInt(string(positionRaw), 10, 0)
 	if err != nil {
-		panic(fmt.Sprintf("malformed content %s: %v", self.posFile, err))
+		Critical("malformed content %s: %v", self.posFile, err)
 	}
 
 	return position
@@ -103,6 +106,7 @@ func (self *Tail) GetLine() string {
 	line, ok := (<-self.tail.Lines)
 	if ok {
 		self.counter++
+		self.wait.Add(1)
 		go self.keepPosition()
 		return line.Text
 	} else {
@@ -117,10 +121,12 @@ func (self *Tail) GetRecord() map[string]string {
 }
 
 func (self *Tail) keepPosition() {
-	if self.counter > 1 {
+	if self.counter >= 1 {
 		position, _ := self.tail.Tell()
 		ioutil.WriteFile(self.posFile, []byte(strconv.FormatInt(position, 10)), 0755)
 	}
+
+	self.wait.Done()
 }
 
 func (self *Tail) IsEOF() bool {
@@ -129,4 +135,8 @@ func (self *Tail) IsEOF() bool {
 
 func (self *Tail) Stop() {
 	self.tail.Stop()
+}
+
+func (self *Tail) Finish() {
+	self.wait.Wait()
 }

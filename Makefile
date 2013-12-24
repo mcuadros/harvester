@@ -27,7 +27,7 @@ GODEP=$(GOTEST) -i
 PACKAGE_NAME := collector
 TOPLEVEL_PKG := .
 BASE_LIST := collector
-IMPL_LIST := collector/input collector/output collector/format
+IMPL_LIST := collector/input collector/output collector/format collector/processor
 CMD_LIST :=	tool/collectord.go
 BIN_PATH := bin
 DEPENDENCIES_LIST = launchpad.net/gocheck \
@@ -60,7 +60,7 @@ export GOPATH
 # All are .PHONY for now because dependencyness is hard
 .PHONY: $(CLEAN_LIST) $(TEST_LIST) $(FMT_LIST) $(INSTALL_LIST) $(BUILD_LIST) $(IREF_LIST)
 
-all: iref test build 
+all: iref build 
 build: $(BUILD_LIST)
 clean: $(CLEAN_LIST)
 install: $(BUILD_LIST)

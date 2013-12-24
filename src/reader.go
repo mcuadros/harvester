@@ -55,3 +55,9 @@ func (self *Reader) emitRecord(channel chan map[string]string, row map[string]st
 		self.counter++
 	}
 }
+
+func (self *Reader) Finish() {
+	for _, input := range self.inputs {
+		input.Finish()
+	}
+}

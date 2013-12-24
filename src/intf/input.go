@@ -4,4 +4,5 @@ type Input interface {
 	GetLine() string
 	GetRecord() map[string]string
 	IsEOF() bool
+	Finish()
 }
