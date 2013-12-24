@@ -7,7 +7,6 @@ import (
 	_ "crypto/sha256"
 	_ "crypto/sha512"
 	"encoding/hex"
-	"hash"
 	"strings"
 )
 
@@ -19,7 +18,7 @@ type AnonymizeConfig struct {
 
 type Anonymize struct {
 	fields []string
-	hash   hash.Hash
+	hash   crypto.Hash
 	email  bool
 }
 
@@ -41,13 +40,13 @@ func (self *Anonymize) SetConfig(config *AnonymizeConfig) {
 
 	switch config.Hash {
 	case "md5":
-		self.hash = crypto.MD5.New()
+		self.hash = crypto.MD5
 	case "sha1":
-		self.hash = crypto.SHA1.New()
+		self.hash = crypto.SHA1
 	case "sha256":
-		self.hash = crypto.SHA256.New()
+		self.hash = crypto.SHA256
 	case "sha512":
-		self.hash = crypto.SHA512.New()
+		self.hash = crypto.SHA512
 	}
 
 	self.email = config.EmailSupport
@@ -74,8 +73,8 @@ func (self *Anonymize) encodeField(record map[string]string, field string) {
 }
 
 func (self *Anonymize) encodeString(value string) string {
-	self.hash.Reset()
-	self.hash.Write([]byte(value))
+	h := self.hash.New()
+	h.Write([]byte(value))
 
-	return hex.EncodeToString(self.hash.Sum(nil))
+	return hex.EncodeToString(h.Sum(nil))
 }
