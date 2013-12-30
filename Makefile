@@ -22,7 +22,6 @@ DESCRIPTION = low footprint collector and parser for events and logs
 SUBPACKAGES = collector/input collector/output collector/format
 COMMANDS =	tool/collectord.go
 DEPENDENCIES = launchpad.net/gocheck \
-
 code.google.com/p/go.tools/cmd/cover \
 code.google.com/p/gcfg \
 github.com/jarod/log4go \
