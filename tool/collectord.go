@@ -2,34 +2,52 @@ package main
 
 import (
 	. "collector"
-	"github.com/codegangsta/cli"
-	"os"
+	"flag"
+	"fmt"
 )
 
-func main() {
-	app := cli.NewApp()
-	app.Name = "collector"
-	app.Usage = "fight the loneliness!"
-	app.Author = "Máximo Cuadros"
-	app.Email = "mcuadros@gmail.com"
+const version string = "0.0.1"
 
-	app.Commands = []cli.Command{{
-		Name:  "daemon",
-		Usage: "add a task to the list",
-		Flags: []cli.Flag{
-			cli.BoolFlag{"verbose", "raise log level to info"},
-			cli.BoolFlag{"debug", "raise log level to debug"},
-			cli.StringFlag{"config, c", "/etc/collectord.conf", "config file"},
-		},
-		Action: daemon,
-	}}
-
-	app.Run(os.Args)
+type Options struct {
+	configFile string
+	verbose    bool
+	debug      bool
+	help       bool
 }
 
-func daemon(c *cli.Context) {
+var options Options
+
+func init() {
+	flag.StringVar(&options.configFile, "config", "/etc/collectord.conf", "config filename")
+	flag.BoolVar(&options.verbose, "verbose", false, "raise log level to verbose")
+	flag.BoolVar(&options.debug, "debug", false, "raise log level to debug")
+	flag.BoolVar(&options.help, "help", false, "help display this help")
+
+	flag.Usage = help
+}
+
+func main() {
+	flag.Parse()
+	if options.help {
+		help()
+		return
+	}
+
+	run()
+}
+
+func help() {
+	fmt.Printf("\033[1mcollectord v%s\033[0m\n", version)
+	fmt.Printf("Low footprint collector and parser for events and logs\n")
+	fmt.Printf("Máximo Cuadros Ortiz <mcuadros@gmail.com>\n\n")
+
+	fmt.Printf("Usage:\n")
+	flag.PrintDefaults()
+}
+
+func run() {
 	collector := NewCollector()
-	collector.Configure(c.String("config"))
+	collector.Configure(options.configFile)
 	collector.Boot()
 	collector.Run()
 }
