@@ -44,12 +44,16 @@ func (s *ContainerSuite) TestGetFormat(c *C) {
 
 		[format-regexp "bar"]
 		pattern = foo
+
+		[format-apache2 "baz"]
+		type = common
 	`)
 
 	GetConfig().Load(raw)
 
 	c.Check(GetContainer().GetFormat("foo"), FitsTypeOf, &format.CSV{})
 	c.Check(GetContainer().GetFormat("bar"), FitsTypeOf, &format.RegExp{})
+	c.Check(GetContainer().GetFormat("baz"), FitsTypeOf, &format.Apache2{})
 }
 
 func (s *ContainerSuite) TestGetOutput(c *C) {

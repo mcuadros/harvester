@@ -12,6 +12,7 @@ func (s *FormatRegExpSuite) TestGetRecord(c *C) {
 	format := NewRegExp(&config)
 
 	record := format.Parse("qux baz")
+	c.Check(record, HasLen, 2)
 	c.Check(record["foo"], Equals, "qux")
 	c.Check(record["bar"], Equals, "baz")
 }

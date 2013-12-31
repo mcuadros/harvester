@@ -1,12 +1,12 @@
 package harvesterd
 
 import (
+	"fmt"
 	"harvesterd/format"
 	"harvesterd/input"
 	"harvesterd/logger"
 	"harvesterd/output"
 	"harvesterd/processor"
-	"fmt"
 	"os"
 )
 
@@ -18,6 +18,7 @@ type Config struct {
 	Logger               logger.LoggerConfig
 	Format_CSV           map[string]*format.CSVConfig
 	Format_RegExp        map[string]*format.RegExpConfig
+	Format_Apache2       map[string]*format.Apache2Config
 	Input_File           map[string]*input.FileConfig
 	Input_Tail           map[string]*input.TailConfig
 	Output_Elasticsearch map[string]*output.ElasticsearchConfig

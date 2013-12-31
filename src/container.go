@@ -29,6 +29,11 @@ func (self *Container) GetFormat(key string) intf.Format {
 		return format.NewRegExp(regExpConfig)
 	}
 
+	apache2Config, ok := GetConfig().Format_Apache2[key]
+	if ok {
+		return format.NewApache2(apache2Config)
+	}
+
 	Critical("Unable to find '%s' format definition", key)
 	return nil
 }

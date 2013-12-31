@@ -30,7 +30,9 @@ func (self *RegExp) Parse(line string) map[string]string {
 
 	record := make(map[string]string)
 	for index, value := range values {
-		record[names[index]] = value
+		if names[index] != "" {
+			record[names[index]] = value
+		}
 	}
 
 	return record
