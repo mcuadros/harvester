@@ -1,24 +1,7 @@
-# Makefile for a go project
-#
-# Author: Jon Eisen
-# 	site: joneisen.me
-# 	
-# Targets:
-# 	all: Builds the code
-# 	build: Builds the code
-# 	install: Installs the code to the GOPATH
-#	test: Runs the tests
-#	coverage: Run the tests and generate the coverage reports
-# 	dependencies: Installs all the dependencies 
-# 	clean: cleans the build enviroment
-#
-#  Blog post on it: http://joneisen.me/post/25503842796
-#
-
+# Package configuration
 PACKAGE = harvesterd
-VERSION = 0.0.1
 HOMEPAGE = https://github.com/mcuadros/harvesterd
-DESCRIPTION = low footprint harvesterd and parser for events and logs
+DESCRIPTION = low footprint collector and parser for events and logs
 SUBPACKAGES = harvesterd/input harvesterd/output harvesterd/format
 COMMANDS =	tool/harvesterd.go
 DEPENDENCIES = launchpad.net/gocheck \
@@ -38,7 +21,8 @@ BIN_PATH := $(BUILD_PATH)/bin
 PACKAGE_PATH := $(BUILD_PATH)/src/$(PACKAGE)
 PACKAGE_BASE := $(shell dirname $(PACKAGE_PATH))
 ALL_PACKAGES := $(PACKAGE) $(SUBPACKAGES)
-INSTALL_PATH ?=/opt/harvesterd
+INSTALL_PATH ?= /opt/harvesterd
+VERSION ?= $(shell git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
 
 # Go parameters
 GOCMD = go
@@ -57,7 +41,7 @@ all: test build
 
 build: dependencies
 	for binary in $(COMMANDS); do \
-		$(GOBUILD) -o $(BIN_PATH)/$${binary%%.*} $(BASE_PATH)/$$binary; \
+		$(GOBUILD) -ldflags "-X main.version $(VERSION)" -o $(BIN_PATH)/$${binary%%.*} $(BASE_PATH)/$$binary; \
 	done
 
 install:
@@ -87,7 +71,8 @@ rpm: build
 			$(foreach binary,$(COMMANDS),$(BIN_PATH)/${subst .go,,${binary}}=$(INSTALL_PATH)/bin/) \
 			package/rpm/harvesterd-initd=/etc/init.d/harvesterd
 
-clean: 
+clean:
+	echo $(VERSION)
 	rm -rf $(BUILD_PATH)
 	rm -rf $(BIN_PATH)
 	rm -rf $(REPORT_PATH)

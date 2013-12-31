@@ -1,12 +1,10 @@
 package main
 
 import (
-	. "harvesterd"
 	"flag"
 	"fmt"
+	. "harvesterd"
 )
-
-const version string = "0.0.1"
 
 type Options struct {
 	configFile string
@@ -15,6 +13,7 @@ type Options struct {
 	help       bool
 }
 
+var version string
 var options Options
 
 func init() {
@@ -37,7 +36,7 @@ func main() {
 }
 
 func help() {
-	fmt.Printf("\033[1mharvesterd v%s\033[0m\n", version)
+	fmt.Printf("\033[1mharvesterd (%s)\033[0m\n", version)
 	fmt.Printf("Low footprint harvesterd and parser for events and logs\n")
 	fmt.Printf("Máximo Cuadros Ortiz <mcuadros@gmail.com>\n\n")
 
