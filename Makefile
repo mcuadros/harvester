@@ -15,12 +15,12 @@
 #  Blog post on it: http://joneisen.me/post/25503842796
 #
 
-PACKAGE = collector
+PACKAGE = harvesterd
 VERSION = 0.0.1
-HOMEPAGE = https://github.com/mcuadros/collector
-DESCRIPTION = low footprint collector and parser for events and logs
-SUBPACKAGES = collector/input collector/output collector/format
-COMMANDS =	tool/collectord.go
+HOMEPAGE = https://github.com/mcuadros/harvesterd
+DESCRIPTION = low footprint harvesterd and parser for events and logs
+SUBPACKAGES = harvesterd/input harvesterd/output harvesterd/format
+COMMANDS =	tool/harvesterd.go
 DEPENDENCIES = launchpad.net/gocheck \
 code.google.com/p/go.tools/cmd/cover \
 code.google.com/p/gcfg \
@@ -38,7 +38,7 @@ BIN_PATH := $(BUILD_PATH)/bin
 PACKAGE_PATH := $(BUILD_PATH)/src/$(PACKAGE)
 PACKAGE_BASE := $(shell dirname $(PACKAGE_PATH))
 ALL_PACKAGES := $(PACKAGE) $(SUBPACKAGES)
-INSTALL_PATH ?=/opt/collectord
+INSTALL_PATH ?=/opt/harvesterd
 
 # Go parameters
 GOCMD = go
@@ -85,7 +85,7 @@ rpm: build
 		--description "$(DESCRIPTION)" \
 		--url "$(HOMEPAGE)" \
 			$(foreach binary,$(COMMANDS),$(BIN_PATH)/${subst .go,,${binary}}=$(INSTALL_PATH)/bin/) \
-			package/rpm/collectord-init.d=/etc/init.d/collectord
+			package/rpm/harvesterd-initd=/etc/init.d/harvesterd
 
 clean: 
 	rm -rf $(BUILD_PATH)

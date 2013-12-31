@@ -1,8 +1,8 @@
 package input
 
 import (
-	"collector/intf"
-	. "collector/logger"
+	"harvesterd/intf"
+	. "harvesterd/logger"
 	"fmt"
 	"io/ioutil"
 	"os"

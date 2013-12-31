@@ -1,7 +1,7 @@
-package collector
+package harvesterd
 
 import (
-	"collector/intf"
+	"harvesterd/intf"
 	"fmt"
 	"strconv"
 	"time"

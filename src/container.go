@@ -1,12 +1,12 @@
-package collector
+package harvesterd
 
 import (
-	"collector/format"
-	"collector/input"
-	"collector/intf"
-	. "collector/logger"
-	"collector/output"
-	"collector/processor"
+	"harvesterd/format"
+	"harvesterd/input"
+	"harvesterd/intf"
+	. "harvesterd/logger"
+	"harvesterd/output"
+	"harvesterd/processor"
 )
 
 type Container struct {

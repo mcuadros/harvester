@@ -1,11 +1,11 @@
-package collector
+package harvesterd
 
 import (
-	"collector/format"
-	"collector/input"
-	"collector/logger"
-	"collector/output"
-	"collector/processor"
+	"harvesterd/format"
+	"harvesterd/input"
+	"harvesterd/logger"
+	"harvesterd/output"
+	"harvesterd/processor"
 	"fmt"
 	"os"
 )

@@ -2,8 +2,8 @@ package input
 
 import (
 	"bufio"
-	"collector/intf"
-	. "collector/logger"
+	"harvesterd/intf"
+	. "harvesterd/logger"
 	"os"
 	"path/filepath"
 )

@@ -1,29 +1,27 @@
 #!/bin/bash
 
-# collectord - Startup script for collectord
+# harvesterd - Startup script for harvesterd
 
 # chkconfig: 35 85 15
-# description: low footprint collector and parser for events and logs
-# processname: collectord
-# config: /etc/collectord.conf
-# pidfile: /var/run/collectord.pid
+# description: low footprint harvesterd and parser for events and logs
+# processname: harvesterd
+# config: /etc/harvesterd.conf
+# pidfile: /var/run/harvesterd.pid
 
 . /etc/rc.d/init.d/functions
 
-# things from mongod.conf get there by mongod reading it
-
-CONFIGFILE="/etc/collectord.conf"
+CONFIGFILE="/etc/harvesterd.conf"
 OPTIONS=" -f $CONFIGFILE"
-PIDFILE=/var/run/collectord.pid
-LOCKFILE=/var/lock/subsys/collectord
-USER=collectord
-exec=/usr/bin/collectord
+PIDFILE=/var/run/harvesterd.pid
+LOCKFILE=/var/lock/subsys/harvesterd
+USER=harvesterd
+exec=/usr/bin/harvesterd
 
 
 start()
 {
-  echo -n $"Starting collectord: "
-  daemon --pidfile="$PIDFILE" --user "$MONGO_USER" $exec $OPTIONS
+  echo -n $"Starting harvesterd: "
+  daemon --pidfile="$PIDFILE" --user "$USER" $exec $OPTIONS
   RETVAL=$?
   echo
   [ $RETVAL -eq 0 ] && touch $LOCKFILE
@@ -31,7 +29,7 @@ start()
 
 stop()
 {
-  echo -n $"Stopping collectord: "
+  echo -n $"Stopping harvesterd: "
   killproc -p "$PIDFILE" $exec
   RETVAL=$?
   echo
@@ -57,7 +55,7 @@ case "$1" in
     restart
     ;;
   condrestart)
-    [ -f /var/lock/subsys/mongod ] && restart || :
+    [ -f $LOCKFILE ] && restart || :
     ;;
   status)
     status -p "$PIDFILE" -l "$LOCKFILE" $exec

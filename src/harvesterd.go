@@ -1,59 +1,59 @@
-package collector
+package harvesterd
 
 import (
-	. "collector/logger"
+	. "harvesterd/logger"
 	"runtime"
 	"time"
 )
 
-type Collector struct {
+type Harvesterd struct {
 	writer  *Writer
 	reader  *Reader
 	channel chan map[string]string
 }
 
-func NewCollector() *Collector {
-	collector := new(Collector)
+func NewHarvesterd() *Harvesterd {
+	harvesterd := new(Harvesterd)
 
-	return collector
+	return harvesterd
 }
 
-func (self *Collector) Configure(filename string) {
+func (self *Harvesterd) Configure(filename string) {
 	GetConfig().LoadFile(filename)
 }
 
-func (self *Collector) Boot() {
+func (self *Harvesterd) Boot() {
 	self.configureLogger()
 	self.configureMaxProcs()
 	self.bootWriter()
 	self.bootReader()
 }
 
-func (self *Collector) configureLogger() {
+func (self *Harvesterd) configureLogger() {
 	Info("Starting ...")
 }
 
-func (self *Collector) configureMaxProcs() {
+func (self *Harvesterd) configureMaxProcs() {
 	Info("Number of max. process %d", runtime.NumCPU())
 	runtime.GOMAXPROCS(runtime.NumCPU())
 }
 
-func (self *Collector) bootWriter() {
+func (self *Harvesterd) bootWriter() {
 	self.writer = GetContainer().GetWriter()
 }
 
-func (self *Collector) bootReader() {
+func (self *Harvesterd) bootReader() {
 	self.reader = GetContainer().GetReader()
 }
 
-func (self *Collector) Run() {
+func (self *Harvesterd) Run() {
 	self.channel = self.writer.GoWriteFromChannel()
 	self.reader.GoReadIntoChannel(self.channel)
 	self.wait()
 	self.reader.Finish()
 }
 
-func (self *Collector) wait() {
+func (self *Harvesterd) wait() {
 	for self.writer.IsAlive() {
 		time.Sleep(1 * time.Second)
 		self.writer.PrintCounters(1)

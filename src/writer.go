@@ -1,8 +1,8 @@
-package collector
+package harvesterd
 
 import (
-	. "collector/intf"
-	. "collector/logger"
+	. "harvesterd/intf"
+	. "harvesterd/logger"
 	"sync"
 	"sync/atomic"
 )

@@ -1,7 +1,7 @@
 package output
 
 import (
-	. "collector/logger"
+	. "harvesterd/logger"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"

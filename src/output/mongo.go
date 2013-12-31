@@ -1,7 +1,7 @@
 package output
 
 import (
-	. "collector/logger"
+	. "harvesterd/logger"
 	"labix.org/v2/mgo"
 )
 

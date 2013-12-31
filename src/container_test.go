@@ -1,10 +1,10 @@
-package collector
+package harvesterd
 
 import (
-	"collector/format"
-	"collector/input"
-	"collector/output"
-	"collector/processor"
+	"harvesterd/format"
+	"harvesterd/input"
+	"harvesterd/output"
+	"harvesterd/processor"
 )
 
 import . "launchpad.net/gocheck"
