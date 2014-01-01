@@ -1,9 +1,9 @@
 package input
 
 import (
-	"harvesterd/intf"
-	. "harvesterd/logger"
 	"fmt"
+	. "harvesterd/intf"
+	. "harvesterd/logger"
 	"io/ioutil"
 	"os"
 	"path"
@@ -23,7 +23,7 @@ type TailConfig struct {
 
 type Tail struct {
 	tail    *tail.Tail
-	format  intf.Format
+	format  Format
 	file    string
 	posFile string
 	counter int
@@ -31,7 +31,7 @@ type Tail struct {
 	wait    sync.WaitGroup
 }
 
-func NewTail(config *TailConfig, format intf.Format) *Tail {
+func NewTail(config *TailConfig, format Format) *Tail {
 	input := new(Tail)
 	input.SetConfig(config)
 	input.SetFormat(format)
@@ -39,7 +39,7 @@ func NewTail(config *TailConfig, format intf.Format) *Tail {
 	return input
 }
 
-func (self *Tail) SetFormat(format intf.Format) {
+func (self *Tail) SetFormat(format Format) {
 	self.format = format
 }
 
@@ -115,7 +115,7 @@ func (self *Tail) GetLine() string {
 	}
 }
 
-func (self *Tail) GetRecord() map[string]string {
+func (self *Tail) GetRecord() Record {
 	line := self.GetLine()
 	return self.format.Parse(line)
 }

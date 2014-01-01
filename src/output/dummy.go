@@ -2,6 +2,7 @@ package output
 
 import (
 	"fmt"
+	. "harvesterd/intf"
 )
 
 type DummyConfig struct {
@@ -22,7 +23,7 @@ func (self *Dummy) SetConfig(config *DummyConfig) {
 	self.printInfo = config.Print
 }
 
-func (self *Dummy) PutRecord(record map[string]string) bool {
+func (self *Dummy) PutRecord(record Record) bool {
 	if self.printInfo {
 		fmt.Println(record)
 	}

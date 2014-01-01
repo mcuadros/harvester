@@ -2,7 +2,7 @@ package input
 
 import (
 	"bufio"
-	"harvesterd/intf"
+	. "harvesterd/intf"
 	. "harvesterd/logger"
 	"os"
 	"path/filepath"
@@ -15,13 +15,13 @@ type FileConfig struct {
 
 type File struct {
 	files   []*bufio.Scanner
-	format  intf.Format
+	format  Format
 	current int
 	empty   bool
 	eof     bool
 }
 
-func NewFile(config *FileConfig, format intf.Format) *File {
+func NewFile(config *FileConfig, format Format) *File {
 	input := new(File)
 	input.SetConfig(config)
 	input.SetFormat(format)
@@ -29,7 +29,7 @@ func NewFile(config *FileConfig, format intf.Format) *File {
 	return input
 }
 
-func (self *File) SetFormat(format intf.Format) {
+func (self *File) SetFormat(format Format) {
 	self.format = format
 }
 
@@ -66,7 +66,7 @@ func (self *File) GetLine() string {
 	return ""
 }
 
-func (self *File) GetRecord() map[string]string {
+func (self *File) GetRecord() Record {
 	line := self.GetLine()
 	return self.format.Parse(line)
 }

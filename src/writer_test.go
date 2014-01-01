@@ -1,8 +1,8 @@
 package harvesterd
 
 import (
-	"harvesterd/intf"
 	"fmt"
+	. "harvesterd/intf"
 	"strconv"
 	"time"
 )
@@ -18,13 +18,13 @@ func (s *WriterSuite) TestWriteFromChannelSingleOutput(c *C) {
 	output.Return = true
 
 	writer := NewWriter()
-	writer.SetOutputs([]intf.Output{output})
+	writer.SetOutputs([]Output{output})
 	writer.SetThreads(1)
 
 	channel := writer.GoWriteFromChannel()
-	go func(channel chan map[string]string) {
+	go func(channel chan Record) {
 		for i := 0; i < 10; i++ {
-			channel <- map[string]string{"foo": fmt.Sprintf("%d", i)}
+			channel <- Record{"foo": fmt.Sprintf("%d", i)}
 		}
 
 		close(channel)
@@ -51,13 +51,13 @@ func (s *WriterSuite) TestWriteFromChannelMultipleOutput(c *C) {
 	outputf.Return = false
 
 	writer := NewWriter()
-	writer.SetOutputs([]intf.Output{outputw, outputf})
+	writer.SetOutputs([]Output{outputw, outputf})
 	writer.SetThreads(1)
 
 	channel := writer.GoWriteFromChannel()
-	go func(channel chan map[string]string) {
+	go func(channel chan Record) {
 		for i := 0; i < 10; i++ {
-			channel <- map[string]string{"foo": fmt.Sprintf("%d", i)}
+			channel <- Record{"foo": fmt.Sprintf("%d", i)}
 		}
 
 		close(channel)
@@ -85,7 +85,7 @@ func (s *WriterSuite) TestWriteIsAlive(c *C) {
 	outputf.Return = false
 
 	writer := NewWriter()
-	writer.SetOutputs([]intf.Output{outputw, outputf})
+	writer.SetOutputs([]Output{outputw, outputf})
 	writer.SetThreads(1)
 
 	channel := writer.GoWriteFromChannel()
@@ -108,13 +108,13 @@ func (s *WriterSuite) TestWriteProcessor(c *C) {
 	processor.Value = 1
 
 	writer := NewWriter()
-	writer.SetOutputs([]intf.Output{output})
-	writer.SetProcessors([]intf.PostProcessor{processor})
+	writer.SetOutputs([]Output{output})
+	writer.SetProcessors([]PostProcessor{processor})
 	writer.SetThreads(1)
 
 	channel := writer.GoWriteFromChannel()
-	go func(channel chan map[string]string) {
-		channel <- map[string]string{"foo": "1"}
+	go func(channel chan Record) {
+		channel <- Record{"foo": "1"}
 		close(channel)
 	}(channel)
 
@@ -133,8 +133,8 @@ type MockOutput struct {
 	Return bool
 }
 
-func (self *MockOutput) PutRecord(record map[string]string) bool {
-	number, _ := strconv.Atoi(record["foo"])
+func (self *MockOutput) PutRecord(record Record) bool {
+	number, _ := strconv.Atoi(record["foo"].(string))
 	self.Count += number
 	return self.Return
 }
@@ -143,7 +143,7 @@ type MockProcessor struct {
 	Value int
 }
 
-func (self *MockProcessor) Do(record map[string]string) {
-	number, _ := strconv.Atoi(record["foo"])
+func (self *MockProcessor) Do(record Record) {
+	number, _ := strconv.Atoi(record["foo"].(string))
 	record["foo"] = fmt.Sprintf("%d", number+self.Value)
 }

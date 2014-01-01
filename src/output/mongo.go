@@ -1,6 +1,7 @@
 package output
 
 import (
+	. "harvesterd/intf"
 	. "harvesterd/logger"
 	"labix.org/v2/mgo"
 )
@@ -54,7 +55,7 @@ func (self *Mongo) Connect() {
 	self.collection = self.session.DB(self.dbName).C(self.collectionName)
 }
 
-func (self *Mongo) PutRecord(record map[string]string) bool {
+func (self *Mongo) PutRecord(record Record) bool {
 	err := self.collection.Insert(record)
 	if err != nil {
 		Error("Can't insert record in mogo: %v\n", err)

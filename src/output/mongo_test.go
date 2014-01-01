@@ -1,6 +1,7 @@
 package output
 
 import (
+	. "harvesterd/intf"
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
 )
@@ -31,7 +32,7 @@ func (self *MongoSuite) TestGetRecord(c *C) {
 	config := MongoConfig{Url: self.url, Database: self.dbName, Collection: self.collectionName}
 
 	output := NewMongo(&config)
-	record := map[string]string{"foo": "bar", "qux": "baz"}
+	record := Record{"foo": "bar", "qux": "baz"}
 
 	c.Check(output.PutRecord(record), Equals, true)
 

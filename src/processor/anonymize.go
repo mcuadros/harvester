@@ -7,6 +7,7 @@ import (
 	_ "crypto/sha256"
 	_ "crypto/sha512"
 	"encoding/hex"
+	. "harvesterd/intf"
 	"strings"
 )
 
@@ -52,7 +53,7 @@ func (self *Anonymize) SetConfig(config *AnonymizeConfig) {
 	self.email = config.EmailSupport
 }
 
-func (self *Anonymize) Do(record map[string]string) {
+func (self *Anonymize) Do(record Record) {
 	for _, field := range self.fields {
 		_, ok := record[field]
 		if ok {
@@ -61,14 +62,14 @@ func (self *Anonymize) Do(record map[string]string) {
 	}
 }
 
-func (self *Anonymize) encodeField(record map[string]string, field string) {
+func (self *Anonymize) encodeField(record Record, field string) {
 	if self.email {
-		parts := strings.Split(record[field], "@")
+		parts := strings.Split(record[field].(string), "@")
 		parts[0] = self.encodeString(parts[0])
 
 		record[field] = strings.Join(parts, "@")
 	} else {
-		record[field] = self.encodeString(record[field])
+		record[field] = self.encodeString(record[field].(string))
 	}
 }
 

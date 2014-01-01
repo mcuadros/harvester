@@ -1,6 +1,7 @@
 package output
 
 import (
+	. "harvesterd/intf"
 	"io/ioutil"
 	"net/http"
 	"testing"
@@ -19,7 +20,7 @@ func (s *ElasticsearchSuite) TestGetRecord(c *C) {
 	config := ElasticsearchConfig{Host: "localhost", Port: 9200, Index: "foo", Type: "bar"}
 
 	output := NewElasticsearch(&config)
-	record := map[string]string{"foo": "bar"}
+	record := Record{"foo": "bar"}
 
 	go dummyServer(":9200", "/foo/bar")
 	c.Check(output.PutRecord(record), Equals, true)

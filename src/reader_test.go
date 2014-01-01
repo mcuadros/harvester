@@ -1,7 +1,7 @@
 package harvesterd
 
 import (
-	"harvesterd/intf"
+	. "harvesterd/intf"
 )
 
 import . "launchpad.net/gocheck"
@@ -11,9 +11,9 @@ type ReaderSuite struct{}
 var _ = Suite(&ReaderSuite{})
 
 func (s *ReaderSuite) TestReadIntoChannelSingleInput(c *C) {
-	channel := make(chan map[string]string, 1)
+	channel := make(chan Record, 1)
 	input := new(MockInput)
-	inputs := []intf.Input{input}
+	inputs := []Input{input}
 
 	reader := NewReader()
 	reader.SetInputs(inputs)
@@ -31,13 +31,13 @@ func (s *ReaderSuite) TestReadIntoChannelSingleInput(c *C) {
 }
 
 func (s *ReaderSuite) TestReadIntoChannelMultipleInputs(c *C) {
-	channel := make(chan map[string]string, 1)
+	channel := make(chan Record, 1)
 	inputA := new(MockInput)
 	inputB := new(MockInput)
 	inputC := new(MockInput)
 	inputD := new(MockInput)
 
-	inputs := []intf.Input{inputA, inputB, inputC, inputD}
+	inputs := []Input{inputA, inputB, inputC, inputD}
 
 	reader := NewReader()
 	reader.SetInputs(inputs)
@@ -69,10 +69,10 @@ func (self *MockInput) GetLine() string {
 	return string("foo")
 }
 
-func (self *MockInput) GetRecord() map[string]string {
+func (self *MockInput) GetRecord() Record {
 	line := self.GetLine()
 
-	return map[string]string{"line": line}
+	return Record{"line": line}
 }
 
 func (self *MockInput) IsEOF() bool {

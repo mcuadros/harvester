@@ -25,11 +25,11 @@ func (self *Reader) SetInputs(inputs []Input) {
 	self.inputs = inputs
 }
 
-func (self *Reader) GoReadIntoChannel(channel chan map[string]string) {
+func (self *Reader) GoReadIntoChannel(channel chan Record) {
 	go self.doReadIntoChannel(channel)
 }
 
-func (self *Reader) doReadIntoChannel(channel chan map[string]string) {
+func (self *Reader) doReadIntoChannel(channel chan Record) {
 	defer close(channel)
 
 	for _, input := range self.inputs {
@@ -40,7 +40,7 @@ func (self *Reader) doReadIntoChannel(channel chan map[string]string) {
 	self.wait.Wait()
 }
 
-func (self *Reader) readInputIntoChannel(input Input, channel chan map[string]string) {
+func (self *Reader) readInputIntoChannel(input Input, channel chan Record) {
 	for !input.IsEOF() {
 		record := input.GetRecord()
 		self.emitRecord(channel, record)
@@ -49,7 +49,7 @@ func (self *Reader) readInputIntoChannel(input Input, channel chan map[string]st
 	self.wait.Done()
 }
 
-func (self *Reader) emitRecord(channel chan map[string]string, row map[string]string) {
+func (self *Reader) emitRecord(channel chan Record, row Record) {
 	if len(row) > 0 {
 		channel <- row
 		self.counter++

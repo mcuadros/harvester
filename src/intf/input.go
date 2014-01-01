@@ -2,7 +2,7 @@ package intf
 
 type Input interface {
 	GetLine() string
-	GetRecord() map[string]string
+	GetRecord() Record
 	IsEOF() bool
 	Finish()
 }

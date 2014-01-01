@@ -1,6 +1,7 @@
 package harvesterd
 
 import (
+	. "harvesterd/intf"
 	. "harvesterd/logger"
 	"runtime"
 	"time"
@@ -9,7 +10,7 @@ import (
 type Harvesterd struct {
 	writer  *Writer
 	reader  *Reader
-	channel chan map[string]string
+	channel chan Record
 }
 
 func NewHarvesterd() *Harvesterd {

@@ -51,8 +51,8 @@ func (self *Writer) IsAlive() bool {
 	return atomic.LoadInt32(&self.threads) != 0
 }
 
-func (self *Writer) GoWriteFromChannel() chan map[string]string {
-	channel := make(chan map[string]string, self.maxThreads)
+func (self *Writer) GoWriteFromChannel() chan Record {
+	channel := make(chan Record, self.maxThreads)
 	for i := uint32(0); i < self.maxThreads; i++ {
 		atomic.AddInt32(&self.threads, 1)
 		go self.doWriteFromChannel(channel)
@@ -61,7 +61,7 @@ func (self *Writer) GoWriteFromChannel() chan map[string]string {
 	return channel
 }
 
-func (self *Writer) doWriteFromChannel(channel chan map[string]string) {
+func (self *Writer) doWriteFromChannel(channel chan Record) {
 	for record := range channel {
 		self.writeRecordFromChannel(record)
 	}
@@ -69,7 +69,7 @@ func (self *Writer) doWriteFromChannel(channel chan map[string]string) {
 	atomic.AddInt32(&self.threads, -1)
 }
 
-func (self *Writer) writeRecordFromChannel(record map[string]string) {
+func (self *Writer) writeRecordFromChannel(record Record) {
 	var wait sync.WaitGroup
 
 	for _, output := range self.outputs {
@@ -80,7 +80,7 @@ func (self *Writer) writeRecordFromChannel(record map[string]string) {
 	wait.Wait()
 }
 
-func (self *Writer) writeRecordIntoOutput(output Output, record map[string]string, wait *sync.WaitGroup) {
+func (self *Writer) writeRecordIntoOutput(output Output, record Record, wait *sync.WaitGroup) {
 	self.applyProcessors(record)
 
 	if output.PutRecord(record) {
@@ -92,7 +92,7 @@ func (self *Writer) writeRecordIntoOutput(output Output, record map[string]strin
 	wait.Done()
 }
 
-func (self *Writer) applyProcessors(record map[string]string) {
+func (self *Writer) applyProcessors(record Record) {
 	if self.hasProcessors {
 		for _, proc := range self.processors {
 			proc.Do(record)
