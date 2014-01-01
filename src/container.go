@@ -19,6 +19,11 @@ func GetContainer() *Container {
 }
 
 func (self *Container) GetFormat(key string) intf.Format {
+	jsonConfig, ok := GetConfig().Format_JSON[key]
+	if ok {
+		return format.NewJSON(jsonConfig)
+	}
+
 	csvConfig, ok := GetConfig().Format_CSV[key]
 	if ok {
 		return format.NewCSV(csvConfig)

@@ -39,25 +39,29 @@ func (s *ContainerSuite) TestGetFormat(c *C) {
 		file = foo
 		format = myformat
 
-		[format-csv "foo"]
+		[format-csv "csv"]
 		fields = foo
 
-		[format-regexp "bar"]
+		[format-regexp "regexp"]
 		pattern = foo
 
-		[format-apache2 "baz"]
+		[format-apache2 "apache2"]
 		type = common
 
-		[format-nginx "qux"]
+		[format-nginx "nginx"]
 		type = common
+
+		[format-json "json"]
+		empty = foo
 	`)
 
 	GetConfig().Load(raw)
 
-	c.Check(GetContainer().GetFormat("foo"), FitsTypeOf, &format.CSV{})
-	c.Check(GetContainer().GetFormat("bar"), FitsTypeOf, &format.RegExp{})
-	c.Check(GetContainer().GetFormat("baz"), FitsTypeOf, &format.Apache2{})
-	c.Check(GetContainer().GetFormat("qux"), FitsTypeOf, &format.Nginx{})
+	c.Check(GetContainer().GetFormat("json"), FitsTypeOf, &format.JSON{})
+	c.Check(GetContainer().GetFormat("csv"), FitsTypeOf, &format.CSV{})
+	c.Check(GetContainer().GetFormat("regexp"), FitsTypeOf, &format.RegExp{})
+	c.Check(GetContainer().GetFormat("apache2"), FitsTypeOf, &format.Apache2{})
+	c.Check(GetContainer().GetFormat("nginx"), FitsTypeOf, &format.Nginx{})
 }
 
 func (s *ContainerSuite) TestGetOutput(c *C) {

@@ -29,10 +29,14 @@ func (s *CofigSuite) TestFormat(c *C) {
 		[input-file "foo"]
 		pattern = foo
 		format = myformat
+
+		[input-json "foo"]
 	`)
 
 	GetConfig().Load(raw)
 
 	c.Check(len(GetConfig().Reader.Input), Equals, 2)
 	c.Check(GetConfig().Format_CSV["foo"].Fields, Equals, "foo")
+	c.Check(GetConfig().Format_JSON, HasLen, 0)
+
 }

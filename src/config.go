@@ -16,6 +16,7 @@ type Config struct {
 	Reader               ReaderConfig
 	Writer               WriterConfig
 	Logger               logger.LoggerConfig
+	Format_JSON          map[string]*format.JSONConfig
 	Format_CSV           map[string]*format.CSVConfig
 	Format_RegExp        map[string]*format.RegExpConfig
 	Format_Apache2       map[string]*format.Apache2Config
