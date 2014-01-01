@@ -34,6 +34,11 @@ func (self *Container) GetFormat(key string) intf.Format {
 		return format.NewApache2(apache2Config)
 	}
 
+	nginxConfig, ok := GetConfig().Format_Nginx[key]
+	if ok {
+		return format.NewNginx(nginxConfig)
+	}
+
 	Critical("Unable to find '%s' format definition", key)
 	return nil
 }

@@ -47,6 +47,9 @@ func (s *ContainerSuite) TestGetFormat(c *C) {
 
 		[format-apache2 "baz"]
 		type = common
+
+		[format-nginx "qux"]
+		type = common
 	`)
 
 	GetConfig().Load(raw)
@@ -54,6 +57,7 @@ func (s *ContainerSuite) TestGetFormat(c *C) {
 	c.Check(GetContainer().GetFormat("foo"), FitsTypeOf, &format.CSV{})
 	c.Check(GetContainer().GetFormat("bar"), FitsTypeOf, &format.RegExp{})
 	c.Check(GetContainer().GetFormat("baz"), FitsTypeOf, &format.Apache2{})
+	c.Check(GetContainer().GetFormat("qux"), FitsTypeOf, &format.Nginx{})
 }
 
 func (s *ContainerSuite) TestGetOutput(c *C) {

@@ -19,6 +19,7 @@ type Config struct {
 	Format_CSV           map[string]*format.CSVConfig
 	Format_RegExp        map[string]*format.RegExpConfig
 	Format_Apache2       map[string]*format.Apache2Config
+	Format_Nginx         map[string]*format.NginxConfig
 	Input_File           map[string]*input.FileConfig
 	Input_Tail           map[string]*input.TailConfig
 	Output_Elasticsearch map[string]*output.ElasticsearchConfig
