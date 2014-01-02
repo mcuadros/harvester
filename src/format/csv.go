@@ -8,6 +8,7 @@ import (
 
 type CSVConfig struct {
 	Fields    string
+	Format    string
 	NotQuoted bool
 	Quote     byte
 	Trim      bool
@@ -15,6 +16,7 @@ type CSVConfig struct {
 }
 
 type CSV struct {
+	format    *FormatHelper
 	fields    []string
 	quoted    bool
 	quote     byte
@@ -30,9 +32,8 @@ func NewCSV(config *CSVConfig) *CSV {
 }
 
 func (self *CSV) SetConfig(config *CSVConfig) {
-	for _, field := range strings.Split(config.Fields, ",") {
-		self.fields = append(self.fields, field)
-	}
+	self.format = NewFormatHelper(config.Format)
+	self.parseFieldConfig(config.Fields)
 
 	self.quoted = !config.NotQuoted
 	self.trim = config.Trim
@@ -48,6 +49,12 @@ func (self *CSV) SetConfig(config *CSVConfig) {
 	}
 }
 
+func (self *CSV) parseFieldConfig(fields string) {
+	for _, field := range strings.Split(fields, ",") {
+		self.fields = append(self.fields, field)
+	}
+}
+
 func (self *CSV) Parse(line string) Record {
 	record := make(Record)
 	chars := []byte(line)
@@ -55,7 +62,7 @@ func (self *CSV) Parse(line string) Record {
 	max := len(self.fields)
 	index := 0
 	quoted := false
-	field := make([]byte, 0)
+	value := make([]byte, 0)
 	for _, char := range chars {
 		if self.quoted && char == self.quote {
 			if !quoted {
@@ -65,27 +72,29 @@ func (self *CSV) Parse(line string) Record {
 			}
 		} else if !quoted && char == self.separator {
 			if self.trim {
-				field = trim(field)
+				value = trim(value)
 			}
 
-			record[self.fields[index]] = string(field)
-			field = make([]byte, 0)
+			field := self.fields[index]
+			record[field] = self.format.Format(field, string(value))
+			value = make([]byte, 0)
 			index++
 
 			if index >= max {
 				break
 			}
 		} else {
-			field = append(field, char)
+			value = append(value, char)
 		}
 	}
 
 	if max > index {
 		if self.trim {
-			field = trim(field)
+			value = trim(value)
 		}
 
-		record[self.fields[index]] = string(field)
+		field := self.fields[index]
+		record[field] = self.format.Format(field, string(value))
 	}
 
 	return record

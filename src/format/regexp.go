@@ -7,11 +7,13 @@ import (
 
 type RegExpConfig struct {
 	Pattern string
+	Format  string
 }
 
 type RegExp struct {
 	fields []string
 	regexp *regexp.Regexp
+	format *FormatHelper
 }
 
 func NewRegExp(config *RegExpConfig) *RegExp {
@@ -23,6 +25,7 @@ func NewRegExp(config *RegExpConfig) *RegExp {
 
 func (self *RegExp) SetConfig(config *RegExpConfig) {
 	self.regexp = regexp.MustCompile(config.Pattern)
+	self.format = NewFormatHelper(config.Format)
 }
 
 func (self *RegExp) Parse(line string) Record {
@@ -32,7 +35,8 @@ func (self *RegExp) Parse(line string) Record {
 	record := make(Record)
 	for index, value := range values {
 		if names[index] != "" {
-			record[names[index]] = value
+			field := names[index]
+			record[field] = self.format.Format(field, value)
 		}
 	}
 

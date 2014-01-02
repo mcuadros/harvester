@@ -1,5 +1,9 @@
 package format
 
+import (
+	"time"
+)
+
 import . "launchpad.net/gocheck"
 
 type NginxSuite struct{}
@@ -14,7 +18,7 @@ func (s *NginxSuite) TestGetRecordError(c *C) {
 	format := NewNginx(&config)
 
 	record := format.Parse(nginxErrorExample)
-	c.Check(record["time"], Equals, "2011/06/10 13:30:10")
+	c.Check(record["time"].(time.Time).String(), Equals, "2011-06-10 13:30:10 +0000 UTC")
 	c.Check(record["severity"], Equals, "error")
 	c.Check(record["message"], Equals, "*1 directory index of \"/var/www/ssl/\" is forbidden")
 	c.Check(record["client"], Equals, "127.0.0.1")
@@ -26,18 +30,18 @@ func (s *NginxSuite) TestGetRecordError(c *C) {
 }
 
 func (s *NginxSuite) TestGetRecordCombined(c *C) {
-	config := Apache2Config{Type: "combined"}
+	config := NginxConfig{Type: "combined"}
 
-	format := NewApache2(&config)
+	format := NewNginx(&config)
 
 	record := format.Parse(nginxCombinedExample)
 	c.Check(record["host"], Equals, "127.0.0.1")
 	c.Check(record["identd"], Equals, "-")
 	c.Check(record["user"], Equals, "frank")
-	c.Check(record["time"], Equals, "10/Oct/2000:13:55:36 -0700")
+	c.Check(record["time"].(time.Time).String(), Equals, "2000-10-10 13:55:36 -0700 -0700")
 	c.Check(record["method"], Equals, "GET")
 	c.Check(record["path"], Equals, "/apache_pb.gif")
 	c.Check(record["version"], Equals, "HTTP/1.0")
-	c.Check(record["status"], Equals, "200")
-	c.Check(record["size"], Equals, "2326")
+	c.Check(record["status"], Equals, 200)
+	c.Check(record["size"], Equals, 2326)
 }

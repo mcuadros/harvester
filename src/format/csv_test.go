@@ -42,3 +42,17 @@ func (s *FormatCSVSuite) TestGetRecordCustomeSettingsNotQuoted(c *C) {
 	c.Check(record["foo"], Equals, "baz")
 	c.Check(record["bar"], Equals, "\"qux  \"")
 }
+
+func (s *FormatCSVSuite) TestGetRecordWithFormat(c *C) {
+	config := CSVConfig{
+		Fields:    "foo,bar",
+		Format:    "(float)foo",
+		NotQuoted: true,
+	}
+
+	format := NewCSV(&config)
+
+	record := format.Parse("1.2,\"qux  \"")
+	c.Check(record["foo"], Equals, 1.2)
+	c.Check(record["bar"], Equals, "\"qux  \"")
+}
