@@ -1,7 +1,6 @@
 package processor
 
 import (
-	"fmt"
 	. "harvesterd/intf"
 	"runtime"
 	"sync"
@@ -16,13 +15,13 @@ var _ = Suite(&MetricsSuite{})
 func (s *MetricsSuite) TestDoCount(c *C) {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	config := MetricsConfig{Metrics: "counter(foo)"}
+	config := MetricsConfig{Metrics: "(terms)foo,(histogram)qux"}
 	processor := NewMetrics(&config)
 
 	var wait sync.WaitGroup
 	var add = func() {
 		for i := 0; i < 10000; i++ {
-			processor.Do(Record{"foo": "bar"})
+			processor.Do(Record{"foo": "bar", "qux": 1})
 		}
 
 		wait.Done()
@@ -39,5 +38,6 @@ func (s *MetricsSuite) TestDoCount(c *C) {
 	record := Record{"foo": "qux"}
 	processor.Do(record)
 
-	fmt.Println(record)
+	c.Check(record["foo"].(map[string]int)["bar"], Equals, 50000)
+	c.Check(record["qux"].(map[string]interface{})["count"], Equals, int64(50000))
 }

@@ -4,7 +4,7 @@ import (
 	. "harvesterd/intf"
 )
 
-type Counter struct {
+type Terms struct {
 	field        string
 	count        map[string]int
 	readChannel  chan chan map[string]int
@@ -16,8 +16,8 @@ type counterIncrement struct {
 	value int
 }
 
-func NewCounter(field string) *Counter {
-	counter := &Counter{
+func NewTerms(field string) *Terms {
+	counter := &Terms{
 		field:        field,
 		count:        make(map[string]int),
 		readChannel:  make(chan chan map[string]int, 0),
@@ -29,11 +29,11 @@ func NewCounter(field string) *Counter {
 	return counter
 }
 
-func (self *Counter) Boot() {
+func (self *Terms) Boot() {
 	go self.syncronized()
 }
 
-func (self *Counter) syncronized() {
+func (self *Terms) syncronized() {
 	for {
 		select {
 		case ci := <-self.writeChannel:
@@ -54,23 +54,25 @@ func (self *Counter) syncronized() {
 	}
 }
 
-func (self *Counter) Process(record Record) {
-	key := record[self.field].(string)
-
-	self.writeChannel <- counterIncrement{key, 1}
+func (self *Terms) Process(record Record) {
+	switch record[self.field].(type) {
+	case string:
+		key := record[self.field].(string)
+		self.writeChannel <- counterIncrement{key, 1}
+	}
 }
 
-func (self *Counter) GetField() string {
+func (self *Terms) GetField() string {
 	return self.field
 }
 
-func (self *Counter) GetValue() interface{} {
+func (self *Terms) GetValue() interface{} {
 	reply := make(chan map[string]int)
 	self.readChannel <- reply
 
 	return <-reply
 }
 
-func (self *Counter) Reset() {
+func (self *Terms) Reset() {
 	self.count = make(map[string]int)
 }

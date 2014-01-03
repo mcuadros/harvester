@@ -25,7 +25,7 @@ type Metric interface {
 	Reset()
 }
 
-var configRegExp = regexp.MustCompile("^(\\w+)\\((\\w+)\\)$")
+var configRegExp = regexp.MustCompile("^\\((\\w+)\\)(\\w+)$")
 
 func NewMetrics(config *MetricsConfig) *Metrics {
 	processor := new(Metrics)
@@ -44,8 +44,10 @@ func (self *Metrics) parseMetricsConfig(metricsConfig string) {
 		class, field := self.parseMetric(config)
 
 		switch class {
-		case "counter":
-			metric = NewCounter(field)
+		case "terms":
+			metric = NewTerms(field)
+		case "histogram":
+			metric = NewHistogram(field)
 		}
 
 		self.metrics = append(self.metrics, metric)

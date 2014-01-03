@@ -10,6 +10,7 @@ code.google.com/p/gcfg \
 github.com/jarod/log4go \
 github.com/ActiveState/tail \
 github.com/mcuadros/go-syslog \
+github.com/rcrowley/go-metrics \
 labix.org/v2/mgo \
 labix.org/v2/mgo/bson
 
