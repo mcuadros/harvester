@@ -105,6 +105,11 @@ func (self *Container) GetPostProcessor(key string) intf.PostProcessor {
 		return processor.NewAnonymize(anonConfig)
 	}
 
+	metricsConfig, ok := GetConfig().Processor_Metrics[key]
+	if ok {
+		return processor.NewMetrics(metricsConfig)
+	}
+
 	Critical("Unable to find '%s' processor definition", key)
 	return nil
 }

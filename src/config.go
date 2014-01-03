@@ -27,6 +27,7 @@ type Config struct {
 	Output_Mongo         map[string]*output.MongoConfig
 	Output_Dummy         map[string]*output.DummyConfig
 	Processor_Anonymize  map[string]*processor.AnonymizeConfig
+	Processor_Metrics    map[string]*processor.MetricsConfig
 }
 
 var configInstance *Config = new(Config)

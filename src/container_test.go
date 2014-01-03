@@ -117,9 +117,13 @@ func (s *ContainerSuite) TestGetPostProcessor(c *C) {
 	var raw = string(`
 		[processor-anonymize "qux"]
 		fields = true
+
+		[processor-metrics "bar"]
+		metrics = (foo)foo
 	`)
 
 	GetConfig().Load(raw)
 	c.Check(GetContainer().GetPostProcessor("qux"), FitsTypeOf, &processor.Anonymize{})
+	c.Check(GetContainer().GetPostProcessor("bar"), FitsTypeOf, &processor.Metrics{})
 
 }
