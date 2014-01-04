@@ -73,8 +73,14 @@ func (self *Container) GetReader() *Reader {
 		inputs[i] = self.GetInput(key)
 	}
 
+	processors := make([]intf.PostProcessor, len(config.Processor))
+	for i, key := range config.Processor {
+		processors[i] = self.GetPostProcessor(key)
+	}
+
 	reader := NewReader()
 	reader.SetInputs(inputs)
+	reader.SetProcessors(processors)
 
 	return reader
 }
@@ -122,14 +128,8 @@ func (self *Container) GetWriter() *Writer {
 		outputs[i] = self.GetOutput(key)
 	}
 
-	processors := make([]intf.PostProcessor, len(config.Processor))
-	for i, key := range config.Processor {
-		processors[i] = self.GetPostProcessor(key)
-	}
-
 	writer := NewWriter()
 	writer.SetOutputs(outputs)
-	writer.SetProcessors(processors)
 	writer.SetThreads(config.Threads)
 
 	return writer

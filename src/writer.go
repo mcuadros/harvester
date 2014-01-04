@@ -8,21 +8,19 @@ import (
 )
 
 type WriterConfig struct {
-	Output    []string
-	Processor []string
-	Threads   int
+	Output  []string
+	Threads int
 }
 
 type Writer struct {
-	outputs       []Output
-	processors    []PostProcessor
-	failed        int32
-	created       int32
-	transferred   int32
-	maxThreads    uint32
-	threads       int32
-	isAlive       bool
-	hasProcessors bool
+	outputs     []Output
+	failed      int32
+	created     int32
+	transferred int32
+	maxThreads  uint32
+	threads     int32
+	isAlive     bool
+	mutex       sync.Mutex
 }
 
 func NewWriter() *Writer {
@@ -33,14 +31,6 @@ func NewWriter() *Writer {
 
 func (self *Writer) SetOutputs(outputs []Output) {
 	self.outputs = outputs
-}
-
-func (self *Writer) SetProcessors(processors []PostProcessor) {
-	if len(processors) > 0 {
-		self.hasProcessors = true
-	}
-
-	self.processors = processors
 }
 
 func (self *Writer) SetThreads(threads int) {
@@ -81,8 +71,6 @@ func (self *Writer) writeRecordFromChannel(record Record) {
 }
 
 func (self *Writer) writeRecordIntoOutput(output Output, record Record, wait *sync.WaitGroup) {
-	self.applyProcessors(record)
-
 	if output.PutRecord(record) {
 		self.created++
 	} else {
@@ -90,14 +78,6 @@ func (self *Writer) writeRecordIntoOutput(output Output, record Record, wait *sy
 	}
 
 	wait.Done()
-}
-
-func (self *Writer) applyProcessors(record Record) {
-	if self.hasProcessors {
-		for _, proc := range self.processors {
-			proc.Do(record)
-		}
-	}
 }
 
 func (self *Writer) GetCounters() (int32, int32, int32) {
@@ -114,8 +94,8 @@ func (self *Writer) PrintCounters(elapsedSeconds int) {
 	created, failed, _ := self.GetCounters()
 	self.ResetCounters()
 
-	logFormat := "Created %d document(s), failed %d times(s), %g doc/sec"
+	logFormat := "Created %d document(s), failed %d times(s), %g doc/sec in %d thread(s)"
 
 	rate := float64(created+failed) / float64(elapsedSeconds)
-	Info(logFormat, created, failed, rate)
+	Info(logFormat, created, failed, rate, self.threads)
 }

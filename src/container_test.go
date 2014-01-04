@@ -119,7 +119,7 @@ func (s *ContainerSuite) TestGetPostProcessor(c *C) {
 		fields = true
 
 		[processor-metrics "bar"]
-		metrics = (foo)foo
+		metrics = (terms)foo
 	`)
 
 	GetConfig().Load(raw)

@@ -1,7 +1,9 @@
 package harvesterd
 
 import (
+	"fmt"
 	. "harvesterd/intf"
+	"strconv"
 )
 
 import . "launchpad.net/gocheck"
@@ -22,6 +24,30 @@ func (s *ReaderSuite) TestReadIntoChannelSingleInput(c *C) {
 	count := 0
 	for record := range channel {
 		c.Check(record["line"], Equals, "foo")
+		count++
+	}
+
+	reader.Finish()
+	c.Check(count, Equals, 4)
+	c.Check(input.Finished, Equals, true)
+}
+
+func (s *ReaderSuite) TestReadIntoChannelWithProcessors(c *C) {
+	channel := make(chan Record, 1)
+	input := new(MockInput)
+	inputs := []Input{input}
+
+	processor := new(MockProcessor)
+	processor.Value = 10
+
+	reader := NewReader()
+	reader.SetInputs(inputs)
+	reader.SetProcessors([]PostProcessor{processor})
+	reader.GoReadIntoChannel(channel)
+
+	count := 0
+	for record := range channel {
+		c.Check(record["line"], Equals, "10")
 		count++
 	}
 
@@ -84,4 +110,13 @@ func (self *MockInput) IsEOF() bool {
 }
 func (self *MockInput) Finish() {
 	self.Finished = true
+}
+
+type MockProcessor struct {
+	Value int
+}
+
+func (self *MockProcessor) Do(record Record) {
+	number, _ := strconv.Atoi(record["line"].(string))
+	record["line"] = fmt.Sprintf("%d", number+self.Value)
 }

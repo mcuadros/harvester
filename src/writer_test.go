@@ -100,34 +100,6 @@ func (s *WriterSuite) TestWriteIsAlive(c *C) {
 	c.Check(writer.IsAlive(), Equals, false)
 }
 
-func (s *WriterSuite) TestWriteProcessor(c *C) {
-	output := new(MockOutput)
-	output.Return = true
-
-	processor := new(MockProcessor)
-	processor.Value = 1
-
-	writer := NewWriter()
-	writer.SetOutputs([]Output{output})
-	writer.SetProcessors([]PostProcessor{processor})
-	writer.SetThreads(1)
-
-	channel := writer.GoWriteFromChannel()
-	go func(channel chan Record) {
-		channel <- Record{"foo": "1"}
-		close(channel)
-	}(channel)
-
-	for {
-		time.Sleep(100 * time.Microsecond)
-		if !writer.IsAlive() {
-			break
-		}
-	}
-
-	c.Check(output.Count, Equals, 2)
-}
-
 type MockOutput struct {
 	Count  int
 	Return bool
@@ -137,13 +109,4 @@ func (self *MockOutput) PutRecord(record Record) bool {
 	number, _ := strconv.Atoi(record["foo"].(string))
 	self.Count += number
 	return self.Return
-}
-
-type MockProcessor struct {
-	Value int
-}
-
-func (self *MockProcessor) Do(record Record) {
-	number, _ := strconv.Atoi(record["foo"].(string))
-	record["foo"] = fmt.Sprintf("%d", number+self.Value)
 }

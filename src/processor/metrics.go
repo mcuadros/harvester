@@ -6,6 +6,7 @@ import (
 	. "harvesterd/processor/metric"
 	"regexp"
 	"strings"
+	"sync"
 )
 
 type MetricsConfig struct {
@@ -16,6 +17,7 @@ type MetricsConfig struct {
 type Metrics struct {
 	metrics []Metric
 	flush   int
+	mutex   sync.Mutex
 }
 
 type Metric interface {
@@ -48,6 +50,8 @@ func (self *Metrics) parseMetricsConfig(metricsConfig string) {
 			metric = NewTerms(field)
 		case "histogram":
 			metric = NewHistogram(field)
+		default:
+			Critical("Unknown metric \"%s\", valid: [terms histogram]", class)
 		}
 
 		self.metrics = append(self.metrics, metric)
@@ -64,8 +68,21 @@ func (self *Metrics) parseMetric(metric string) (class string, field string) {
 }
 
 func (self *Metrics) Do(record Record) {
+	self.mutex.Lock()
+
+	var temp = make(map[string]interface{})
 	for _, metric := range self.metrics {
 		metric.Process(record)
-		record[metric.GetField()] = metric.GetValue()
+		temp[metric.GetField()] = metric.GetValue()
 	}
+
+	for key, _ := range record {
+		delete(record, key)
+	}
+
+	for key, value := range temp {
+		record[key] = value
+	}
+
+	self.mutex.Unlock()
 }
