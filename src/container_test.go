@@ -29,8 +29,8 @@ func (s *ContainerSuite) TestGetInput(c *C) {
 
 	GetConfig().Load(raw)
 
-	c.Check(GetContainer().GetInput("foo"), FitsTypeOf, &input.File{})
-	c.Check(GetContainer().GetInput("bar"), FitsTypeOf, &input.Tail{})
+	c.Assert(GetContainer().GetInput("foo"), FitsTypeOf, &input.File{})
+	c.Assert(GetContainer().GetInput("bar"), FitsTypeOf, &input.Tail{})
 }
 
 func (s *ContainerSuite) TestGetFormat(c *C) {
@@ -57,11 +57,11 @@ func (s *ContainerSuite) TestGetFormat(c *C) {
 
 	GetConfig().Load(raw)
 
-	c.Check(GetContainer().GetFormat("json"), FitsTypeOf, &format.JSON{})
-	c.Check(GetContainer().GetFormat("csv"), FitsTypeOf, &format.CSV{})
-	c.Check(GetContainer().GetFormat("regexp"), FitsTypeOf, &format.RegExp{})
-	c.Check(GetContainer().GetFormat("apache2"), FitsTypeOf, &format.Apache2{})
-	c.Check(GetContainer().GetFormat("nginx"), FitsTypeOf, &format.Nginx{})
+	c.Assert(GetContainer().GetFormat("json"), FitsTypeOf, &format.JSON{})
+	c.Assert(GetContainer().GetFormat("csv"), FitsTypeOf, &format.CSV{})
+	c.Assert(GetContainer().GetFormat("regexp"), FitsTypeOf, &format.RegExp{})
+	c.Assert(GetContainer().GetFormat("apache2"), FitsTypeOf, &format.Apache2{})
+	c.Assert(GetContainer().GetFormat("nginx"), FitsTypeOf, &format.Nginx{})
 }
 
 func (s *ContainerSuite) TestGetOutput(c *C) {
@@ -77,9 +77,9 @@ func (s *ContainerSuite) TestGetOutput(c *C) {
 	`)
 
 	GetConfig().Load(raw)
-	c.Check(GetContainer().GetOutput("qux"), FitsTypeOf, &output.Dummy{})
-	c.Check(GetContainer().GetOutput("foo"), FitsTypeOf, &output.Mongo{})
-	c.Check(GetContainer().GetOutput("bar"), FitsTypeOf, &output.Elasticsearch{})
+	c.Assert(GetContainer().GetOutput("qux"), FitsTypeOf, &output.Dummy{})
+	c.Assert(GetContainer().GetOutput("foo"), FitsTypeOf, &output.Mongo{})
+	c.Assert(GetContainer().GetOutput("bar"), FitsTypeOf, &output.Elasticsearch{})
 }
 
 func (s *ContainerSuite) TestGetReader(c *C) {
@@ -95,7 +95,7 @@ func (s *ContainerSuite) TestGetReader(c *C) {
 
 	GetConfig().Load(raw)
 
-	c.Check(GetContainer().GetReader(""), FitsTypeOf, &Reader{})
+	c.Assert(GetContainer().GetReader(""), FitsTypeOf, &Reader{})
 }
 
 func (s *ContainerSuite) TestGetWriter(c *C) {
@@ -103,14 +103,31 @@ func (s *ContainerSuite) TestGetWriter(c *C) {
 		[output-elasticsearch "bar"]
 		host = foo
 
-		[writer]
+		[writer "bar"]
 		output = bar
-
 	`)
 
 	GetConfig().Load(raw)
 
-	c.Check(GetContainer().GetWriter(), FitsTypeOf, &Writer{})
+	c.Assert(GetContainer().GetWriter(""), FitsTypeOf, &Writer{})
+}
+
+func (s *ContainerSuite) TestGetWriters(c *C) {
+	var raw = string(`
+		[writer "foo"]
+		output = bar
+
+		[writer "bar"]
+		output = bar
+	`)
+
+	GetConfig().Load(raw)
+
+	writers := GetContainer().GetWriters()
+	print(len(writers))
+	c.Assert(writers, HasLen, 2)
+	c.Assert(writers[0], FitsTypeOf, &Writer{})
+	c.Assert(writers[1], FitsTypeOf, &Writer{})
 }
 
 func (s *ContainerSuite) TestGetPostProcessor(c *C) {
@@ -123,7 +140,6 @@ func (s *ContainerSuite) TestGetPostProcessor(c *C) {
 	`)
 
 	GetConfig().Load(raw)
-	c.Check(GetContainer().GetPostProcessor("qux"), FitsTypeOf, &processor.Anonymize{})
-	c.Check(GetContainer().GetPostProcessor("bar"), FitsTypeOf, &processor.Metrics{})
-
+	c.Assert(GetContainer().GetPostProcessor("qux"), FitsTypeOf, &processor.Anonymize{})
+	c.Assert(GetContainer().GetPostProcessor("bar"), FitsTypeOf, &processor.Metrics{})
 }

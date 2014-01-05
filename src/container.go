@@ -124,8 +124,11 @@ func (self *Container) GetPostProcessor(key string) PostProcessor {
 	return nil
 }
 
-func (self *Container) GetWriter() *Writer {
-	config := GetConfig().Writer
+func (self *Container) GetWriter(key string) *Writer {
+	config, ok := GetConfig().Writer[key]
+	if !ok {
+		return nil
+	}
 
 	outputs := make([]Output, len(config.Output))
 	for i, key := range config.Output {
@@ -143,4 +146,16 @@ func (self *Container) GetWriter() *Writer {
 	writer.SetThreads(config.Threads)
 
 	return writer
+}
+
+func (self *Container) GetWriters() []*Writer {
+	writers := make([]*Writer, len(GetConfig().Writer))
+
+	i := 0
+	for key, _ := range GetConfig().Writer {
+		writers[i] = self.GetWriter(key)
+		i++
+	}
+
+	return writers
 }

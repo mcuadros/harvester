@@ -13,8 +13,8 @@ import (
 import "code.google.com/p/gcfg"
 
 type Config struct {
-	Writer               WriterConfig
-	Logger               logger.LoggerConfig
+	Logger               *logger.LoggerConfig
+	Writer               map[string]*WriterConfig
 	Reader               map[string]*ReaderConfig
 	Format_JSON          map[string]*format.JSONConfig
 	Format_CSV           map[string]*format.CSVConfig

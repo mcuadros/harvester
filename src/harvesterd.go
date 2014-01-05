@@ -2,6 +2,7 @@ package harvesterd
 
 import (
 	. "harvesterd/logger"
+
 	"runtime"
 	"time"
 )
@@ -36,7 +37,7 @@ func (self *Harvesterd) configureMaxProcs() {
 }
 
 func (self *Harvesterd) bootWriter() {
-	self.writer = GetContainer().GetWriter()
+	self.writer = GetContainer().GetWriter("")
 }
 
 func (self *Harvesterd) Run() {
