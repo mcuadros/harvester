@@ -49,7 +49,8 @@ func (self *Harvesterd) bootReader() {
 
 func (self *Harvesterd) Run() {
 	self.channel = self.writer.GoWriteFromChannel()
-	self.reader.GoReadIntoChannel(self.channel)
+	self.reader.SetChannel(self.channel)
+	self.reader.GoRead()
 	self.wait()
 	self.reader.Finish()
 }

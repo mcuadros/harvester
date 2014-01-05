@@ -14,6 +14,7 @@ type Reader struct {
 	counter       int32
 	inputs        []Input
 	processors    []PostProcessor
+	channel       chan Record
 	hasProcessors bool
 	wait          sync.WaitGroup
 }
@@ -36,19 +37,24 @@ func (self *Reader) SetProcessors(processors []PostProcessor) {
 	self.processors = processors
 }
 
-func (self *Reader) GoReadIntoChannel(channel chan Record) {
-	go self.doReadIntoChannel(channel)
+func (self *Reader) SetChannel(channel chan Record) {
+	self.channel = channel
+}
+
+func (self *Reader) GoRead() {
+	self.setChannelToProcessors(self.channel)
+	go self.doReadIntoChannel(self.channel)
 }
 
 func (self *Reader) doReadIntoChannel(channel chan Record) {
-	defer close(channel)
-
 	for _, input := range self.inputs {
 		self.wait.Add(1)
 		go self.readInputIntoChannel(input, channel)
 	}
 
 	self.wait.Wait()
+	self.finishProcessors()
+	close(channel)
 }
 
 func (self *Reader) readInputIntoChannel(input Input, channel chan Record) {
@@ -62,18 +68,37 @@ func (self *Reader) readInputIntoChannel(input Input, channel chan Record) {
 
 func (self *Reader) emitRecord(channel chan Record, record Record) {
 	if len(record) > 0 {
-		self.applyProcessors(record)
+		if self.applyProcessors(record) {
+			channel <- record
+		}
 
-		channel <- record
 		self.counter++
 	}
 }
 
-func (self *Reader) applyProcessors(record Record) {
+func (self *Reader) setChannelToProcessors(channel chan Record) {
 	if self.hasProcessors {
 		for _, proc := range self.processors {
-			proc.Do(record)
+			proc.SetChannel(channel)
 		}
+	}
+}
+
+func (self *Reader) applyProcessors(record Record) bool {
+	if self.hasProcessors {
+		for _, proc := range self.processors {
+			if proc.Do(record) == false {
+				return false
+			}
+		}
+	}
+
+	return true
+}
+
+func (self *Reader) finishProcessors() {
+	for _, proc := range self.processors {
+		proc.Finish()
 	}
 }
 

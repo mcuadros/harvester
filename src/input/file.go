@@ -68,7 +68,11 @@ func (self *File) GetLine() string {
 
 func (self *File) GetRecord() Record {
 	line := self.GetLine()
-	return self.format.Parse(line)
+	if line != "" {
+		return self.format.Parse(line)
+	}
+
+	return nil
 }
 
 func (self *File) scan() bool {

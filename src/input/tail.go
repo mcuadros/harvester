@@ -117,7 +117,11 @@ func (self *Tail) GetLine() string {
 
 func (self *Tail) GetRecord() Record {
 	line := self.GetLine()
-	return self.format.Parse(line)
+	if line != "" {
+		return self.format.Parse(line)
+	}
+
+	return nil
 }
 
 func (self *Tail) keepPosition() {

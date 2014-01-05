@@ -30,6 +30,11 @@ func NewAnonymize(config *AnonymizeConfig) *Anonymize {
 	return processor
 }
 
+//Just for match the interface
+func (self *Anonymize) SetChannel(channel chan Record) {
+
+}
+
 func (self *Anonymize) SetConfig(config *AnonymizeConfig) {
 	for _, field := range strings.Split(config.Fields, ",") {
 		self.fields = append(self.fields, field)
@@ -53,13 +58,15 @@ func (self *Anonymize) SetConfig(config *AnonymizeConfig) {
 	self.email = config.EmailSupport
 }
 
-func (self *Anonymize) Do(record Record) {
+func (self *Anonymize) Do(record Record) bool {
 	for _, field := range self.fields {
 		_, ok := record[field]
 		if ok {
 			self.encodeField(record, field)
 		}
 	}
+
+	return true
 }
 
 func (self *Anonymize) encodeField(record Record, field string) {
@@ -78,4 +85,9 @@ func (self *Anonymize) encodeString(value string) string {
 	h.Write([]byte(value))
 
 	return hex.EncodeToString(h.Sum(nil))
+}
+
+//Just for match the interface
+func (self *Anonymize) Finish() {
+
 }

@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strings"
 	"sync"
+	"time"
 )
 
 type MetricsConfig struct {
@@ -16,8 +17,10 @@ type MetricsConfig struct {
 
 type Metrics struct {
 	metrics []Metric
-	flush   int
+	flush   time.Duration
 	mutex   sync.Mutex
+	channel chan Record
+	isAlive bool
 }
 
 type Metric interface {
@@ -32,12 +35,18 @@ var configRegExp = regexp.MustCompile("^\\((\\w+)\\)(\\w+)$")
 func NewMetrics(config *MetricsConfig) *Metrics {
 	processor := new(Metrics)
 	processor.SetConfig(config)
+	processor.Boot()
 
 	return processor
 }
 
 func (self *Metrics) SetConfig(config *MetricsConfig) {
+	self.flush = time.Duration(config.Flush)
 	self.parseMetricsConfig(config.Metrics)
+}
+
+func (self *Metrics) SetChannel(channel chan Record) {
+	self.channel = channel
 }
 
 func (self *Metrics) parseMetricsConfig(metricsConfig string) {
@@ -67,22 +76,43 @@ func (self *Metrics) parseMetric(metric string) (class string, field string) {
 	return config[1], config[2]
 }
 
-func (self *Metrics) Do(record Record) {
+func (self *Metrics) Do(record Record) bool {
 	self.mutex.Lock()
 
-	var temp = make(map[string]interface{})
 	for _, metric := range self.metrics {
 		metric.Process(record)
-		temp[metric.GetField()] = metric.GetValue()
-	}
-
-	for key, _ := range record {
-		delete(record, key)
-	}
-
-	for key, value := range temp {
-		record[key] = value
 	}
 
 	self.mutex.Unlock()
+
+	return false
+}
+
+func (self *Metrics) Boot() {
+	self.isAlive = true
+	go self.deliveryRecord()
+}
+
+func (self *Metrics) deliveryRecord() {
+	Debug("Started metrics routine")
+	for {
+		time.Sleep(self.flush * time.Second)
+		if self.isAlive {
+			self.flushMetrics()
+		}
+	}
+}
+
+func (self *Metrics) flushMetrics() {
+	var record = make(map[string]interface{})
+	for _, metric := range self.metrics {
+		record[metric.GetField()] = metric.GetValue()
+	}
+
+	self.channel <- record
+}
+
+func (self *Metrics) Finish() {
+	self.isAlive = false
+	self.flushMetrics()
 }

@@ -1,5 +1,7 @@
 package intf
 
 type PostProcessor interface {
-	Do(record Record)
+	SetChannel(channel chan Record)
+	Do(record Record) bool
+	Finish()
 }

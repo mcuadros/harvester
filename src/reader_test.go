@@ -52,7 +52,7 @@ func (s *ReaderSuite) TestReadIntoChannelWithProcessors(c *C) {
 	}
 
 	reader.Finish()
-	c.Check(count, Equals, 4)
+	c.Check(count, Equals, 2)
 	c.Check(input.Finished, Equals, true)
 }
 
@@ -81,7 +81,6 @@ func (s *ReaderSuite) TestReadIntoChannelMultipleInputs(c *C) {
 	c.Check(inputB.Finished, Equals, true)
 	c.Check(inputC.Finished, Equals, true)
 	c.Check(inputD.Finished, Equals, true)
-
 }
 
 type MockInput struct {
@@ -114,9 +113,18 @@ func (self *MockInput) Finish() {
 
 type MockProcessor struct {
 	Value int
+	Count int
 }
 
-func (self *MockProcessor) Do(record Record) {
+func (self *MockProcessor) Do(record Record) bool {
+	self.Count++
+
 	number, _ := strconv.Atoi(record["line"].(string))
 	record["line"] = fmt.Sprintf("%d", number+self.Value)
+
+	if self.Count%2 == 0 {
+		return true
+	}
+
+	return false
 }
