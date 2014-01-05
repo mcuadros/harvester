@@ -88,6 +88,6 @@ func (self *Anonymize) encodeString(value string) string {
 }
 
 //Just for match the interface
-func (self *Anonymize) Finish() {
+func (self *Anonymize) Teardown() {
 
 }

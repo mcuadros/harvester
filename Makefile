@@ -2,7 +2,12 @@
 PACKAGE = harvesterd
 HOMEPAGE = https://github.com/mcuadros/harvesterd
 DESCRIPTION = low footprint collector and parser for events and logs
-SUBPACKAGES = harvesterd/input harvesterd/output harvesterd/format harvesterd/processor
+SUBPACKAGES = harvesterd/input \
+harvesterd/output \
+harvesterd/format \
+harvesterd/processor \
+harvesterd/processor/metric
+
 COMMANDS =	tool/harvesterd.go
 DEPENDENCIES = launchpad.net/gocheck \
 code.google.com/p/go.tools/cmd/cover \

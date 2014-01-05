@@ -52,7 +52,7 @@ func (self *Harvesterd) Run() {
 	self.reader.SetChannel(self.channel)
 	self.reader.GoRead()
 	self.wait()
-	self.reader.Finish()
+	self.reader.Teardown()
 }
 
 func (self *Harvesterd) wait() {

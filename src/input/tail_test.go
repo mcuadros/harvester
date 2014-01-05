@@ -55,7 +55,7 @@ func (s *TailFileSuite) TestTailFile(c *C) {
 		}
 	}
 
-	tail.Finish()
+	tail.Teardown()
 	c.Check(len(lines), Equals, 20)
 }
 
@@ -88,6 +88,6 @@ func (s *TailFileSuite) TestTailFileWithPos(c *C) {
 		}
 	}
 
-	tail.Finish()
+	tail.Teardown()
 	c.Check(len(lines), Equals, 10)
 }

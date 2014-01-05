@@ -4,5 +4,5 @@ type Input interface {
 	GetLine() string
 	GetRecord() Record
 	IsEOF() bool
-	Finish()
+	Teardown()
 }

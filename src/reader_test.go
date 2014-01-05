@@ -19,7 +19,8 @@ func (s *ReaderSuite) TestReadIntoChannelSingleInput(c *C) {
 
 	reader := NewReader()
 	reader.SetInputs(inputs)
-	reader.GoReadIntoChannel(channel)
+	reader.SetChannel(channel)
+	reader.GoRead()
 
 	count := 0
 	for record := range channel {
@@ -27,7 +28,7 @@ func (s *ReaderSuite) TestReadIntoChannelSingleInput(c *C) {
 		count++
 	}
 
-	reader.Finish()
+	reader.Teardown()
 	c.Check(count, Equals, 4)
 	c.Check(input.Finished, Equals, true)
 }
@@ -43,7 +44,8 @@ func (s *ReaderSuite) TestReadIntoChannelWithProcessors(c *C) {
 	reader := NewReader()
 	reader.SetInputs(inputs)
 	reader.SetProcessors([]PostProcessor{processor})
-	reader.GoReadIntoChannel(channel)
+	reader.SetChannel(channel)
+	reader.GoRead()
 
 	count := 0
 	for record := range channel {
@@ -51,7 +53,7 @@ func (s *ReaderSuite) TestReadIntoChannelWithProcessors(c *C) {
 		count++
 	}
 
-	reader.Finish()
+	reader.Teardown()
 	c.Check(count, Equals, 2)
 	c.Check(input.Finished, Equals, true)
 }
@@ -67,7 +69,8 @@ func (s *ReaderSuite) TestReadIntoChannelMultipleInputs(c *C) {
 
 	reader := NewReader()
 	reader.SetInputs(inputs)
-	reader.GoReadIntoChannel(channel)
+	reader.SetChannel(channel)
+	reader.GoRead()
 
 	count := 0
 	for record := range channel {
@@ -75,7 +78,7 @@ func (s *ReaderSuite) TestReadIntoChannelMultipleInputs(c *C) {
 		count++
 	}
 
-	reader.Finish()
+	reader.Teardown()
 	c.Check(count, Equals, 16)
 	c.Check(inputA.Finished, Equals, true)
 	c.Check(inputB.Finished, Equals, true)
@@ -107,13 +110,19 @@ func (self *MockInput) IsEOF() bool {
 
 	return false
 }
-func (self *MockInput) Finish() {
+func (self *MockInput) Teardown() {
 	self.Finished = true
 }
 
 type MockProcessor struct {
 	Value int
 	Count int
+}
+
+func (self *MockProcessor) SetChannel(channel chan Record) {
+}
+
+func (self *MockProcessor) Teardown() {
 }
 
 func (self *MockProcessor) Do(record Record) bool {

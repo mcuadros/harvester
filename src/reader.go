@@ -11,12 +11,12 @@ type ReaderConfig struct {
 }
 
 type Reader struct {
+	wait          sync.WaitGroup
+	channel       chan Record
 	counter       int32
 	inputs        []Input
-	processors    []PostProcessor
-	channel       chan Record
 	hasProcessors bool
-	wait          sync.WaitGroup
+	processors    []PostProcessor
 }
 
 func NewReader() *Reader {
@@ -42,44 +42,45 @@ func (self *Reader) SetChannel(channel chan Record) {
 }
 
 func (self *Reader) GoRead() {
-	self.setChannelToProcessors(self.channel)
-	go self.doReadIntoChannel(self.channel)
+	self.setChannelToProcessors()
+	go self.doReadIntoChannel()
 }
 
-func (self *Reader) doReadIntoChannel(channel chan Record) {
+func (self *Reader) doReadIntoChannel() {
 	for _, input := range self.inputs {
 		self.wait.Add(1)
-		go self.readInputIntoChannel(input, channel)
+		go self.readInputIntoChannel(input)
 	}
 
 	self.wait.Wait()
-	self.finishProcessors()
-	close(channel)
+
+	self.teardownProcessors()
+	close(self.channel)
 }
 
-func (self *Reader) readInputIntoChannel(input Input, channel chan Record) {
+func (self *Reader) readInputIntoChannel(input Input) {
 	for !input.IsEOF() {
 		record := input.GetRecord()
-		self.emitRecord(channel, record)
+		self.emitRecord(record)
 	}
 
 	self.wait.Done()
 }
 
-func (self *Reader) emitRecord(channel chan Record, record Record) {
+func (self *Reader) emitRecord(record Record) {
 	if len(record) > 0 {
 		if self.applyProcessors(record) {
-			channel <- record
+			self.channel <- record
 		}
 
 		self.counter++
 	}
 }
 
-func (self *Reader) setChannelToProcessors(channel chan Record) {
+func (self *Reader) setChannelToProcessors() {
 	if self.hasProcessors {
 		for _, proc := range self.processors {
-			proc.SetChannel(channel)
+			proc.SetChannel(self.channel)
 		}
 	}
 }
@@ -96,14 +97,18 @@ func (self *Reader) applyProcessors(record Record) bool {
 	return true
 }
 
-func (self *Reader) finishProcessors() {
+func (self *Reader) teardownProcessors() {
 	for _, proc := range self.processors {
-		proc.Finish()
+		proc.Teardown()
 	}
 }
 
-func (self *Reader) Finish() {
+func (self *Reader) teardownInputs() {
 	for _, input := range self.inputs {
-		input.Finish()
+		input.Teardown()
 	}
+}
+
+func (self *Reader) Teardown() {
+	self.teardownInputs()
 }

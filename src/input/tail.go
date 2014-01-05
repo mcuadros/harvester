@@ -141,6 +141,6 @@ func (self *Tail) Stop() {
 	self.tail.Stop()
 }
 
-func (self *Tail) Finish() {
+func (self *Tail) Teardown() {
 	self.wait.Wait()
 }

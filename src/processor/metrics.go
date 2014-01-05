@@ -35,7 +35,7 @@ var configRegExp = regexp.MustCompile("^\\((\\w+)\\)(\\w+)$")
 func NewMetrics(config *MetricsConfig) *Metrics {
 	processor := new(Metrics)
 	processor.SetConfig(config)
-	processor.Boot()
+	processor.Setup()
 
 	return processor
 }
@@ -88,7 +88,7 @@ func (self *Metrics) Do(record Record) bool {
 	return false
 }
 
-func (self *Metrics) Boot() {
+func (self *Metrics) Setup() {
 	self.isAlive = true
 	go self.deliveryRecord()
 }
@@ -112,7 +112,7 @@ func (self *Metrics) flushMetrics() {
 	self.channel <- record
 }
 
-func (self *Metrics) Finish() {
+func (self *Metrics) Teardown() {
 	self.isAlive = false
 	self.flushMetrics()
 }

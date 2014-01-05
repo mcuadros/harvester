@@ -94,5 +94,5 @@ func (self *File) IsEOF() bool {
 	return self.eof
 }
 
-func (self *File) Finish() {
+func (self *File) Teardown() {
 }
