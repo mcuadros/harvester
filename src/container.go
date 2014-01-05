@@ -1,10 +1,11 @@
 package harvesterd
 
 import (
+	. "harvesterd/intf"
+	. "harvesterd/logger"
+
 	"harvesterd/format"
 	"harvesterd/input"
-	"harvesterd/intf"
-	. "harvesterd/logger"
 	"harvesterd/output"
 	"harvesterd/processor"
 )
@@ -18,7 +19,7 @@ func GetContainer() *Container {
 	return containerInstance
 }
 
-func (self *Container) GetFormat(key string) intf.Format {
+func (self *Container) GetFormat(key string) Format {
 	jsonConfig, ok := GetConfig().Format_JSON[key]
 	if ok {
 		return format.NewJSON(jsonConfig)
@@ -48,7 +49,7 @@ func (self *Container) GetFormat(key string) intf.Format {
 	return nil
 }
 
-func (self *Container) GetInput(key string) intf.Input {
+func (self *Container) GetInput(key string) Input {
 	fileConfig, ok := GetConfig().Input_File[key]
 	if ok {
 		format := self.GetFormat(fileConfig.Format)
@@ -65,15 +66,18 @@ func (self *Container) GetInput(key string) intf.Input {
 	return nil
 }
 
-func (self *Container) GetReader() *Reader {
-	config := GetConfig().Reader
+func (self *Container) GetReader(key string) *Reader {
+	config, ok := GetConfig().Reader[key]
+	if !ok {
+		return nil
+	}
 
-	inputs := make([]intf.Input, len(config.Input))
+	inputs := make([]Input, len(config.Input))
 	for i, key := range config.Input {
 		inputs[i] = self.GetInput(key)
 	}
 
-	processors := make([]intf.PostProcessor, len(config.Processor))
+	processors := make([]PostProcessor, len(config.Processor))
 	for i, key := range config.Processor {
 		processors[i] = self.GetPostProcessor(key)
 	}
@@ -85,7 +89,7 @@ func (self *Container) GetReader() *Reader {
 	return reader
 }
 
-func (self *Container) GetOutput(key string) intf.Output {
+func (self *Container) GetOutput(key string) Output {
 	esConfig, ok := GetConfig().Output_Elasticsearch[key]
 	if ok {
 		return output.NewElasticsearch(esConfig)
@@ -105,7 +109,7 @@ func (self *Container) GetOutput(key string) intf.Output {
 	return nil
 }
 
-func (self *Container) GetPostProcessor(key string) intf.PostProcessor {
+func (self *Container) GetPostProcessor(key string) PostProcessor {
 	anonConfig, ok := GetConfig().Processor_Anonymize[key]
 	if ok {
 		return processor.NewAnonymize(anonConfig)
@@ -123,13 +127,19 @@ func (self *Container) GetPostProcessor(key string) intf.PostProcessor {
 func (self *Container) GetWriter() *Writer {
 	config := GetConfig().Writer
 
-	outputs := make([]intf.Output, len(config.Output))
+	outputs := make([]Output, len(config.Output))
 	for i, key := range config.Output {
 		outputs[i] = self.GetOutput(key)
 	}
 
+	readers := make([]*Reader, len(config.Reader))
+	for i, key := range config.Reader {
+		readers[i] = self.GetReader(key)
+	}
+
 	writer := NewWriter()
 	writer.SetOutputs(outputs)
+	writer.SetReaders(readers)
 	writer.SetThreads(config.Threads)
 
 	return writer

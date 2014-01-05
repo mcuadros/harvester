@@ -95,7 +95,7 @@ func (s *ContainerSuite) TestGetReader(c *C) {
 
 	GetConfig().Load(raw)
 
-	c.Check(GetContainer().GetReader(), FitsTypeOf, &Reader{})
+	c.Check(GetContainer().GetReader(""), FitsTypeOf, &Reader{})
 }
 
 func (s *ContainerSuite) TestGetWriter(c *C) {

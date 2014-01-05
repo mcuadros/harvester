@@ -13,17 +13,25 @@ type ReaderSuite struct{}
 var _ = Suite(&ReaderSuite{})
 
 func (s *ReaderSuite) TestReadIntoChannelSingleInput(c *C) {
-	channel := make(chan Record, 1)
+	recordsChan := make(RecordsChan, 1)
+	closeChan := make(CloseChan, 1)
+
 	input := new(MockInput)
 	inputs := []Input{input}
 
 	reader := NewReader()
 	reader.SetInputs(inputs)
-	reader.SetChannel(channel)
+	reader.SetChannels(recordsChan, closeChan)
 	reader.GoRead()
 
+	go func() {
+		for _ = range closeChan {
+			close(recordsChan)
+		}
+	}()
+
 	count := 0
-	for record := range channel {
+	for record := range recordsChan {
 		c.Check(record["line"], Equals, "foo")
 		count++
 	}
@@ -34,7 +42,9 @@ func (s *ReaderSuite) TestReadIntoChannelSingleInput(c *C) {
 }
 
 func (s *ReaderSuite) TestReadIntoChannelWithProcessors(c *C) {
-	channel := make(chan Record, 1)
+	recordsChan := make(RecordsChan, 1)
+	closeChan := make(CloseChan, 1)
+
 	input := new(MockInput)
 	inputs := []Input{input}
 
@@ -44,11 +54,17 @@ func (s *ReaderSuite) TestReadIntoChannelWithProcessors(c *C) {
 	reader := NewReader()
 	reader.SetInputs(inputs)
 	reader.SetProcessors([]PostProcessor{processor})
-	reader.SetChannel(channel)
+	reader.SetChannels(recordsChan, closeChan)
 	reader.GoRead()
 
+	go func() {
+		for _ = range closeChan {
+			close(recordsChan)
+		}
+	}()
+
 	count := 0
-	for record := range channel {
+	for record := range recordsChan {
 		c.Check(record["line"], Equals, "10")
 		count++
 	}
@@ -59,7 +75,9 @@ func (s *ReaderSuite) TestReadIntoChannelWithProcessors(c *C) {
 }
 
 func (s *ReaderSuite) TestReadIntoChannelMultipleInputs(c *C) {
-	channel := make(chan Record, 1)
+	recordsChan := make(RecordsChan, 1)
+	closeChan := make(CloseChan, 1)
+
 	inputA := new(MockInput)
 	inputB := new(MockInput)
 	inputC := new(MockInput)
@@ -69,11 +87,17 @@ func (s *ReaderSuite) TestReadIntoChannelMultipleInputs(c *C) {
 
 	reader := NewReader()
 	reader.SetInputs(inputs)
-	reader.SetChannel(channel)
+	reader.SetChannels(recordsChan, closeChan)
 	reader.GoRead()
 
+	go func() {
+		for _ = range closeChan {
+			close(recordsChan)
+		}
+	}()
+
 	count := 0
-	for record := range channel {
+	for record := range recordsChan {
 		c.Check(record["line"], Equals, "foo")
 		count++
 	}
@@ -119,7 +143,7 @@ type MockProcessor struct {
 	Count int
 }
 
-func (self *MockProcessor) SetChannel(channel chan Record) {
+func (self *MockProcessor) SetChannel(recordsChan chan Record) {
 }
 
 func (self *MockProcessor) Teardown() {

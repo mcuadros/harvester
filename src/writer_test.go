@@ -20,15 +20,18 @@ func (s *WriterSuite) TestWriteFromChannelSingleOutput(c *C) {
 	writer := NewWriter()
 	writer.SetOutputs([]Output{output})
 	writer.SetThreads(1)
+	writer.Setup()
+	writer.Boot()
 
-	channel := writer.GoWriteFromChannel()
-	go func(channel chan Record) {
+	recordChan, closeChan := writer.GetChannels()
+	go func() {
 		for i := 0; i < 10; i++ {
-			channel <- Record{"foo": fmt.Sprintf("%d", i)}
+			recordChan <- Record{"foo": fmt.Sprintf("%d", i)}
 		}
 
-		close(channel)
-	}(channel)
+		close(recordChan)
+		close(closeChan)
+	}()
 
 	for {
 		time.Sleep(100 * time.Microsecond)
@@ -53,15 +56,19 @@ func (s *WriterSuite) TestWriteFromChannelMultipleOutput(c *C) {
 	writer := NewWriter()
 	writer.SetOutputs([]Output{outputw, outputf})
 	writer.SetThreads(1)
+	writer.Setup()
+	writer.Boot()
 
-	channel := writer.GoWriteFromChannel()
-	go func(channel chan Record) {
+	recordChan, closeChan := writer.GetChannels()
+	go func() {
+
 		for i := 0; i < 10; i++ {
-			channel <- Record{"foo": fmt.Sprintf("%d", i)}
+			recordChan <- Record{"foo": fmt.Sprintf("%d", i)}
 		}
 
-		close(channel)
-	}(channel)
+		close(recordChan)
+		close(closeChan)
+	}()
 
 	for {
 		time.Sleep(100 * time.Microsecond)
@@ -87,8 +94,10 @@ func (s *WriterSuite) TestWriteIsAlive(c *C) {
 	writer := NewWriter()
 	writer.SetOutputs([]Output{outputw, outputf})
 	writer.SetThreads(1)
+	writer.Setup()
+	writer.Boot()
 
-	channel := writer.GoWriteFromChannel()
+	channel, _ := writer.GetChannels()
 
 	c.Check(writer.IsAlive(), Equals, true)
 

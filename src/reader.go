@@ -12,7 +12,8 @@ type ReaderConfig struct {
 
 type Reader struct {
 	wait          sync.WaitGroup
-	channel       chan Record
+	recordsChan   RecordsChan
+	closeChan     CloseChan
 	counter       int32
 	inputs        []Input
 	hasProcessors bool
@@ -37,8 +38,9 @@ func (self *Reader) SetProcessors(processors []PostProcessor) {
 	self.processors = processors
 }
 
-func (self *Reader) SetChannel(channel chan Record) {
-	self.channel = channel
+func (self *Reader) SetChannels(recordsChan RecordsChan, closeChan CloseChan) {
+	self.recordsChan = recordsChan
+	self.closeChan = closeChan
 }
 
 func (self *Reader) GoRead() {
@@ -55,7 +57,7 @@ func (self *Reader) doReadIntoChannel() {
 	self.wait.Wait()
 
 	self.teardownProcessors()
-	close(self.channel)
+	self.closeChan <- true
 }
 
 func (self *Reader) readInputIntoChannel(input Input) {
@@ -70,7 +72,7 @@ func (self *Reader) readInputIntoChannel(input Input) {
 func (self *Reader) emitRecord(record Record) {
 	if len(record) > 0 {
 		if self.applyProcessors(record) {
-			self.channel <- record
+			self.recordsChan <- record
 		}
 
 		self.counter++
@@ -80,7 +82,7 @@ func (self *Reader) emitRecord(record Record) {
 func (self *Reader) setChannelToProcessors() {
 	if self.hasProcessors {
 		for _, proc := range self.processors {
-			proc.SetChannel(self.channel)
+			proc.SetChannel(self.recordsChan)
 		}
 	}
 }

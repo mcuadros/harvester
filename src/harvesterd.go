@@ -1,16 +1,13 @@
 package harvesterd
 
 import (
-	. "harvesterd/intf"
 	. "harvesterd/logger"
 	"runtime"
 	"time"
 )
 
 type Harvesterd struct {
-	writer  *Writer
-	reader  *Reader
-	channel chan Record
+	writer *Writer
 }
 
 func NewHarvesterd() *Harvesterd {
@@ -27,7 +24,6 @@ func (self *Harvesterd) Boot() {
 	self.configureLogger()
 	self.configureMaxProcs()
 	self.bootWriter()
-	self.bootReader()
 }
 
 func (self *Harvesterd) configureLogger() {
@@ -43,16 +39,11 @@ func (self *Harvesterd) bootWriter() {
 	self.writer = GetContainer().GetWriter()
 }
 
-func (self *Harvesterd) bootReader() {
-	self.reader = GetContainer().GetReader()
-}
-
 func (self *Harvesterd) Run() {
-	self.channel = self.writer.GoWriteFromChannel()
-	self.reader.SetChannel(self.channel)
-	self.reader.GoRead()
+	self.writer.Setup()
+	self.writer.Boot()
 	self.wait()
-	self.reader.Teardown()
+	self.writer.Teardown()
 }
 
 func (self *Harvesterd) wait() {
