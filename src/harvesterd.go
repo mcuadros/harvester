@@ -8,7 +8,7 @@ import (
 )
 
 type Harvesterd struct {
-	writer *Writer
+	writerGroup *WriterGroup
 }
 
 func NewHarvesterd() *Harvesterd {
@@ -37,21 +37,31 @@ func (self *Harvesterd) configureMaxProcs() {
 }
 
 func (self *Harvesterd) bootWriter() {
-	self.writer = GetContainer().GetWriter("")
+	self.writerGroup = GetContainer().GetWriterGroup()
 }
 
 func (self *Harvesterd) Run() {
-	self.writer.Setup()
-	self.writer.Boot()
+	self.writerGroup.Setup()
+	self.writerGroup.Boot()
 	self.wait()
-	self.writer.Teardown()
+	self.writerGroup.Teardown()
 }
 
 func (self *Harvesterd) wait() {
-	for self.writer.IsAlive() {
+	for self.writerGroup.IsAlive() {
 		time.Sleep(1 * time.Second)
-		self.writer.PrintCounters(1)
+		self.PrintCounters(1)
 	}
 
 	Info("nothing more for read, terminating daemon ...")
+}
+
+func (self *Harvesterd) PrintCounters(elapsedSeconds int) {
+	created, failed, _, threads := self.writerGroup.GetCounters()
+	self.writerGroup.ResetCounters()
+
+	logFormat := "Created %d document(s), failed %d times(s), %g doc/sec in %d thread(s)"
+
+	rate := float64(created+failed) / float64(elapsedSeconds)
+	Info(logFormat, created, failed, rate, threads)
 }

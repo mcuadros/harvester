@@ -109,10 +109,10 @@ func (s *ContainerSuite) TestGetWriter(c *C) {
 
 	GetConfig().Load(raw)
 
-	c.Assert(GetContainer().GetWriter(""), FitsTypeOf, &Writer{})
+	c.Assert(GetContainer().GetWriter(""), FitsTypeOf, &BasicWriter{})
 }
 
-func (s *ContainerSuite) TestGetWriters(c *C) {
+func (s *ContainerSuite) TestGetWriterGroup(c *C) {
 	var raw = string(`
 		[writer "foo"]
 		output = bar
@@ -123,11 +123,7 @@ func (s *ContainerSuite) TestGetWriters(c *C) {
 
 	GetConfig().Load(raw)
 
-	writers := GetContainer().GetWriters()
-	print(len(writers))
-	c.Assert(writers, HasLen, 2)
-	c.Assert(writers[0], FitsTypeOf, &Writer{})
-	c.Assert(writers[1], FitsTypeOf, &Writer{})
+	c.Assert(GetContainer().GetWriterGroup(), FitsTypeOf, &WriterGroup{})
 }
 
 func (s *ContainerSuite) TestGetPostProcessor(c *C) {

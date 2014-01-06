@@ -40,7 +40,7 @@ func (s *WriterSuite) TestWriteFromChannelSingleOutput(c *C) {
 		}
 	}
 
-	created, failed, _ := writer.GetCounters()
+	created, failed, _, _ := writer.GetCounters()
 	c.Check(created, Equals, int32(10))
 	c.Check(failed, Equals, int32(0))
 	c.Check(output.Count, Equals, 45)
@@ -77,7 +77,7 @@ func (s *WriterSuite) TestWriteFromChannelMultipleOutput(c *C) {
 		}
 	}
 
-	created, failed, _ := writer.GetCounters()
+	created, failed, _, _ := writer.GetCounters()
 	c.Check(created, Equals, int32(10))
 	c.Check(failed, Equals, int32(10))
 	c.Check(outputw.Count, Equals, 45)
