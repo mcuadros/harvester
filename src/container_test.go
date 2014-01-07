@@ -109,7 +109,7 @@ func (s *ContainerSuite) TestGetWriter(c *C) {
 
 	GetConfig().Load(raw)
 
-	c.Assert(GetContainer().GetWriter(""), FitsTypeOf, &BasicWriter{})
+	c.Assert(GetContainer().GetWriter(""), FitsTypeOf, &Writer{})
 }
 
 func (s *ContainerSuite) TestGetWriterGroup(c *C) {

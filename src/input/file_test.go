@@ -1,7 +1,7 @@
 package input
 
 import (
-	. "harvesterd/intf"
+	"harvesterd/intf"
 	"testing"
 )
 
@@ -9,8 +9,8 @@ import . "launchpad.net/gocheck"
 
 type MockFormat struct{}
 
-func (s *MockFormat) Parse(line string) Record {
-	return Record{"foo": "bar"}
+func (s *MockFormat) Parse(line string) intf.Record {
+	return intf.Record{"foo": "bar"}
 }
 
 // Hook up gocheck into the "go test" runner.

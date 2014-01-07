@@ -2,7 +2,7 @@ package format
 
 import (
 	"bytes"
-	. "harvesterd/intf"
+	"harvesterd/intf"
 	"strings"
 )
 
@@ -55,8 +55,8 @@ func (self *CSV) parseFieldConfig(fields string) {
 	}
 }
 
-func (self *CSV) Parse(line string) Record {
-	record := make(Record)
+func (self *CSV) Parse(line string) intf.Record {
+	record := make(intf.Record)
 	chars := []byte(line)
 
 	max := len(self.fields)

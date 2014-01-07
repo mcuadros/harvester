@@ -1,7 +1,7 @@
 package format
 
 import (
-	. "harvesterd/intf"
+	"harvesterd/intf"
 	"regexp"
 )
 
@@ -28,11 +28,11 @@ func (self *RegExp) SetConfig(config *RegExpConfig) {
 	self.format = NewFormatHelper(config.Format)
 }
 
-func (self *RegExp) Parse(line string) Record {
+func (self *RegExp) Parse(line string) intf.Record {
 	names := self.regexp.SubexpNames()
 	values := self.regexp.FindStringSubmatch(line)
 
-	record := make(Record)
+	record := make(intf.Record)
 	for index, value := range values {
 		if names[index] != "" {
 			field := names[index]

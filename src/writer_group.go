@@ -1,11 +1,11 @@
 package harvesterd
 
 import (
-	. "harvesterd/intf"
+	"harvesterd/intf"
 )
 
 type WriterGroup struct {
-	writers []Writer
+	writers []intf.Writer
 }
 
 func NewWriterGroup() *WriterGroup {
@@ -14,7 +14,7 @@ func NewWriterGroup() *WriterGroup {
 	return writerGroup
 }
 
-func (self *WriterGroup) SetWriters(writers []Writer) {
+func (self *WriterGroup) SetWriters(writers []intf.Writer) {
 	self.writers = writers
 }
 

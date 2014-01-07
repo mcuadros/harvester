@@ -1,7 +1,7 @@
 package processor
 
 import (
-	. "harvesterd/intf"
+	"harvesterd/intf"
 	"runtime"
 	"sync"
 )
@@ -18,13 +18,13 @@ func (s *MetricsSuite) TestDoCount(c *C) {
 	config := MetricsConfig{Metrics: "(terms)foo,(histogram)qux", Flush: 1}
 	processor := NewMetrics(&config)
 
-	channel := make(chan Record, 1)
+	channel := make(chan intf.Record, 1)
 	processor.SetChannel(channel)
 
 	var wait sync.WaitGroup
 	var add = func() {
 		for i := 0; i < 10000; i++ {
-			processor.Do(Record{"foo": "bar", "qux": 1})
+			processor.Do(intf.Record{"foo": "bar", "qux": 1})
 		}
 
 		wait.Done()
@@ -38,7 +38,7 @@ func (s *MetricsSuite) TestDoCount(c *C) {
 	wait.Add(count)
 	wait.Wait()
 
-	processor.Do(Record{"foo": "qux"})
+	processor.Do(intf.Record{"foo": "qux"})
 	processor.Teardown()
 
 	record := <-channel

@@ -2,7 +2,7 @@ package harvesterd
 
 import (
 	"fmt"
-	. "harvesterd/intf"
+	"harvesterd/intf"
 	"strconv"
 	"time"
 )
@@ -18,7 +18,7 @@ func (s *WriterSuite) TestWriteFromChannelSingleOutput(c *C) {
 	output.Return = true
 
 	writer := NewWriter()
-	writer.SetOutputs([]Output{output})
+	writer.SetOutputs([]intf.Output{output})
 	writer.SetThreads(1)
 	writer.Setup()
 	writer.Boot()
@@ -26,7 +26,7 @@ func (s *WriterSuite) TestWriteFromChannelSingleOutput(c *C) {
 	recordChan, closeChan := writer.GetChannels()
 	go func() {
 		for i := 0; i < 10; i++ {
-			recordChan <- Record{"foo": fmt.Sprintf("%d", i)}
+			recordChan <- intf.Record{"foo": fmt.Sprintf("%d", i)}
 		}
 
 		close(recordChan)
@@ -54,7 +54,7 @@ func (s *WriterSuite) TestWriteFromChannelMultipleOutput(c *C) {
 	outputf.Return = false
 
 	writer := NewWriter()
-	writer.SetOutputs([]Output{outputw, outputf})
+	writer.SetOutputs([]intf.Output{outputw, outputf})
 	writer.SetThreads(1)
 	writer.Setup()
 	writer.Boot()
@@ -63,7 +63,7 @@ func (s *WriterSuite) TestWriteFromChannelMultipleOutput(c *C) {
 	go func() {
 
 		for i := 0; i < 10; i++ {
-			recordChan <- Record{"foo": fmt.Sprintf("%d", i)}
+			recordChan <- intf.Record{"foo": fmt.Sprintf("%d", i)}
 		}
 
 		close(recordChan)
@@ -92,7 +92,7 @@ func (s *WriterSuite) TestWriteIsAlive(c *C) {
 	outputf.Return = false
 
 	writer := NewWriter()
-	writer.SetOutputs([]Output{outputw, outputf})
+	writer.SetOutputs([]intf.Output{outputw, outputf})
 	writer.SetThreads(1)
 	writer.Setup()
 	writer.Boot()
@@ -114,7 +114,7 @@ type MockOutput struct {
 	Return bool
 }
 
-func (self *MockOutput) PutRecord(record Record) bool {
+func (self *MockOutput) PutRecord(record intf.Record) bool {
 	number, _ := strconv.Atoi(record["foo"].(string))
 	self.Count += number
 	return self.Return

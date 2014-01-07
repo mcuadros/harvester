@@ -2,7 +2,7 @@ package format
 
 import (
 	"encoding/json"
-	. "harvesterd/intf"
+	"harvesterd/intf"
 	. "harvesterd/logger"
 )
 
@@ -24,8 +24,8 @@ func (self *JSON) SetConfig(config *JSONConfig) {
 
 }
 
-func (self *JSON) Parse(line string) Record {
-	var record Record
+func (self *JSON) Parse(line string) intf.Record {
+	var record intf.Record
 
 	err := json.Unmarshal([]byte(line), &record)
 	if err != nil {

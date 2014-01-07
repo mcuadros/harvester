@@ -1,7 +1,7 @@
 package processor
 
 import (
-	. "harvesterd/intf"
+	"harvesterd/intf"
 	. "harvesterd/logger"
 	. "harvesterd/processor/metric"
 	"regexp"
@@ -19,12 +19,12 @@ type Metrics struct {
 	metrics []Metric
 	flush   time.Duration
 	mutex   sync.Mutex
-	channel chan Record
+	channel chan intf.Record
 	isAlive bool
 }
 
 type Metric interface {
-	Process(record Record)
+	Process(record intf.Record)
 	GetValue() interface{}
 	GetField() string
 	Reset()
@@ -45,7 +45,7 @@ func (self *Metrics) SetConfig(config *MetricsConfig) {
 	self.parseMetricsConfig(config.Metrics)
 }
 
-func (self *Metrics) SetChannel(channel chan Record) {
+func (self *Metrics) SetChannel(channel chan intf.Record) {
 	self.channel = channel
 }
 
@@ -76,7 +76,7 @@ func (self *Metrics) parseMetric(metric string) (class string, field string) {
 	return config[1], config[2]
 }
 
-func (self *Metrics) Do(record Record) bool {
+func (self *Metrics) Do(record intf.Record) bool {
 	self.mutex.Lock()
 
 	for _, metric := range self.metrics {

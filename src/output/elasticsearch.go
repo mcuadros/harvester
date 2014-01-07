@@ -3,7 +3,7 @@ package output
 import (
 	"encoding/json"
 	"fmt"
-	. "harvesterd/intf"
+	"harvesterd/intf"
 	. "harvesterd/logger"
 	"io/ioutil"
 	"net/http"
@@ -38,7 +38,7 @@ func (self *Elasticsearch) SetConfig(config *ElasticsearchConfig) {
 	self.url = self.getIndexURL()
 }
 
-func (self *Elasticsearch) PutRecord(record Record) bool {
+func (self *Elasticsearch) PutRecord(record intf.Record) bool {
 	buffer := strings.NewReader(self.encodeToJSON(record))
 	transport := &http.Transport{ResponseHeaderTimeout: time.Second * 45}
 	client := &http.Client{Transport: transport}
@@ -67,7 +67,7 @@ func (self *Elasticsearch) PutRecord(record Record) bool {
 	return false
 }
 
-func (self *Elasticsearch) encodeToJSON(record Record) string {
+func (self *Elasticsearch) encodeToJSON(record intf.Record) string {
 	json, err := json.MarshalIndent(record, " ", "    ")
 	if err != nil {
 		Error("JSON Error %s", err)

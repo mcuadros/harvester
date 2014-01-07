@@ -1,7 +1,7 @@
 package harvesterd
 
 import (
-	. "harvesterd/intf"
+	"harvesterd/intf"
 	"sync"
 )
 
@@ -15,9 +15,9 @@ type Reader struct {
 	recordsChan   RecordsChan
 	closeChan     CloseChan
 	counter       int32
-	inputs        []Input
+	inputs        []intf.Input
 	hasProcessors bool
-	processors    []PostProcessor
+	processors    []intf.PostProcessor
 }
 
 func NewReader() *Reader {
@@ -26,11 +26,11 @@ func NewReader() *Reader {
 	return reader
 }
 
-func (self *Reader) SetInputs(inputs []Input) {
+func (self *Reader) SetInputs(inputs []intf.Input) {
 	self.inputs = inputs
 }
 
-func (self *Reader) SetProcessors(processors []PostProcessor) {
+func (self *Reader) SetProcessors(processors []intf.PostProcessor) {
 	if len(processors) > 0 {
 		self.hasProcessors = true
 	}
@@ -60,7 +60,7 @@ func (self *Reader) doReadIntoChannel() {
 	self.closeChan <- true
 }
 
-func (self *Reader) readInputIntoChannel(input Input) {
+func (self *Reader) readInputIntoChannel(input intf.Input) {
 	for !input.IsEOF() {
 		record := input.GetRecord()
 		self.emitRecord(record)
@@ -69,7 +69,7 @@ func (self *Reader) readInputIntoChannel(input Input) {
 	self.wait.Done()
 }
 
-func (self *Reader) emitRecord(record Record) {
+func (self *Reader) emitRecord(record intf.Record) {
 	if len(record) > 0 {
 		if self.applyProcessors(record) {
 			self.recordsChan <- record
@@ -87,7 +87,7 @@ func (self *Reader) setChannelToProcessors() {
 	}
 }
 
-func (self *Reader) applyProcessors(record Record) bool {
+func (self *Reader) applyProcessors(record intf.Record) bool {
 	if self.hasProcessors {
 		for _, proc := range self.processors {
 			if proc.Do(record) == false {

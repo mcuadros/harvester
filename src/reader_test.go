@@ -2,7 +2,7 @@ package harvesterd
 
 import (
 	"fmt"
-	. "harvesterd/intf"
+	"harvesterd/intf"
 	"strconv"
 )
 
@@ -17,7 +17,7 @@ func (s *ReaderSuite) TestReadIntoChannelSingleInput(c *C) {
 	closeChan := make(CloseChan, 1)
 
 	input := new(MockInput)
-	inputs := []Input{input}
+	inputs := []intf.Input{input}
 
 	reader := NewReader()
 	reader.SetInputs(inputs)
@@ -46,14 +46,14 @@ func (s *ReaderSuite) TestReadIntoChannelWithProcessors(c *C) {
 	closeChan := make(CloseChan, 1)
 
 	input := new(MockInput)
-	inputs := []Input{input}
+	inputs := []intf.Input{input}
 
 	processor := new(MockProcessor)
 	processor.Value = 10
 
 	reader := NewReader()
 	reader.SetInputs(inputs)
-	reader.SetProcessors([]PostProcessor{processor})
+	reader.SetProcessors([]intf.PostProcessor{processor})
 	reader.SetChannels(recordsChan, closeChan)
 	reader.GoRead()
 
@@ -83,7 +83,7 @@ func (s *ReaderSuite) TestReadIntoChannelMultipleInputs(c *C) {
 	inputC := new(MockInput)
 	inputD := new(MockInput)
 
-	inputs := []Input{inputA, inputB, inputC, inputD}
+	inputs := []intf.Input{inputA, inputB, inputC, inputD}
 
 	reader := NewReader()
 	reader.SetInputs(inputs)
@@ -121,10 +121,10 @@ func (self *MockInput) GetLine() string {
 	return string("foo")
 }
 
-func (self *MockInput) GetRecord() Record {
+func (self *MockInput) GetRecord() intf.Record {
 	line := self.GetLine()
 
-	return Record{"line": line}
+	return intf.Record{"line": line}
 }
 
 func (self *MockInput) IsEOF() bool {
@@ -143,13 +143,13 @@ type MockProcessor struct {
 	Count int
 }
 
-func (self *MockProcessor) SetChannel(recordsChan chan Record) {
+func (self *MockProcessor) SetChannel(recordsChan chan intf.Record) {
 }
 
 func (self *MockProcessor) Teardown() {
 }
 
-func (self *MockProcessor) Do(record Record) bool {
+func (self *MockProcessor) Do(record intf.Record) bool {
 	self.Count++
 
 	number, _ := strconv.Atoi(record["line"].(string))

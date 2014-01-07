@@ -1,7 +1,7 @@
 package processor
 
 import (
-	. "harvesterd/intf"
+	"harvesterd/intf"
 	"testing"
 )
 
@@ -18,10 +18,10 @@ func (s *AnonymizeSuite) TestDoDefault(c *C) {
 	config := AnonymizeConfig{Fields: "foo"}
 	processor := NewAnonymize(&config)
 
-	recordA := Record{"foo": "bar"}
+	recordA := intf.Record{"foo": "bar"}
 	processor.Do(recordA)
 
-	recordB := Record{"foo": "qux"}
+	recordB := intf.Record{"foo": "qux"}
 	processor.Do(recordB)
 
 	c.Check(recordA["foo"], Equals, "37b51d194a7513e45b56f6524f2d51f2")
@@ -32,10 +32,10 @@ func (s *AnonymizeSuite) TestDoSHA1(c *C) {
 	config := AnonymizeConfig{Fields: "foo", Hash: "sha1"}
 	processor := NewAnonymize(&config)
 
-	recordA := Record{"foo": "bar"}
+	recordA := intf.Record{"foo": "bar"}
 	processor.Do(recordA)
 
-	recordB := Record{"foo": "qux"}
+	recordB := intf.Record{"foo": "qux"}
 	processor.Do(recordB)
 
 	c.Check(recordA["foo"], Equals, "62cdb7020ff920e5aa642c3d4066950dd1f01f4d")
@@ -46,7 +46,7 @@ func (s *AnonymizeSuite) TestDoEmailSupport(c *C) {
 	config := AnonymizeConfig{Fields: "foo", EmailSupport: true}
 	processor := NewAnonymize(&config)
 
-	record := Record{"foo": "bar@qux"}
+	record := intf.Record{"foo": "bar@qux"}
 	processor.Do(record)
 
 	c.Check(record["foo"], Equals, "37b51d194a7513e45b56f6524f2d51f2@qux")
