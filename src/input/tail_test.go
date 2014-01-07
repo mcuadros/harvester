@@ -16,7 +16,7 @@ func (s *TailFileSuite) TestTailFile(c *C) {
 	config := TailConfig{File: "../../tests/resources/tail.b.txt"}
 
 	tail := NewTail(&config, new(MockFormat))
-	c.Check(tail.IsEOF(), Equals, false)
+	c.Assert(tail.IsEOF(), Equals, false)
 
 	go func(tail *Tail) {
 		filename := "../../tests/resources/tail.b.txt"
@@ -56,7 +56,7 @@ func (s *TailFileSuite) TestTailFile(c *C) {
 	}
 
 	tail.Teardown()
-	c.Check(len(lines), Equals, 20)
+	c.Assert(len(lines), Equals, 20)
 }
 
 func (s *TailFileSuite) TestTailFileWithPos(c *C) {
@@ -64,7 +64,7 @@ func (s *TailFileSuite) TestTailFileWithPos(c *C) {
 	config := TailConfig{File: "../../tests/resources/tail.a.txt"}
 
 	tail := NewTail(&config, new(MockFormat))
-	c.Check(tail.IsEOF(), Equals, false)
+	c.Assert(tail.IsEOF(), Equals, false)
 
 	go func(tail *Tail) {
 		filename := "../../tests/resources/tail.a.txt"
@@ -89,5 +89,5 @@ func (s *TailFileSuite) TestTailFileWithPos(c *C) {
 	}
 
 	tail.Teardown()
-	c.Check(len(lines), Equals, 10)
+	c.Assert(len(lines), Equals, 10)
 }

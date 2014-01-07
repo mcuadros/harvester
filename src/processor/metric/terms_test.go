@@ -42,8 +42,8 @@ func (s *MetricsSuite) TestProcess(c *C) {
 	metric.Process(record)
 
 	result := metric.GetValue().(map[string]int)
-	c.Check(result["bar"], Equals, 50000)
-	c.Check(result["qux"], Equals, 1)
+	c.Assert(result["bar"], Equals, 50000)
+	c.Assert(result["qux"], Equals, 1)
 }
 
 func (s *MetricsSuite) TestProcessNonString(c *C) {
@@ -72,6 +72,6 @@ func (s *MetricsSuite) TestProcessNonString(c *C) {
 	metric.Process(record)
 
 	result := metric.GetValue().(map[string]int)
-	c.Check(result["bar"], Equals, 0)
-	c.Check(result["qux"], Equals, 1)
+	c.Assert(result["bar"], Equals, 0)
+	c.Assert(result["qux"], Equals, 1)
 }

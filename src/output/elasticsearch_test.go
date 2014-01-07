@@ -23,7 +23,7 @@ func (s *ElasticsearchSuite) TestGetRecord(c *C) {
 	record := intf.Record{"foo": "bar"}
 
 	go dummyServer(":9200", "/foo/bar")
-	c.Check(output.PutRecord(record), Equals, true)
+	c.Assert(output.PutRecord(record), Equals, true)
 }
 
 func parrotHandler(w http.ResponseWriter, r *http.Request) {

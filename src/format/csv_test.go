@@ -19,8 +19,8 @@ func (s *FormatCSVSuite) TestGetRecordDefaultSettings(c *C) {
 	format := NewCSV(&config)
 
 	record := format.Parse("baz,\"qux  \"")
-	c.Check(record["foo"], Equals, "baz")
-	c.Check(record["bar"], Equals, "qux  ")
+	c.Assert(record["foo"], Equals, "baz")
+	c.Assert(record["bar"], Equals, "qux  ")
 }
 
 func (s *FormatCSVSuite) TestGetRecordCustomeSettings(c *C) {
@@ -29,8 +29,8 @@ func (s *FormatCSVSuite) TestGetRecordCustomeSettings(c *C) {
 	format := NewCSV(&config)
 
 	record := format.Parse("baz;'qux  '")
-	c.Check(record["foo"], Equals, "baz")
-	c.Check(record["bar"], Equals, "qux")
+	c.Assert(record["foo"], Equals, "baz")
+	c.Assert(record["bar"], Equals, "qux")
 }
 
 func (s *FormatCSVSuite) TestGetRecordCustomeSettingsNotQuoted(c *C) {
@@ -39,8 +39,8 @@ func (s *FormatCSVSuite) TestGetRecordCustomeSettingsNotQuoted(c *C) {
 	format := NewCSV(&config)
 
 	record := format.Parse("baz,\"qux  \"")
-	c.Check(record["foo"], Equals, "baz")
-	c.Check(record["bar"], Equals, "\"qux  \"")
+	c.Assert(record["foo"], Equals, "baz")
+	c.Assert(record["bar"], Equals, "\"qux  \"")
 }
 
 func (s *FormatCSVSuite) TestGetRecordWithFormat(c *C) {
@@ -53,6 +53,6 @@ func (s *FormatCSVSuite) TestGetRecordWithFormat(c *C) {
 	format := NewCSV(&config)
 
 	record := format.Parse("1.2,\"qux  \"")
-	c.Check(record["foo"], Equals, 1.2)
-	c.Check(record["bar"], Equals, "\"qux  \"")
+	c.Assert(record["foo"], Equals, 1.2)
+	c.Assert(record["bar"], Equals, "\"qux  \"")
 }

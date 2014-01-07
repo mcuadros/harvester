@@ -18,5 +18,5 @@ func (s *FormatJSONSuite) TestGetRecord(c *C) {
 	fmt.Println(record)
 
 	foo := record["foo"].(map[string]interface{})
-	c.Check(foo["foo"], Equals, "bar")
+	c.Assert(foo["foo"], Equals, "bar")
 }

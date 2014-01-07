@@ -34,12 +34,12 @@ func (self *MongoSuite) TestGetRecord(c *C) {
 	output := NewMongo(&config)
 	record := intf.Record{"foo": "bar", "qux": "baz"}
 
-	c.Check(output.PutRecord(record), Equals, true)
+	c.Assert(output.PutRecord(record), Equals, true)
 
 	self.connect()
 	msg := self.getDocument(c)
-	c.Check(msg.Foo, Equals, "bar")
-	c.Check(msg.Qux, Equals, "baz")
+	c.Assert(msg.Foo, Equals, "bar")
+	c.Assert(msg.Qux, Equals, "baz")
 	self.deleteDocument()
 }
 
@@ -52,7 +52,7 @@ func (self *MongoSuite) getDocument(c *C) msg {
 	var msg msg
 	err := self.collection.Find(bson.M{}).One(&msg)
 	if err != nil {
-		c.Check(false, Equals, true)
+		c.Assert(false, Equals, true)
 	}
 
 	return msg

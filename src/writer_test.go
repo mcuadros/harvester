@@ -41,9 +41,9 @@ func (s *WriterSuite) TestWriteFromChannelSingleOutput(c *C) {
 	}
 
 	created, failed, _, _ := writer.GetCounters()
-	c.Check(created, Equals, int32(10))
-	c.Check(failed, Equals, int32(0))
-	c.Check(output.Count, Equals, 45)
+	c.Assert(created, Equals, int32(10))
+	c.Assert(failed, Equals, int32(0))
+	c.Assert(output.Count, Equals, 45)
 
 }
 
@@ -78,10 +78,10 @@ func (s *WriterSuite) TestWriteFromChannelMultipleOutput(c *C) {
 	}
 
 	created, failed, _, _ := writer.GetCounters()
-	c.Check(created, Equals, int32(10))
-	c.Check(failed, Equals, int32(10))
-	c.Check(outputw.Count, Equals, 45)
-	c.Check(outputf.Count, Equals, 45)
+	c.Assert(created, Equals, int32(10))
+	c.Assert(failed, Equals, int32(10))
+	c.Assert(outputw.Count, Equals, 45)
+	c.Assert(outputf.Count, Equals, 45)
 
 }
 
@@ -99,14 +99,14 @@ func (s *WriterSuite) TestWriteIsAlive(c *C) {
 
 	channel, _ := writer.GetChannels()
 
-	c.Check(writer.IsAlive(), Equals, true)
+	c.Assert(writer.IsAlive(), Equals, true)
 
 	time.Sleep(100 * time.Microsecond)
-	c.Check(writer.IsAlive(), Equals, true)
+	c.Assert(writer.IsAlive(), Equals, true)
 	close(channel)
 
 	time.Sleep(100 * time.Microsecond)
-	c.Check(writer.IsAlive(), Equals, false)
+	c.Assert(writer.IsAlive(), Equals, false)
 }
 
 type MockOutput struct {

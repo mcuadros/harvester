@@ -12,9 +12,9 @@ func (s *FormatRegExpSuite) TestGetRecord(c *C) {
 	format := NewRegExp(&config)
 
 	record := format.Parse("qux baz")
-	c.Check(record, HasLen, 2)
-	c.Check(record["foo"], Equals, "qux")
-	c.Check(record["bar"], Equals, "baz")
+	c.Assert(record, HasLen, 2)
+	c.Assert(record["foo"], Equals, "qux")
+	c.Assert(record["bar"], Equals, "baz")
 }
 
 func (s *FormatRegExpSuite) TestGetRecordWithFormat(c *C) {
@@ -26,7 +26,7 @@ func (s *FormatRegExpSuite) TestGetRecordWithFormat(c *C) {
 	format := NewRegExp(&config)
 
 	record := format.Parse("1 baz")
-	c.Check(record, HasLen, 2)
-	c.Check(record["foo"], Equals, 1)
-	c.Check(record["bar"], Equals, "baz")
+	c.Assert(record, HasLen, 2)
+	c.Assert(record["foo"], Equals, 1)
+	c.Assert(record["bar"], Equals, "baz")
 }

@@ -32,13 +32,13 @@ func (s *ReaderSuite) TestReadIntoChannelSingleInput(c *C) {
 
 	count := 0
 	for record := range recordsChan {
-		c.Check(record["line"], Equals, "foo")
+		c.Assert(record["line"], Equals, "foo")
 		count++
 	}
 
 	reader.Teardown()
-	c.Check(count, Equals, 4)
-	c.Check(input.Finished, Equals, true)
+	c.Assert(count, Equals, 4)
+	c.Assert(input.Finished, Equals, true)
 }
 
 func (s *ReaderSuite) TestReadIntoChannelWithProcessors(c *C) {
@@ -65,13 +65,13 @@ func (s *ReaderSuite) TestReadIntoChannelWithProcessors(c *C) {
 
 	count := 0
 	for record := range recordsChan {
-		c.Check(record["line"], Equals, "10")
+		c.Assert(record["line"], Equals, "10")
 		count++
 	}
 
 	reader.Teardown()
-	c.Check(count, Equals, 2)
-	c.Check(input.Finished, Equals, true)
+	c.Assert(count, Equals, 2)
+	c.Assert(input.Finished, Equals, true)
 }
 
 func (s *ReaderSuite) TestReadIntoChannelMultipleInputs(c *C) {
@@ -98,16 +98,16 @@ func (s *ReaderSuite) TestReadIntoChannelMultipleInputs(c *C) {
 
 	count := 0
 	for record := range recordsChan {
-		c.Check(record["line"], Equals, "foo")
+		c.Assert(record["line"], Equals, "foo")
 		count++
 	}
 
 	reader.Teardown()
-	c.Check(count, Equals, 16)
-	c.Check(inputA.Finished, Equals, true)
-	c.Check(inputB.Finished, Equals, true)
-	c.Check(inputC.Finished, Equals, true)
-	c.Check(inputD.Finished, Equals, true)
+	c.Assert(count, Equals, 16)
+	c.Assert(inputA.Finished, Equals, true)
+	c.Assert(inputB.Finished, Equals, true)
+	c.Assert(inputC.Finished, Equals, true)
+	c.Assert(inputD.Finished, Equals, true)
 }
 
 type MockInput struct {

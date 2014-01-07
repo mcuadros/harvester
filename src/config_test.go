@@ -35,8 +35,8 @@ func (s *CofigSuite) TestFormat(c *C) {
 
 	GetConfig().Load(raw)
 
-	c.Check(len(GetConfig().Reader["foo"].Input), Equals, 2)
-	c.Check(GetConfig().Format_CSV["foo"].Fields, Equals, "foo")
-	c.Check(GetConfig().Format_JSON, HasLen, 0)
+	c.Assert(len(GetConfig().Reader["foo"].Input), Equals, 2)
+	c.Assert(GetConfig().Format_CSV["foo"].Fields, Equals, "foo")
+	c.Assert(GetConfig().Format_JSON, HasLen, 0)
 
 }

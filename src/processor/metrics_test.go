@@ -42,6 +42,6 @@ func (s *MetricsSuite) TestDoCount(c *C) {
 	processor.Teardown()
 
 	record := <-channel
-	c.Check(record["foo"].(map[string]int)["bar"], Equals, 50000)
-	c.Check(record["qux"].(map[string]interface{})["count"], Equals, int64(50000))
+	c.Assert(record["foo"].(map[string]int)["bar"], Equals, 50000)
+	c.Assert(record["qux"].(map[string]interface{})["count"], Equals, int64(50000))
 }
