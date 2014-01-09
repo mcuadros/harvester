@@ -109,18 +109,16 @@ func (self *Writer) doWriteFromChannel() {
 
 func (self *Writer) writeRecordFromChannel(outputs []intf.Output, record intf.Record) {
 	for _, output := range outputs {
-		self.writeRecordIntoOutput(output, record, &wait)
+		self.writeRecordIntoOutput(output, record)
 	}
 }
 
-func (self *Writer) writeRecordIntoOutput(output intf.Output, record intf.Record, wait *sync.WaitGroup) {
+func (self *Writer) writeRecordIntoOutput(output intf.Output, record intf.Record) {
 	if output.PutRecord(record) {
 		self.created++
 	} else {
 		self.failed++
 	}
-
-	wait.Done()
 }
 
 func (self *Writer) GetCounters() (int32, int32, int32, int32) {
