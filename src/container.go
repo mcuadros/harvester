@@ -9,6 +9,8 @@ import (
 	"harvesterd/processor"
 )
 
+type OutputsFactory func() []intf.Output
+
 type Container struct {
 }
 
@@ -129,9 +131,13 @@ func (self *Container) GetWriter(key string) *Writer {
 		return nil
 	}
 
-	outputs := make([]intf.Output, len(config.Output))
-	for i, key := range config.Output {
-		outputs[i] = self.GetOutput(key)
+	outputsFactory := func() []intf.Output {
+		outputs := make([]intf.Output, len(config.Output))
+		for i, key := range config.Output {
+			outputs[i] = self.GetOutput(key)
+		}
+
+		return outputs
 	}
 
 	readers := make([]*Reader, len(config.Reader))
@@ -140,7 +146,7 @@ func (self *Container) GetWriter(key string) *Writer {
 	}
 
 	writer := NewWriter()
-	writer.SetOutputs(outputs)
+	writer.SetOutputsFactory(outputsFactory)
 	writer.SetReaders(readers)
 	writer.SetThreads(config.Threads)
 

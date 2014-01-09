@@ -18,7 +18,7 @@ type TailConfig struct {
 	File      string // File to be readed
 	MustExist bool   // Fail early if the file does not exist
 	Poll      bool   // Poll for file changes instead of using inotify
-	LimitRate int64  // Maximum read rate (lines per second)
+	LimitRate int64  // Maximum read rate (lines per second)ssh
 }
 
 type Tail struct {
@@ -45,6 +45,7 @@ func (self *Tail) SetFormat(format intf.Format) {
 
 func (self *Tail) SetConfig(config *TailConfig) {
 	self.file = config.File
+	Info(self.file)
 	self.posFile = fmt.Sprintf("%s/.%s.pos", path.Dir(self.file), path.Base(self.file))
 
 	self.createTailReader(self.translateConfig(config))

@@ -16,7 +16,7 @@ type WriterConfig struct {
 }
 
 type Writer struct {
-	outputs     []intf.Output
+	outputs     OutputsFactory
 	readers     []*Reader
 	failed      int32
 	created     int32
@@ -38,8 +38,8 @@ func (self *Writer) SetReaders(readers []*Reader) {
 	self.readers = readers
 }
 
-func (self *Writer) SetOutputs(outputs []intf.Output) {
-	self.outputs = outputs
+func (self *Writer) SetOutputsFactory(factory OutputsFactory) {
+	self.outputs = factory
 }
 
 func (self *Writer) SetThreads(threads int) {
@@ -99,17 +99,18 @@ func (self *Writer) goWaitForReadersClose() {
 }
 
 func (self *Writer) doWriteFromChannel() {
+	outputs := self.outputs()
 	for record := range self.recordsChan {
-		self.writeRecordFromChannel(record)
+		self.writeRecordFromChannel(outputs, record)
 	}
 
 	atomic.AddInt32(&self.threads, -1)
 }
 
-func (self *Writer) writeRecordFromChannel(record intf.Record) {
+func (self *Writer) writeRecordFromChannel(outputs []intf.Output, record intf.Record) {
 	var wait sync.WaitGroup
 
-	for _, output := range self.outputs {
+	for _, output := range outputs {
 		wait.Add(1)
 		go self.writeRecordIntoOutput(output, record, &wait)
 	}

@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"harvesterd/intf"
 	. "harvesterd/logger"
+	"io"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"strings"
 	"time"
@@ -24,6 +26,7 @@ type Elasticsearch struct {
 	created     int
 	transferred int
 	url         string
+	client      *http.Client
 }
 
 func NewElasticsearch(config *ElasticsearchConfig) *Elasticsearch {
@@ -36,31 +39,34 @@ func NewElasticsearch(config *ElasticsearchConfig) *Elasticsearch {
 func (self *Elasticsearch) SetConfig(config *ElasticsearchConfig) {
 	self.config = config
 	self.url = self.getIndexURL()
+
+	self.createHTTPClient()
+	Info("Created HTTP client")
+}
+
+func (self *Elasticsearch) createHTTPClient() {
+	var dialer = &net.Dialer{Timeout: 1 * time.Second}
+	var transport = &http.Transport{Dial: dialer.Dial}
+
+	self.client = &http.Client{Transport: transport}
 }
 
 func (self *Elasticsearch) PutRecord(record intf.Record) bool {
 	buffer := strings.NewReader(self.encodeToJSON(record))
-	transport := &http.Transport{ResponseHeaderTimeout: time.Second * 45}
-	client := &http.Client{Transport: transport}
 
 	req, err := http.NewRequest("POST", self.url, buffer)
-	req.Close = true
 	req.Header.Set("Content-Type", "application/json")
-	resp, err := client.Do(req)
+
+	resp, err := self.client.Do(req)
 	if err != nil {
 		Error("HTTP Error %s", err)
 		return false
 	}
 
-	defer resp.Body.Close()
+	io.Copy(ioutil.Discard, resp.Body)
+	resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Println(err)
-		return false
-	}
-
-	if len(body) > 0 && resp.StatusCode == http.StatusCreated {
+	if resp.StatusCode == http.StatusCreated {
 		return true
 	}
 
