@@ -108,8 +108,6 @@ func (self *Writer) doWriteFromChannel() {
 }
 
 func (self *Writer) writeRecordFromChannel(outputs []intf.Output, record intf.Record) {
-	var wait sync.WaitGroup
-
 	for _, output := range outputs {
 		self.writeRecordIntoOutput(output, record, &wait)
 	}
