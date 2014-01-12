@@ -18,7 +18,7 @@ func init() {
 
 func NewLogger(config *LoggerConfig) {
 	if config.Level == "debug" {
-		log.SetFlags(log.Ldate | log.Ltime | log.Lmicroseconds | log.Lshortfile)
+		log.SetFlags(log.Ldate | log.Ltime | log.Lmicroseconds)
 	} else {
 		log.SetFlags(log.Ldate | log.Ltime)
 	}

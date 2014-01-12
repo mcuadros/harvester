@@ -17,8 +17,13 @@ func (s *WriterSuite) TestWriteFromChannelSingleOutput(c *C) {
 	output := new(MockOutput)
 	output.Return = true
 
+	outputs := []intf.Output{output}
+	outputsFactory := func() []intf.Output {
+		return outputs
+	}
+
 	writer := NewWriter()
-	writer.SetOutputs([]intf.Output{output})
+	writer.SetOutputsFactory(outputsFactory)
 	writer.SetThreads(1)
 	writer.Setup()
 	writer.Boot()
@@ -53,8 +58,13 @@ func (s *WriterSuite) TestWriteFromChannelMultipleOutput(c *C) {
 	outputf := new(MockOutput)
 	outputf.Return = false
 
+	outputs := []intf.Output{outputw, outputf}
+	outputsFactory := func() []intf.Output {
+		return outputs
+	}
+
 	writer := NewWriter()
-	writer.SetOutputs([]intf.Output{outputw, outputf})
+	writer.SetOutputsFactory(outputsFactory)
 	writer.SetThreads(1)
 	writer.Setup()
 	writer.Boot()
@@ -91,8 +101,13 @@ func (s *WriterSuite) TestWriteIsAlive(c *C) {
 	outputf := new(MockOutput)
 	outputf.Return = false
 
+	outputs := []intf.Output{outputw, outputf}
+	outputsFactory := func() []intf.Output {
+		return outputs
+	}
+
 	writer := NewWriter()
-	writer.SetOutputs([]intf.Output{outputw, outputf})
+	writer.SetOutputsFactory(outputsFactory)
 	writer.SetThreads(1)
 	writer.Setup()
 	writer.Boot()

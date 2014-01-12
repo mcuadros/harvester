@@ -8,7 +8,7 @@ import (
 	"os"
 	"path"
 	"strconv"
-	"sync"
+	"time"
 )
 
 import "github.com/ActiveState/tail"
@@ -22,21 +22,27 @@ type TailConfig struct {
 }
 
 type Tail struct {
-	tail    *tail.Tail
-	format  intf.Format
-	file    string
-	posFile string
-	counter int
-	eof     bool
-	wait    sync.WaitGroup
+	tail          *tail.Tail
+	format        intf.Format
+	file          string
+	posFile       string
+	eof           bool
+	needSavePos   bool
+	stopChannel   chan struct{}
+	savePosTicker *time.Ticker
 }
 
 func NewTail(config *TailConfig, format intf.Format) *Tail {
 	input := new(Tail)
 	input.SetConfig(config)
 	input.SetFormat(format)
+	input.Boot()
 
 	return input
+}
+
+func (self *Tail) Boot() {
+	self.goKeepPosition()
 }
 
 func (self *Tail) SetFormat(format intf.Format) {
@@ -106,9 +112,7 @@ func (self *Tail) readPosition() int64 {
 func (self *Tail) GetLine() string {
 	line, ok := (<-self.tail.Lines)
 	if ok {
-		self.counter++
-		self.wait.Add(1)
-		go self.keepPosition()
+		self.needSavePos = true
 		return line.Text
 	} else {
 		self.eof = true
@@ -125,13 +129,29 @@ func (self *Tail) GetRecord() intf.Record {
 	return nil
 }
 
-func (self *Tail) keepPosition() {
-	if self.counter >= 1 {
-		position, _ := self.tail.Tell()
-		ioutil.WriteFile(self.posFile, []byte(strconv.FormatInt(position, 10)), 0755)
-	}
+func (self *Tail) goKeepPosition() {
+	self.savePosTicker = time.NewTicker(1 * time.Second)
+	self.stopChannel = make(chan struct{})
 
-	self.wait.Done()
+	go func() {
+		for {
+			select {
+			case <-self.savePosTicker.C:
+				if self.needSavePos {
+					self.keepPosition()
+					self.needSavePos = false
+				}
+			case <-self.stopChannel:
+				self.savePosTicker.Stop()
+				return
+			}
+		}
+	}()
+}
+
+func (self *Tail) keepPosition() {
+	position, _ := self.tail.Tell()
+	ioutil.WriteFile(self.posFile, []byte(strconv.FormatInt(position, 10)), 0755)
 }
 
 func (self *Tail) IsEOF() bool {
@@ -139,9 +159,10 @@ func (self *Tail) IsEOF() bool {
 }
 
 func (self *Tail) Stop() {
+	self.keepPosition()
 	self.tail.Stop()
 }
 
 func (self *Tail) Teardown() {
-	self.wait.Wait()
+	close(self.stopChannel)
 }
