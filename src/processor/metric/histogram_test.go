@@ -1,6 +1,7 @@
 package metric
 
 import (
+	"flag"
 	. "harvesterd/intf"
 	"math"
 	"runtime"
@@ -13,16 +14,19 @@ import . "launchpad.net/gocheck"
 type HistogramSuite struct{}
 
 var _ = Suite(&HistogramSuite{})
+var noTravis = flag.Bool("noTravis", false, "Not in travis flag")
 
 func (s *HistogramSuite) TestProcessInt(c *C) {
+	if !*noTravis {
+		c.Skip("-noTravis not provided")
+	}
+
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	metric := NewHistogram("foo")
 
 	var wait sync.WaitGroup
 	var add = func() {
-		time.Sleep(1000 * time.Microsecond)
-
 		for i := 1; i <= 10000; i++ {
 			metric.Process(Record{"foo": i})
 		}
@@ -53,14 +57,16 @@ func (s *HistogramSuite) TestProcessInt(c *C) {
 }
 
 func (s *HistogramSuite) TestProcessFloat64(c *C) {
+	if !*noTravis {
+		c.Skip("-noTravis not provided")
+	}
+
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	metric := NewHistogram("foo")
 
 	var wait sync.WaitGroup
 	var add = func() {
-		time.Sleep(1000 * time.Microsecond)
-
 		for i := 1; i <= 10000; i++ {
 			metric.Process(Record{"foo": float64(i) / 1000.0})
 		}

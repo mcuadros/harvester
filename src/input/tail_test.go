@@ -92,7 +92,7 @@ func (s *TailFileSuite) TestTailFileWithPos(c *C) {
 	}
 
 	tail.Teardown()
-	c.Assert(len(lines), Equals, 11)
+	c.Assert(len(lines), Equals, 10)
 }
 
 func (s *TailFileSuite) TestTailFileDelete(c *C) {
