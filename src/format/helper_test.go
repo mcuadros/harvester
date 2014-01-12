@@ -47,8 +47,8 @@ func (s *FormatHelperSuite) TestFormatString(c *C) {
 }
 
 func (s *FormatHelperSuite) TestFormatTime(c *C) {
-	helper := NewFormatHelper("(time:\"Jan 2, 2006 at 3:04pm (MST)\")bar,(int)foo")
+	helper := NewFormatHelper("(time:\"Jan 2, 2006 at 3:04pm -0700\")bar,(int)foo")
 
-	result := helper.Format("bar", "Jul 9, 2012 at 5:02am (CEST)")
+	result := helper.Format("bar", "Jul 9, 2012 at 5:02am +0200")
 	c.Assert(result.(time.Time).Unix(), Equals, int64(1341802920))
 }

@@ -45,7 +45,7 @@ func (s *TailFileSuite) TestTailFile(c *C) {
 		os.Remove(filename)
 		os.Remove(pos)
 
-		time.Sleep(100 * time.Microsecond)
+		time.Sleep(10000 * time.Microsecond)
 		tail.Stop()
 	}(tail)
 
@@ -71,14 +71,15 @@ func (s *TailFileSuite) TestTailFileWithPos(c *C) {
 	go func(tail *Tail) {
 		filename := "../../tests/resources/tail.a.txt"
 
-		time.Sleep(100 * time.Microsecond)
+		time.Sleep(1000 * time.Microsecond)
 		file, _ := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0600)
 
 		for i := 0; i < 10; i++ {
-			time.Sleep(1000 * time.Microsecond)
+			time.Sleep(100 * time.Microsecond)
 			io.WriteString(file, "foo\n")
 		}
 
+		time.Sleep(10000 * time.Microsecond)
 		tail.Stop()
 	}(tail)
 
@@ -115,7 +116,7 @@ func (s *TailFileSuite) TestTailFileDelete(c *C) {
 		}
 
 		os.Remove(filename)
-		time.Sleep(1000 * time.Microsecond)
+		time.Sleep(10000 * time.Microsecond)
 
 		tail.Stop()
 	}(tail)
@@ -127,6 +128,8 @@ func (s *TailFileSuite) TestTailFileDelete(c *C) {
 			lines = append(lines, line)
 		}
 	}
+
+	time.Sleep(10000 * time.Microsecond)
 
 	positionRaw, _ := ioutil.ReadFile(pos)
 	os.Remove(pos)

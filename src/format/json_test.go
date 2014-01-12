@@ -1,9 +1,6 @@
 package format
 
 import . "launchpad.net/gocheck"
-import (
-	"fmt"
-)
 
 type FormatJSONSuite struct{}
 
@@ -15,7 +12,6 @@ func (s *FormatJSONSuite) TestGetRecord(c *C) {
 	format := NewJSON(&config)
 
 	record := format.Parse("{\"foo\":{\"foo\":\"bar\",\"bar\":\"qux\"}}")
-	fmt.Println(record)
 
 	foo := record["foo"].(map[string]interface{})
 	c.Assert(foo["foo"], Equals, "bar")
