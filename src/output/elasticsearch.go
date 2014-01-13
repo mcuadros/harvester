@@ -2,6 +2,7 @@ package output
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"harvesterd/intf"
 	. "harvesterd/logger"
@@ -11,6 +12,11 @@ import (
 	"net/http"
 	"strings"
 	"time"
+)
+
+var (
+	httpNonCreatedCode = errors.New("http: received != 201 status code")
+	httpNetworkError   = errors.New("http: network error")
 )
 
 type ElasticsearchConfig struct {
@@ -41,7 +47,6 @@ func (self *Elasticsearch) SetConfig(config *ElasticsearchConfig) {
 	self.url = self.getIndexURL()
 
 	self.createHTTPClient()
-	Info("Created HTTP client")
 }
 
 func (self *Elasticsearch) createHTTPClient() {
@@ -54,23 +59,50 @@ func (self *Elasticsearch) createHTTPClient() {
 func (self *Elasticsearch) PutRecord(record intf.Record) bool {
 	buffer := strings.NewReader(self.encodeToJSON(record))
 
+	retryCount := 0
+	retry := true
+	for retry {
+		retryCount++
+
+		err, ctx := self.makeRequest(buffer)
+		switch err {
+		case httpNetworkError:
+			Debug("%s, retrying", ctx)
+			retry = true
+			break
+		case httpNonCreatedCode:
+			Error("%s: received %d", httpNonCreatedCode, ctx)
+			return false
+		case nil:
+			return true
+		}
+
+		if retryCount >= 10 {
+			Error("retry limit reached, network issues")
+			return false
+		}
+	}
+
+	return false
+}
+
+func (self *Elasticsearch) makeRequest(buffer *strings.Reader) (error, interface{}) {
 	req, err := http.NewRequest("POST", self.url, buffer)
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := self.client.Do(req)
 	if err != nil {
-		Error("HTTP Error %s", err)
-		return false
+		return httpNetworkError, err
 	}
 
 	io.Copy(ioutil.Discard, resp.Body)
 	resp.Body.Close()
 
-	if resp.StatusCode == http.StatusCreated {
-		return true
+	if resp.StatusCode != http.StatusCreated {
+		return httpNonCreatedCode, nil
 	}
 
-	return false
+	return nil, nil
 }
 
 func (self *Elasticsearch) encodeToJSON(record intf.Record) string {

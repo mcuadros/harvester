@@ -2,13 +2,17 @@ package harvesterd
 
 import (
 	. "harvesterd/logger"
-
+	"os"
+	"os/signal"
 	"runtime"
+	"syscall"
 	"time"
 )
 
 type Harvesterd struct {
-	writerGroup *WriterGroup
+	writerGroup  *WriterGroup
+	signsChannel chan os.Signal
+	isAlive      bool
 }
 
 func NewHarvesterd() *Harvesterd {
@@ -22,9 +26,24 @@ func (self *Harvesterd) Configure(filename string) {
 }
 
 func (self *Harvesterd) Boot() {
+	self.isAlive = true
 	self.configureLogger()
 	self.configureMaxProcs()
+	self.bootSignalWaiter()
 	self.bootWriter()
+}
+
+func (self *Harvesterd) bootSignalWaiter() {
+	self.signsChannel = make(chan os.Signal, 1)
+
+	signal.Notify(self.signsChannel, syscall.SIGINT, syscall.SIGTERM)
+	go self.signalWaiter()
+}
+
+func (self *Harvesterd) signalWaiter() {
+	signal := <-self.signsChannel
+	Warning("Received signal: %s", signal)
+	self.isAlive = false
 }
 
 func (self *Harvesterd) configureLogger() {
@@ -48,7 +67,7 @@ func (self *Harvesterd) Run() {
 }
 
 func (self *Harvesterd) wait() {
-	for self.writerGroup.IsAlive() {
+	for self.writerGroup.IsAlive() && self.isAlive {
 		time.Sleep(1 * time.Second)
 		self.PrintCounters(1)
 	}
@@ -60,7 +79,7 @@ func (self *Harvesterd) PrintCounters(elapsedSeconds int) {
 	created, failed, _, threads := self.writerGroup.GetCounters()
 	self.writerGroup.ResetCounters()
 
-	logFormat := "Created %d document(s), failed %d times(s), %g doc/sec in %d thread(s)"
+	logFormat := "processed %d document(s), failed %d times(s), %g doc/sec in %d thread(s)"
 
 	rate := float64(created+failed) / float64(elapsedSeconds)
 	Info(logFormat, created, failed, rate, threads)

@@ -58,7 +58,6 @@ func (self *Tail) SetConfig(config *TailConfig) {
 }
 
 func (self *Tail) createTailReader(config tail.Config) {
-
 	tail, err := tail.TailFile(self.file, config)
 	if err != nil {
 		Critical("tail %s: %v", self.file, err)

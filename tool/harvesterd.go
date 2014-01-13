@@ -37,7 +37,7 @@ func main() {
 
 func help() {
 	fmt.Printf("\033[1mharvesterd (%s)\033[0m\n", version)
-	fmt.Printf("Low footprint harvesterd and parser for events and logs\n")
+	fmt.Printf("Low footprint collector and parser for events and logs\n")
 	fmt.Printf("Máximo Cuadros Ortiz <mcuadros@gmail.com>\n\n")
 
 	fmt.Printf("Usage:\n")
