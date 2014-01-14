@@ -1,13 +1,12 @@
 package harvesterd
 
 import (
-	"fmt"
 	"harvesterd/format"
 	"harvesterd/input"
 	"harvesterd/logger"
 	"harvesterd/output"
 	"harvesterd/processor"
-	"os"
+	"reflect"
 )
 
 import "code.google.com/p/gcfg"
@@ -30,6 +29,19 @@ type Config struct {
 	Processor_Metrics    map[string]*processor.MetricsConfig
 }
 
+type Definition struct {
+	Name          string
+	AllowMultiple bool
+	Fields        []*FieldDefinition
+}
+
+type FieldDefinition struct {
+	Name        string
+	Type        string
+	Description string
+	Default     string
+}
+
 var configInstance *Config = new(Config)
 
 func GetConfig() *Config {
@@ -39,15 +51,65 @@ func GetConfig() *Config {
 func (self *Config) Load(ini string) {
 	err := gcfg.ReadStringInto(self, ini)
 	if err != nil {
-		fmt.Println("error: cannot parse config", err)
-		os.Exit(1)
+		logger.Critical("error: cannot parse config", err)
 	}
 }
 
 func (self *Config) LoadFile(filename string) {
 	err := gcfg.ReadFileInto(self, filename)
 	if err != nil {
-		fmt.Println("erro:", err)
-		os.Exit(1)
+		logger.Critical("erro:", err)
 	}
+}
+
+func (self *Config) GetDescription() []*Definition {
+	typeObject := reflect.TypeOf(configInstance).Elem()
+
+	fields := self.getFieldsFromType(typeObject)
+	definitions := make([]*Definition, len(fields))
+	for index, field := range fields {
+		definitions[index] = self.processField(field)
+	}
+
+	return definitions
+}
+
+func (self *Config) getFieldsFromType(typeObject reflect.Type) []reflect.StructField {
+	typeObject.NumField()
+
+	count := typeObject.NumField()
+	results := make([]reflect.StructField, count)
+	for i := 0; i < count; i++ {
+		results[i] = typeObject.Field(i)
+	}
+
+	return results
+}
+
+func (self *Config) processField(field reflect.StructField) *Definition {
+	def := new(Definition)
+
+	var typeObject reflect.Type
+
+	switch field.Type.Kind() {
+	case reflect.Ptr:
+		typeObject = field.Type.Elem()
+		def.AllowMultiple = false
+	case reflect.Map:
+		typeObject = field.Type.Elem().Elem()
+		def.AllowMultiple = true
+	}
+
+	def.Name = field.Name
+
+	for _, field := range self.getFieldsFromType(typeObject) {
+		def.Fields = append(def.Fields, &FieldDefinition{
+			Name:        field.Name,
+			Type:        field.Type.String(),
+			Default:     field.Tag.Get("default"),
+			Description: field.Tag.Get("description"),
+		})
+	}
+
+	return def
 }
