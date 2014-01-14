@@ -14,11 +14,11 @@ import (
 import "github.com/ActiveState/tail"
 
 type TailConfig struct {
-	Format    string
-	File      string // File to be readed
-	MustExist bool   // Fail early if the file does not exist
-	Poll      bool   // Poll for file changes instead of using inotify
-	LimitRate int64  // Maximum read rate (lines per second)ssh
+	Format    string `description:"A valid format name"`
+	File      string `description:"File to be readed"`
+	MustExist bool   `description:"Fail early if the file does not exist"`
+	Poll      bool   `description:"Poll for file changes instead of using inotify"`
+	LimitRate int64  `description:"Maximum read rate (lines per second)"`
 }
 
 type Tail struct {

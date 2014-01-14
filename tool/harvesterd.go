@@ -4,13 +4,22 @@ import (
 	"flag"
 	"fmt"
 	. "harvesterd"
+	"os"
+	"text/template"
 )
+
+// Define a template.
+const configurationTemplate = `[{{.Name}}{{if .AllowMultiple}} "name"{{end}}]{{range .Fields}}
+-{{.Name}} (type:{{.Type}}{{if .Default}}, default: {{.Default}}{{end}}): {{.Description}}{{end}}
+
+`
 
 type Options struct {
 	configFile string
 	verbose    bool
 	debug      bool
 	help       bool
+	spec       string
 }
 
 var version string
@@ -20,19 +29,23 @@ func init() {
 	flag.StringVar(&options.configFile, "config", "/etc/harvesterd.conf", "config filename")
 	flag.BoolVar(&options.verbose, "verbose", false, "raise log level to verbose")
 	flag.BoolVar(&options.debug, "debug", false, "raise log level to debug")
-	flag.BoolVar(&options.help, "help", false, "help display this help")
+	flag.BoolVar(&options.help, "help", false, "display this help")
+	flag.StringVar(&options.spec, "spec", "", "display the specs for any config group, 'all' returns all the groups")
 
 	flag.Usage = help
 }
 
 func main() {
 	flag.Parse()
-	if options.help {
-		help()
-		return
-	}
 
-	run()
+	switch {
+	case options.help:
+		help()
+	case len(options.spec) != 0:
+		spec(options.spec)
+	default:
+		run()
+	}
 }
 
 func help() {
@@ -42,6 +55,32 @@ func help() {
 
 	fmt.Printf("Usage:\n")
 	flag.PrintDefaults()
+}
+
+func spec(group string) {
+	template := template.Must(template.New("tmpl").Parse(configurationTemplate))
+
+	any := false
+	if group == "all" {
+		any = true
+	}
+
+	definitions := GetConfig().GetDescription()
+	found := false
+	for _, definition := range definitions {
+		if definition.Name == group || any {
+			err := template.Execute(os.Stdout, definition)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "executing template:", err)
+			}
+
+			found = true
+		}
+	}
+
+	if !found {
+		fmt.Fprintf(os.Stderr, "unable to find spec for '%s'", group)
+	}
 }
 
 func run() {

@@ -7,6 +7,7 @@ import (
 	"harvesterd/output"
 	"harvesterd/processor"
 	"reflect"
+	"strings"
 )
 
 import "code.google.com/p/gcfg"
@@ -100,11 +101,11 @@ func (self *Config) processField(field reflect.StructField) *Definition {
 		def.AllowMultiple = true
 	}
 
-	def.Name = field.Name
+	def.Name = strings.Replace(strings.ToLower(field.Name), "_", "-", -1)
 
 	for _, field := range self.getFieldsFromType(typeObject) {
 		def.Fields = append(def.Fields, &FieldDefinition{
-			Name:        field.Name,
+			Name:        strings.ToLower(field.Name),
 			Type:        field.Type.String(),
 			Default:     field.Tag.Get("default"),
 			Description: field.Tag.Get("description"),
