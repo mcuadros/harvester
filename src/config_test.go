@@ -44,13 +44,13 @@ func (s *CofigSuite) TestLoad(c *C) {
 func (s *CofigSuite) TestGetDescription(c *C) {
 	definition := GetConfig().GetDescription()
 
-	c.Assert(definition, HasLen, 15)
+	c.Assert(definition, HasLen, 16)
 
-	c.Assert(definition[0].Name, Equals, "Logger")
+	c.Assert(definition[0].Name, Equals, "logger")
 	c.Assert(definition[0].AllowMultiple, Equals, false)
-	c.Assert(definition[0].Fields[0].Name, Equals, "Level")
-	c.Assert(definition[0].Fields[0].Default, Equals, "info")
+	c.Assert(definition[0].Fields[0].Name, Equals, "level")
+	c.Assert(definition[0].Fields[0].Default, Equals, "")
 
-	c.Assert(definition[1].Name, Equals, "Writer")
+	c.Assert(definition[1].Name, Equals, "writer")
 	c.Assert(definition[1].AllowMultiple, Equals, true)
 }

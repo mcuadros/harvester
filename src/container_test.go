@@ -66,20 +66,25 @@ func (s *ContainerSuite) TestGetFormat(c *C) {
 
 func (s *ContainerSuite) TestGetOutput(c *C) {
 	var raw = string(`
-		[output-elasticsearch "bar"]
+		[output-elasticsearch "es"]
 		host = foo
 
-		[output-mongo "foo"]
+		[output-mongo "mongo"]
 		url = mongodb://localhost
 
-		[output-dummy "qux"]
+		[output-http "http"]
+		url = http://localhost
+
+		[output-dummy "dummy"]
 		print = true
 	`)
 
 	GetConfig().Load(raw)
-	c.Assert(GetContainer().GetOutput("qux"), FitsTypeOf, &output.Dummy{})
-	c.Assert(GetContainer().GetOutput("foo"), FitsTypeOf, &output.Mongo{})
-	c.Assert(GetContainer().GetOutput("bar"), FitsTypeOf, &output.Elasticsearch{})
+	c.Assert(GetContainer().GetOutput("dummy"), FitsTypeOf, &output.Dummy{})
+	c.Assert(GetContainer().GetOutput("mongo"), FitsTypeOf, &output.Mongo{})
+	c.Assert(GetContainer().GetOutput("es"), FitsTypeOf, &output.Elasticsearch{})
+	c.Assert(GetContainer().GetOutput("http"), FitsTypeOf, &output.HTTP{})
+
 }
 
 func (s *ContainerSuite) TestGetReader(c *C) {

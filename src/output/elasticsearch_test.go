@@ -2,8 +2,6 @@ package output
 
 import (
 	"harvesterd/intf"
-	"io/ioutil"
-	"net/http"
 	"testing"
 )
 
@@ -16,26 +14,22 @@ type ElasticsearchSuite struct{}
 
 var _ = Suite(&ElasticsearchSuite{})
 
-func (s *ElasticsearchSuite) TestGetRecord(c *C) {
-	config := ElasticsearchConfig{Host: "localhost", Port: 9200, Index: "foo", Type: "bar"}
+func (s *ElasticsearchSuite) TestGetRecordDefault(c *C) {
+	config := ElasticsearchConfig{Index: "foo", Type: "qux"}
 
 	output := NewElasticsearch(&config)
 	record := intf.Record{"foo": "bar"}
 
-	go dummyServer(":9200", "/foo/bar")
+	go dummyServer(c, ":9200", "/foo/qux", "application/json", "POST", "{\n     \"foo\": \"bar\"\n }")
 	c.Assert(output.PutRecord(record), Equals, true)
 }
 
-func parrotHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
-		body, _ := ioutil.ReadAll(r.Body)
+func (s *ElasticsearchSuite) TestGetRecordConfig(c *C) {
+	config := ElasticsearchConfig{Host: "127.0.0.1", Port: 9300, Index: "foo", Type: "bar"}
 
-		w.WriteHeader(http.StatusCreated)
-		w.Write(body)
-	}
-}
+	output := NewElasticsearch(&config)
+	record := intf.Record{"foo": "bar"}
 
-func dummyServer(server, path string) {
-	http.HandleFunc(path, parrotHandler)
-	http.ListenAndServe(server, nil)
+	go dummyServer(c, ":9300", "/foo/bar", "application/json", "POST", "{\n     \"foo\": \"bar\"\n }")
+	c.Assert(output.PutRecord(record), Equals, true)
 }

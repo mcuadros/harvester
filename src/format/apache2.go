@@ -1,7 +1,7 @@
 package format
 
 type Apache2Config struct {
-	Type string
+	Type string `description:"type of the log to parse (common, combined or error)"`
 }
 
 const apache2commonRegExp = "^(?P<host>[\\d.]+) (?P<identd>\\S+) (?P<user>\\S+) \\[(?P<time>[\\w:/]+\\s[+\\-]\\d{4})\\] \"(?P<method>\\S+) (?P<path>\\S+) (?P<version>.+?)\" (?P<status>\\d{3}) (?P<size>\\d+)$"

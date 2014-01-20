@@ -91,6 +91,11 @@ func (self *Container) GetReader(key string) *Reader {
 }
 
 func (self *Container) GetOutput(key string) intf.Output {
+	httpConfig, ok := GetConfig().Output_HTTP[key]
+	if ok {
+		return output.NewHTTP(httpConfig)
+	}
+
 	esConfig, ok := GetConfig().Output_Elasticsearch[key]
 	if ok {
 		return output.NewElasticsearch(esConfig)

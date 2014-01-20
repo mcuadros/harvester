@@ -1,7 +1,7 @@
 package format
 
 type NginxConfig struct {
-	Type string
+	Type string `description:"type of the log to parse (combined or error)"`
 }
 
 const nginxErrorRegExp = "^(?P<time>[\\d+/ :]+) \\[(?P<severity>.+)\\] .*?: (?P<message>.+), client: (?P<client>.+), server: (?P<server>.+), request: \"(?P<method>\\S+) (?P<path>\\S+) (?P<version>.+?)\", host: \"(?P<host>.+)\"$"
