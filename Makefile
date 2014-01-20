@@ -2,7 +2,8 @@
 PACKAGE = harvesterd
 HOMEPAGE = https://github.com/mcuadros/harvesterd
 DESCRIPTION = low footprint collector and parser for events and logs
-SUBPACKAGES = harvesterd/input \
+SUBPACKAGES = harvesterd/util \
+harvesterd/input \
 harvesterd/output \
 harvesterd/format \
 harvesterd/processor \
@@ -17,6 +18,7 @@ github.com/ActiveState/tail \
 github.com/mcuadros/go-syslog \
 github.com/mcuadros/go-defaults \
 github.com/rcrowley/go-metrics \
+github.com/stretchr/objx \
 github.com/ajg/form \
 labix.org/v2/mgo \
 labix.org/v2/mgo/bson

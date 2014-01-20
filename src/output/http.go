@@ -5,6 +5,7 @@ import (
 	"errors"
 	"harvesterd/intf"
 	. "harvesterd/logger"
+	"harvesterd/util"
 	"io"
 	"io/ioutil"
 	"net"
@@ -31,7 +32,8 @@ type HTTPConfig struct {
 }
 
 type HTTP struct {
-	url         string
+	url         *util.Template
+	headers     map[string]*util.Template
 	format      string
 	contentType string
 	method      string
@@ -39,7 +41,6 @@ type HTTP struct {
 	failed      int
 	created     int
 	transferred int
-	headers     map[string]string
 	client      *http.Client
 }
 
@@ -53,7 +54,7 @@ func NewHTTP(config *HTTPConfig) *HTTP {
 func (self *HTTP) SetConfig(config *HTTPConfig) {
 	defaults.SetDefaults(config)
 
-	self.url = config.Url
+	self.url = util.NewTemplate(config.Url)
 	self.format = config.Format
 	self.contentType = config.ContentType
 	self.method = config.Method
@@ -63,7 +64,7 @@ func (self *HTTP) SetConfig(config *HTTPConfig) {
 }
 
 func (self *HTTP) parseHeadersConfig(headers []string) {
-	self.headers = make(map[string]string, len(headers))
+	self.headers = make(map[string]*util.Template, len(headers))
 
 	for _, headerRaw := range headers {
 		header := strings.Split(headerRaw, ",")
@@ -71,7 +72,7 @@ func (self *HTTP) parseHeadersConfig(headers []string) {
 			Critical("Malformed header setting '%s'", header)
 		}
 
-		self.headers[header[0]] = header[1]
+		self.headers[header[0]] = util.NewTemplate(header[1])
 	}
 }
 
@@ -88,8 +89,7 @@ func (self *HTTP) PutRecord(record intf.Record) bool {
 	for retry {
 		retryCount++
 
-		buffer := strings.NewReader(self.encode(record))
-		err, ctx := self.makeRequest(buffer)
+		err, ctx := self.makeRequest(record)
 
 		switch err {
 		case httpNetworkError:
@@ -112,15 +112,16 @@ func (self *HTTP) PutRecord(record intf.Record) bool {
 	return false
 }
 
-func (self *HTTP) makeRequest(buffer *strings.Reader) (error, interface{}) {
-	req, err := http.NewRequest(self.method, self.url, buffer)
+func (self *HTTP) makeRequest(record intf.Record) (error, interface{}) {
+	buffer := strings.NewReader(self.encode(record))
+	req, err := http.NewRequest(self.method, self.url.Apply(record), buffer)
 
 	if self.contentType != "" {
 		req.Header.Set("Content-Type", self.contentType)
 	}
 
 	for header, value := range self.headers {
-		req.Header.Add(header, value)
+		req.Header.Add(header, value.Apply(record))
 	}
 
 	resp, err := self.client.Do(req)

@@ -24,6 +24,18 @@ func (s *HTTPSuite) TestGetRecordDefault(c *C) {
 	c.Assert(output.PutRecord(record), Equals, true)
 }
 
+func (s *HTTPSuite) TestGetRecordTemplatedURL(c *C) {
+	config := HTTPConfig{
+		Url: `http://localhost:9200/%{foo}/a`,
+	}
+
+	output := NewHTTP(&config)
+	record := intf.Record{"foo": "bar"}
+
+	go dummyServer(c, ":9200", "/bar/a", "application/x-www-form-urlencoded", "POST", "foo=bar")
+	c.Assert(output.PutRecord(record), Equals, true)
+}
+
 func (s *HTTPSuite) TestGetRecordPOStJson(c *C) {
 	config := HTTPConfig{
 		Url:         "http://localhost:9200/foo/b",
