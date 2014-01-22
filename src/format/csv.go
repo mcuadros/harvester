@@ -76,9 +76,13 @@ func (self *CSV) Parse(line string) intf.Record {
 			}
 
 			field := self.fields[index]
-			record[field] = self.format.Format(field, string(value))
-			value = make([]byte, 0)
 			index++
+
+			if field != "_" {
+				record[field] = self.format.Format(field, string(value))
+			}
+
+			value = make([]byte, 0)
 
 			if index >= max {
 				break

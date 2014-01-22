@@ -15,7 +15,7 @@ type Template struct {
 	isEmpty  bool
 }
 
-var tokenRegexp = regexp.MustCompile(`%{(\w+)}`)
+var tokenRegexp = regexp.MustCompile(`%{([\w.]+)}`)
 
 func NewTemplate(template string) *Template {
 	tmpl := &Template{template: template}

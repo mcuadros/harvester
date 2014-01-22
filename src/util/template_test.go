@@ -21,6 +21,13 @@ func (s *TemplateSuite) TestApplyWithString(c *C) {
 	c.Assert(template.Apply(record), Equals, "foo qux --- ")
 }
 
+func (s *TemplateSuite) TestApplyWithMap(c *C) {
+	template := NewTemplate(`foo %{bar.foo}`)
+
+	record := intf.Record{"bar": map[string]interface{}{"foo": "qux"}}
+	c.Assert(template.Apply(record), Equals, "foo qux")
+}
+
 func (s *TemplateSuite) TestApplyWithInt(c *C) {
 	template := NewTemplate(`%{int} %{int8} %{int16} %{int32} %{int64}`)
 

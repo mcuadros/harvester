@@ -59,6 +59,7 @@ func (self *HTTP) SetConfig(config *HTTPConfig) {
 	self.contentType = config.ContentType
 	self.method = config.Method
 	self.timeout = time.Duration(config.Timeout)
+	self.parseHeadersConfig(config.Header)
 
 	self.createHTTPClient()
 }
@@ -113,15 +114,16 @@ func (self *HTTP) PutRecord(record intf.Record) bool {
 }
 
 func (self *HTTP) makeRequest(record intf.Record) (error, interface{}) {
+	url := self.url.Apply(record)
 	buffer := strings.NewReader(self.encode(record))
-	req, err := http.NewRequest(self.method, self.url.Apply(record), buffer)
+	req, err := http.NewRequest(self.method, url, buffer)
 
 	if self.contentType != "" {
 		req.Header.Set("Content-Type", self.contentType)
 	}
 
 	for header, value := range self.headers {
-		req.Header.Add(header, value.Apply(record))
+		req.Header.Set(header, value.Apply(record))
 	}
 
 	resp, err := self.client.Do(req)
@@ -130,9 +132,12 @@ func (self *HTTP) makeRequest(record intf.Record) (error, interface{}) {
 	}
 
 	io.Copy(ioutil.Discard, resp.Body)
+	//body, _ := ioutil.ReadAll(resp.Body)
+	//fmt.Println(record, url, resp, string(body))
 	resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		print(resp.StatusCode)
 		return httpNonOkCode, nil
 	}
 

@@ -56,3 +56,15 @@ func (s *FormatCSVSuite) TestGetRecordWithFormat(c *C) {
 	c.Assert(record["foo"], Equals, 1.2)
 	c.Assert(record["bar"], Equals, "\"qux  \"")
 }
+
+func (s *FormatCSVSuite) TestGetRecordWithDiscard(c *C) {
+	config := CSVConfig{
+		Fields: "_,foo",
+	}
+
+	format := NewCSV(&config)
+
+	record := format.Parse("1.2,a")
+	c.Assert(record, HasLen, 1)
+	c.Assert(record["foo"], Equals, "a")
+}
