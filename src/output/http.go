@@ -131,14 +131,16 @@ func (self *HTTP) makeRequest(record intf.Record) (error, interface{}) {
 		return httpNetworkError, err
 	}
 
-	io.Copy(ioutil.Discard, resp.Body)
-	//body, _ := ioutil.ReadAll(resp.Body)
-	//fmt.Println(record, url, resp, string(body))
-	resp.Body.Close()
+	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		print(resp.StatusCode)
+		body, _ := ioutil.ReadAll(resp.Body)
+		Debug("Url %s / StatusCode %d", url, resp.StatusCode)
+		Debug("Request %s / Response %s", resp, string(body))
+
 		return httpNonOkCode, nil
+	} else {
+		io.Copy(ioutil.Discard, resp.Body)
 	}
 
 	return nil, nil
