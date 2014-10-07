@@ -2,9 +2,9 @@ package output
 
 import (
 	"fmt"
-)
 
-import "github.com/mcuadros/go-defaults"
+	"github.com/mcuadros/go-defaults"
+)
 
 type ElasticsearchConfig struct {
 	Host    string `default:"localhost" description:"elastic host port "`

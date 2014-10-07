@@ -9,10 +9,10 @@ import (
 	"path"
 	"strconv"
 	"time"
-)
 
-import "github.com/ActiveState/tail"
-import "github.com/ActiveState/tail/ratelimiter"
+	"github.com/ActiveState/tail"
+	"github.com/ActiveState/tail/ratelimiter"
+)
 
 type TailConfig struct {
 	Format    string `description:"A valid format name"`

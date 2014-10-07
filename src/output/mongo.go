@@ -3,6 +3,7 @@ package output
 import (
 	"harvesterd/intf"
 	. "harvesterd/logger"
+
 	"labix.org/v2/mgo"
 )
 

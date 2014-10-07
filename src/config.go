@@ -8,9 +8,9 @@ import (
 	"harvesterd/processor"
 	"reflect"
 	"strings"
-)
 
-import "code.google.com/p/gcfg"
+	"code.google.com/p/gcfg"
+)
 
 type Config struct {
 	Logger               *logger.LoggerConfig

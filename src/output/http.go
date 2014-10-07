@@ -12,10 +12,10 @@ import (
 	"net/http"
 	"strings"
 	"time"
-)
 
-import "github.com/ajg/form"
-import "github.com/mcuadros/go-defaults"
+	"github.com/ajg/form"
+	"github.com/mcuadros/go-defaults"
+)
 
 var (
 	httpNonOkCode    = errors.New("http: received non 2xx status code")

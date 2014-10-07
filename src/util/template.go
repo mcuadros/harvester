@@ -5,9 +5,9 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-)
 
-import "github.com/stretchr/objx"
+	"github.com/stretchr/objx"
+)
 
 type Template struct {
 	template string
