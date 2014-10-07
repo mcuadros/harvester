@@ -12,6 +12,7 @@ import (
 )
 
 import "github.com/ActiveState/tail"
+import "github.com/ActiveState/tail/ratelimiter"
 
 type TailConfig struct {
 	Format    string `description:"A valid format name"`
@@ -78,7 +79,10 @@ func (self *Tail) translateConfig(original *TailConfig) tail.Config {
 	}
 
 	if original.LimitRate > 0 {
-		config.LimitRate = original.LimitRate
+		config.RateLimiter = ratelimiter.NewLeakyBucket(
+			uint16(original.LimitRate),
+			time.Second,
+		)
 	}
 
 	position := self.readPosition()
