@@ -28,18 +28,18 @@ func NewFormatHelper(config string) *FormatHelper {
 	return helper
 }
 
-func (self *FormatHelper) SetConfig(config string) {
-	self.parseFieldsConfig(config)
+func (h *FormatHelper) SetConfig(config string) {
+	h.parseFieldsConfig(config)
 }
 
-func (self *FormatHelper) parseFieldsConfig(config string) {
+func (h *FormatHelper) parseFieldsConfig(config string) {
 	for _, fieldConfig := range helperConfigGroupRegExp.FindAllStringSubmatch(config, -1) {
-		field, format, layout := self.parseField(fieldConfig[0])
-		self.fields[field] = &fieldFormat{format: format, layout: layout}
+		field, format, layout := h.parseField(fieldConfig[0])
+		h.fields[field] = &fieldFormat{format: format, layout: layout}
 	}
 }
 
-func (self *FormatHelper) parseField(fieldConfig string) (field string, format string, layout string) {
+func (h *FormatHelper) parseField(fieldConfig string) (field string, format string, layout string) {
 	config := helperConfigRegExp.FindStringSubmatch(fieldConfig)
 	if len(config) != 4 {
 		Critical("Malformed format config \"%s\"", fieldConfig)
@@ -59,32 +59,32 @@ func (self *FormatHelper) parseField(fieldConfig string) (field string, format s
 	return config[3], config[1], config[2]
 }
 
-func (self *FormatHelper) GetFields() map[string]*fieldFormat {
-	return self.fields
+func (h *FormatHelper) GetFields() map[string]*fieldFormat {
+	return h.fields
 }
 
-func (self *FormatHelper) Format(field, value string) interface{} {
-	if _, ok := self.fields[field]; !ok {
+func (h *FormatHelper) Format(field, value string) interface{} {
+	if _, ok := h.fields[field]; !ok {
 		return value
 	}
 
-	switch self.fields[field].format {
+	switch h.fields[field].format {
 	case "int":
-		return self.toInt(value)
+		return h.toInt(value)
 	case "float":
-		return self.toFloat(value)
+		return h.toFloat(value)
 	case "bool":
-		return self.toBool(value)
+		return h.toBool(value)
 	case "string":
-		return self.toString(value)
+		return h.toString(value)
 	case "time":
-		return self.toTime(value, self.fields[field].layout)
+		return h.toTime(value, h.fields[field].layout)
 	}
 
 	return value
 }
 
-func (self *FormatHelper) toInt(original string) int {
+func (h *FormatHelper) toInt(original string) int {
 	value, err := strconv.Atoi(strings.Trim(original, " \"'"))
 	if err != nil {
 		return 0
@@ -93,7 +93,7 @@ func (self *FormatHelper) toInt(original string) int {
 	return value
 }
 
-func (self *FormatHelper) toFloat(original string) float64 {
+func (h *FormatHelper) toFloat(original string) float64 {
 	original = strings.Trim(original, " \"'")
 	original = strings.Replace(original, ",", ".", -1)
 
@@ -105,7 +105,7 @@ func (self *FormatHelper) toFloat(original string) float64 {
 	return value
 }
 
-func (self *FormatHelper) toBool(original string) interface{} {
+func (h *FormatHelper) toBool(original string) interface{} {
 	value, err := strconv.ParseBool(strings.Trim(original, " \"'"))
 	if err != nil {
 		return nil
@@ -114,11 +114,11 @@ func (self *FormatHelper) toBool(original string) interface{} {
 	return value
 }
 
-func (self *FormatHelper) toString(original string) string {
+func (h *FormatHelper) toString(original string) string {
 	return strings.Trim(original, " ")
 }
 
-func (self *FormatHelper) toTime(original string, layout string) interface{} {
+func (h *FormatHelper) toTime(original string, layout string) interface{} {
 	value, err := time.Parse(layout, original)
 	if err != nil {
 		return nil

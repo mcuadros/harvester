@@ -51,21 +51,21 @@ func NewHTTP(config *HTTPConfig) *HTTP {
 	return output
 }
 
-func (self *HTTP) SetConfig(config *HTTPConfig) {
+func (o *HTTP) SetConfig(config *HTTPConfig) {
 	defaults.SetDefaults(config)
 
-	self.url = util.NewTemplate(config.Url)
-	self.format = config.Format
-	self.contentType = config.ContentType
-	self.method = config.Method
-	self.timeout = time.Duration(config.Timeout)
-	self.parseHeadersConfig(config.Header)
+	o.url = util.NewTemplate(config.Url)
+	o.format = config.Format
+	o.contentType = config.ContentType
+	o.method = config.Method
+	o.timeout = time.Duration(config.Timeout)
+	o.parseHeadersConfig(config.Header)
 
-	self.createHTTPClient()
+	o.createHTTPClient()
 }
 
-func (self *HTTP) parseHeadersConfig(headers []string) {
-	self.headers = make(map[string]*util.Template, len(headers))
+func (o *HTTP) parseHeadersConfig(headers []string) {
+	o.headers = make(map[string]*util.Template, len(headers))
 
 	for _, headerRaw := range headers {
 		header := strings.Split(headerRaw, ",")
@@ -73,24 +73,24 @@ func (self *HTTP) parseHeadersConfig(headers []string) {
 			Critical("Malformed header setting '%s'", header)
 		}
 
-		self.headers[header[0]] = util.NewTemplate(header[1])
+		o.headers[header[0]] = util.NewTemplate(header[1])
 	}
 }
 
-func (self *HTTP) createHTTPClient() {
-	var dialer = &net.Dialer{Timeout: self.timeout * time.Second}
+func (o *HTTP) createHTTPClient() {
+	var dialer = &net.Dialer{Timeout: o.timeout * time.Second}
 	var transport = &http.Transport{Dial: dialer.Dial}
 
-	self.client = &http.Client{Transport: transport}
+	o.client = &http.Client{Transport: transport}
 }
 
-func (self *HTTP) PutRecord(record intf.Record) bool {
+func (o *HTTP) PutRecord(record intf.Record) bool {
 	retryCount := 0
 	retry := true
 	for retry {
 		retryCount++
 
-		err, ctx := self.makeRequest(record)
+		err, ctx := o.makeRequest(record)
 
 		switch err {
 		case httpNetworkError:
@@ -113,20 +113,20 @@ func (self *HTTP) PutRecord(record intf.Record) bool {
 	return false
 }
 
-func (self *HTTP) makeRequest(record intf.Record) (error, interface{}) {
-	url := self.url.Apply(record)
-	buffer := strings.NewReader(self.encode(record))
-	req, err := http.NewRequest(self.method, url, buffer)
+func (o *HTTP) makeRequest(record intf.Record) (error, interface{}) {
+	url := o.url.Apply(record)
+	buffer := strings.NewReader(o.encode(record))
+	req, err := http.NewRequest(o.method, url, buffer)
 
-	if self.contentType != "" {
-		req.Header.Set("Content-Type", self.contentType)
+	if o.contentType != "" {
+		req.Header.Set("Content-Type", o.contentType)
 	}
 
-	for header, value := range self.headers {
+	for header, value := range o.headers {
 		req.Header.Set(header, value.Apply(record))
 	}
 
-	resp, err := self.client.Do(req)
+	resp, err := o.client.Do(req)
 	if err != nil {
 		return httpNetworkError, err
 	}
@@ -146,30 +146,30 @@ func (self *HTTP) makeRequest(record intf.Record) (error, interface{}) {
 	return nil, nil
 }
 
-func (self *HTTP) encode(record intf.Record) string {
-	switch self.format {
+func (o *HTTP) encode(record intf.Record) string {
+	switch o.format {
 	case "json":
-		return self.encodeToJSON(record)
+		return o.encodeToJSON(record)
 	case "form":
-		return self.encodeToForm(record)
+		return o.encodeToForm(record)
 	default:
-		Critical("Invalid encode format '%s'", self.format)
+		Critical("Invalid encode format '%s'", o.format)
 	}
 
 	return ""
 }
 
-func (self *HTTP) encodeToJSON(record intf.Record) string {
+func (o *HTTP) encodeToJSON(record intf.Record) string {
 	json, err := json.MarshalIndent(record, " ", "    ")
 	if err != nil {
 		Error("JSON Error %s", err)
 	}
 
-	self.transferred += len(json)
+	o.transferred += len(json)
 	return string(json)
 }
 
-func (self *HTTP) encodeToForm(record intf.Record) string {
+func (o *HTTP) encodeToForm(record intf.Record) string {
 	values, err := form.EncodeToValues(record)
 	if err != nil {
 		Error("Form Error %s", err)

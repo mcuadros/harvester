@@ -40,19 +40,19 @@ func NewMetrics(config *MetricsConfig) *Metrics {
 	return processor
 }
 
-func (self *Metrics) SetConfig(config *MetricsConfig) {
-	self.flush = time.Duration(config.Flush)
-	self.parseMetricsConfig(config.Metrics)
+func (p *Metrics) SetConfig(config *MetricsConfig) {
+	p.flush = time.Duration(config.Flush)
+	p.parseMetricsConfig(config.Metrics)
 }
 
-func (self *Metrics) SetChannel(channel chan intf.Record) {
-	self.channel = channel
+func (p *Metrics) SetChannel(channel chan intf.Record) {
+	p.channel = channel
 }
 
-func (self *Metrics) parseMetricsConfig(metricsConfig string) {
+func (p *Metrics) parseMetricsConfig(metricsConfig string) {
 	for _, config := range strings.Split(metricsConfig, ",") {
 		var metric Metric
-		class, field := self.parseMetric(config)
+		class, field := p.parseMetric(config)
 
 		switch class {
 		case "terms":
@@ -63,11 +63,11 @@ func (self *Metrics) parseMetricsConfig(metricsConfig string) {
 			Critical("Unknown metric \"%s\", valid: [terms histogram]", class)
 		}
 
-		self.metrics = append(self.metrics, metric)
+		p.metrics = append(p.metrics, metric)
 	}
 }
 
-func (self *Metrics) parseMetric(metric string) (class string, field string) {
+func (p *Metrics) parseMetric(metric string) (class string, field string) {
 	config := configRegExp.FindStringSubmatch(metric)
 	if len(config) != 3 {
 		Critical("Malformed metric config \"%s\"", metric)
@@ -76,43 +76,43 @@ func (self *Metrics) parseMetric(metric string) (class string, field string) {
 	return config[1], config[2]
 }
 
-func (self *Metrics) Do(record intf.Record) bool {
-	self.mutex.Lock()
+func (p *Metrics) Do(record intf.Record) bool {
+	p.mutex.Lock()
 
-	for _, metric := range self.metrics {
+	for _, metric := range p.metrics {
 		metric.Process(record)
 	}
 
-	self.mutex.Unlock()
+	p.mutex.Unlock()
 
 	return false
 }
 
-func (self *Metrics) Setup() {
-	self.isAlive = true
-	go self.deliveryRecord()
+func (p *Metrics) Setup() {
+	p.isAlive = true
+	go p.deliveryRecord()
 }
 
-func (self *Metrics) deliveryRecord() {
+func (p *Metrics) deliveryRecord() {
 	Debug("Started metrics routine")
 	for {
-		time.Sleep(self.flush * time.Second)
-		if self.isAlive {
-			self.flushMetrics()
+		time.Sleep(p.flush * time.Second)
+		if p.isAlive {
+			p.flushMetrics()
 		}
 	}
 }
 
-func (self *Metrics) flushMetrics() {
+func (p *Metrics) flushMetrics() {
 	var record = make(map[string]interface{})
-	for _, metric := range self.metrics {
+	for _, metric := range p.metrics {
 		record[metric.GetField()] = metric.GetValue()
 	}
 
-	self.channel <- record
+	p.channel <- record
 }
 
-func (self *Metrics) Teardown() {
-	self.isAlive = false
-	self.flushMetrics()
+func (p *Metrics) Teardown() {
+	p.isAlive = false
+	p.flushMetrics()
 }

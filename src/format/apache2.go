@@ -24,7 +24,7 @@ func NewApache2(config *Apache2Config) *Apache2 {
 	return format
 }
 
-func (self *Apache2) TransformConfig(config *Apache2Config) *RegExpConfig {
+func (f *Apache2) TransformConfig(config *Apache2Config) *RegExpConfig {
 
 	var pattern, format string
 	switch config.Type {

@@ -31,55 +31,55 @@ func NewCSV(config *CSVConfig) *CSV {
 	return format
 }
 
-func (self *CSV) SetConfig(config *CSVConfig) {
-	self.format = NewFormatHelper(config.Format)
-	self.parseFieldConfig(config.Fields)
+func (f *CSV) SetConfig(config *CSVConfig) {
+	f.format = NewFormatHelper(config.Format)
+	f.parseFieldConfig(config.Fields)
 
-	self.quoted = !config.NotQuoted
-	self.trim = config.Trim
+	f.quoted = !config.NotQuoted
+	f.trim = config.Trim
 
-	self.quote = config.Quote
-	if self.quote == 0 {
-		self.quote = '"'
+	f.quote = config.Quote
+	if f.quote == 0 {
+		f.quote = '"'
 	}
 
-	self.separator = config.Separator
-	if self.separator == 0 {
-		self.separator = ','
+	f.separator = config.Separator
+	if f.separator == 0 {
+		f.separator = ','
 	}
 }
 
-func (self *CSV) parseFieldConfig(fields string) {
+func (f *CSV) parseFieldConfig(fields string) {
 	for _, field := range strings.Split(fields, ",") {
-		self.fields = append(self.fields, field)
+		f.fields = append(f.fields, field)
 	}
 }
 
-func (self *CSV) Parse(line string) intf.Record {
+func (f *CSV) Parse(line string) intf.Record {
 	record := make(intf.Record)
 	chars := []byte(line)
 
-	max := len(self.fields)
+	max := len(f.fields)
 	index := 0
 	quoted := false
 	value := make([]byte, 0)
 	for _, char := range chars {
-		if self.quoted && char == self.quote {
+		if f.quoted && char == f.quote {
 			if !quoted {
 				quoted = true
 			} else {
 				quoted = false
 			}
-		} else if !quoted && char == self.separator {
-			if self.trim {
+		} else if !quoted && char == f.separator {
+			if f.trim {
 				value = trim(value)
 			}
 
-			field := self.fields[index]
+			field := f.fields[index]
 			index++
 
 			if field != "_" {
-				record[field] = self.format.Format(field, string(value))
+				record[field] = f.format.Format(field, string(value))
 			}
 
 			value = make([]byte, 0)
@@ -93,12 +93,12 @@ func (self *CSV) Parse(line string) intf.Record {
 	}
 
 	if max > index {
-		if self.trim {
+		if f.trim {
 			value = trim(value)
 		}
 
-		field := self.fields[index]
-		record[field] = self.format.Format(field, string(value))
+		field := f.fields[index]
+		record[field] = f.format.Format(field, string(value))
 	}
 
 	return record

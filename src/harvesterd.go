@@ -21,63 +21,63 @@ func NewHarvesterd() *Harvesterd {
 	return harvesterd
 }
 
-func (self *Harvesterd) Configure(filename string) {
+func (h *Harvesterd) Configure(filename string) {
 	GetConfig().LoadFile(filename)
 }
 
-func (self *Harvesterd) Boot() {
-	self.isAlive = true
-	self.configureLogger()
-	self.configureMaxProcs()
-	self.bootSignalWaiter()
-	self.bootWriter()
+func (h *Harvesterd) Boot() {
+	h.isAlive = true
+	h.configureLogger()
+	h.configureMaxProcs()
+	h.bootSignalWaiter()
+	h.bootWriter()
 }
 
-func (self *Harvesterd) bootSignalWaiter() {
-	self.signsChannel = make(chan os.Signal, 1)
+func (h *Harvesterd) bootSignalWaiter() {
+	h.signsChannel = make(chan os.Signal, 1)
 
-	signal.Notify(self.signsChannel, syscall.SIGINT, syscall.SIGTERM)
-	go self.signalWaiter()
+	signal.Notify(h.signsChannel, syscall.SIGINT, syscall.SIGTERM)
+	go h.signalWaiter()
 }
 
-func (self *Harvesterd) signalWaiter() {
-	signal := <-self.signsChannel
+func (h *Harvesterd) signalWaiter() {
+	signal := <-h.signsChannel
 	Warning("Received signal: %s", signal)
-	self.isAlive = false
+	h.isAlive = false
 }
 
-func (self *Harvesterd) configureLogger() {
+func (h *Harvesterd) configureLogger() {
 	Info("Starting ...")
 }
 
-func (self *Harvesterd) configureMaxProcs() {
+func (h *Harvesterd) configureMaxProcs() {
 	Info("Number of max. process %d", runtime.NumCPU())
 	runtime.GOMAXPROCS(runtime.NumCPU())
 }
 
-func (self *Harvesterd) bootWriter() {
-	self.writerGroup = GetContainer().GetWriterGroup()
+func (h *Harvesterd) bootWriter() {
+	h.writerGroup = GetContainer().GetWriterGroup()
 }
 
-func (self *Harvesterd) Run() {
-	self.writerGroup.Setup()
-	self.writerGroup.Boot()
-	self.wait()
-	self.writerGroup.Teardown()
+func (h *Harvesterd) Run() {
+	h.writerGroup.Setup()
+	h.writerGroup.Boot()
+	h.wait()
+	h.writerGroup.Teardown()
 }
 
-func (self *Harvesterd) wait() {
-	for self.writerGroup.IsAlive() && self.isAlive {
+func (h *Harvesterd) wait() {
+	for h.writerGroup.IsAlive() && h.isAlive {
 		time.Sleep(1 * time.Second)
-		self.PrintCounters(1)
+		h.PrintCounters(1)
 	}
 
 	Info("nothing more for read, terminating daemon ...")
 }
 
-func (self *Harvesterd) PrintCounters(elapsedSeconds int) {
-	created, failed, _, threads := self.writerGroup.GetCounters()
-	self.writerGroup.ResetCounters()
+func (h *Harvesterd) PrintCounters(elapsedSeconds int) {
+	created, failed, _, threads := h.writerGroup.GetCounters()
+	h.writerGroup.ResetCounters()
 
 	logFormat := "processed %d document(s), failed %d times(s), %g doc/sec in %d thread(s)"
 

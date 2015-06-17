@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-import . "launchpad.net/gocheck"
+import . "gopkg.in/check.v1"
 
 type ReaderSuite struct{}
 

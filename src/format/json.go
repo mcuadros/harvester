@@ -20,11 +20,11 @@ func NewJSON(config *JSONConfig) *JSON {
 	return format
 }
 
-func (self *JSON) SetConfig(config *JSONConfig) {
+func (f *JSON) SetConfig(config *JSONConfig) {
 
 }
 
-func (self *JSON) Parse(line string) intf.Record {
+func (f *JSON) Parse(line string) intf.Record {
 	var record intf.Record
 
 	err := json.Unmarshal([]byte(line), &record)

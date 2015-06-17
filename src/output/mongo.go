@@ -34,30 +34,30 @@ func NewMongo(config *MongoConfig) *Mongo {
 	return output
 }
 
-func (self *Mongo) SetConfig(config *MongoConfig) {
-	self.url = config.Url
-	self.dbName = config.Database
-	self.collectionName = config.Collection
-	self.safe = config.Safe
+func (o *Mongo) SetConfig(config *MongoConfig) {
+	o.url = config.Url
+	o.dbName = config.Database
+	o.collectionName = config.Collection
+	o.safe = config.Safe
 }
 
-func (self *Mongo) Connect() {
-	Debug("Connecting to mongo server '%s' ...", self.url)
-	session, err := mgo.Dial(self.url)
+func (o *Mongo) Connect() {
+	Debug("Connecting to mongo server '%s' ...", o.url)
+	session, err := mgo.Dial(o.url)
 	if err != nil {
 		Critical("Can't connect to mongo, go error %v\n", err)
 	}
 
-	self.session = session
-	if self.safe {
-		self.session.SetSafe(&mgo.Safe{})
+	o.session = session
+	if o.safe {
+		o.session.SetSafe(&mgo.Safe{})
 	}
 
-	self.collection = self.session.DB(self.dbName).C(self.collectionName)
+	o.collection = o.session.DB(o.dbName).C(o.collectionName)
 }
 
-func (self *Mongo) PutRecord(record intf.Record) bool {
-	err := self.collection.Insert(record)
+func (o *Mongo) PutRecord(record intf.Record) bool {
+	err := o.collection.Insert(record)
 	if err != nil {
 		Error("Can't insert record in mogo: %v\n", err)
 		return false

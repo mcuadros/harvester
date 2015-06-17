@@ -2,11 +2,12 @@ package output
 
 import (
 	"harvesterd/intf"
+
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
 )
 
-import . "launchpad.net/gocheck"
+import . "gopkg.in/check.v1"
 
 type msg struct {
 	Id  bson.ObjectId `bson:"_id"`

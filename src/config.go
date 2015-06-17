@@ -50,33 +50,33 @@ func GetConfig() *Config {
 	return configInstance
 }
 
-func (self *Config) Load(ini string) {
-	err := gcfg.ReadStringInto(self, ini)
+func (c *Config) Load(ini string) {
+	err := gcfg.ReadStringInto(c, ini)
 	if err != nil {
 		logger.Critical("error: cannot parse config", err)
 	}
 }
 
-func (self *Config) LoadFile(filename string) {
-	err := gcfg.ReadFileInto(self, filename)
+func (c *Config) LoadFile(filename string) {
+	err := gcfg.ReadFileInto(c, filename)
 	if err != nil {
 		logger.Critical("erro:", err)
 	}
 }
 
-func (self *Config) GetDescription() []*Definition {
+func (c *Config) GetDescription() []*Definition {
 	typeObject := reflect.TypeOf(configInstance).Elem()
 
-	fields := self.getFieldsFromType(typeObject)
+	fields := c.getFieldsFromType(typeObject)
 	definitions := make([]*Definition, len(fields))
 	for index, field := range fields {
-		definitions[index] = self.processField(field)
+		definitions[index] = c.processField(field)
 	}
 
 	return definitions
 }
 
-func (self *Config) getFieldsFromType(typeObject reflect.Type) []reflect.StructField {
+func (c *Config) getFieldsFromType(typeObject reflect.Type) []reflect.StructField {
 	typeObject.NumField()
 
 	count := typeObject.NumField()
@@ -88,7 +88,7 @@ func (self *Config) getFieldsFromType(typeObject reflect.Type) []reflect.StructF
 	return results
 }
 
-func (self *Config) processField(field reflect.StructField) *Definition {
+func (c *Config) processField(field reflect.StructField) *Definition {
 	def := new(Definition)
 
 	var typeObject reflect.Type
@@ -104,7 +104,7 @@ func (self *Config) processField(field reflect.StructField) *Definition {
 
 	def.Name = strings.Replace(strings.ToLower(field.Name), "_", "-", -1)
 
-	for _, field := range self.getFieldsFromType(typeObject) {
+	for _, field := range c.getFieldsFromType(typeObject) {
 		def.Fields = append(def.Fields, &FieldDefinition{
 			Name:        strings.ToLower(field.Name),
 			Type:        field.Type.String(),

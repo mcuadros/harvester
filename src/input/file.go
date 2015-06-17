@@ -29,27 +29,27 @@ func NewFile(config *FileConfig, format intf.Format) *File {
 	return input
 }
 
-func (self *File) SetFormat(format intf.Format) {
-	self.format = format
+func (i *File) SetFormat(format intf.Format) {
+	i.format = format
 }
 
-func (self *File) SetConfig(config *FileConfig) {
+func (i *File) SetConfig(config *FileConfig) {
 	files, err := filepath.Glob(config.Pattern)
 	if err != nil {
 		Critical("open %s: %v", config.Pattern, err)
 	}
 
 	for _, file := range files {
-		self.files = append(self.files, self.createBufioReader(file))
+		i.files = append(i.files, i.createBufioReader(file))
 	}
 
-	if len(self.files) == 0 {
-		self.empty = true
-		self.eof = true
+	if len(i.files) == 0 {
+		i.empty = true
+		i.eof = true
 	}
 }
 
-func (self *File) createBufioReader(filename string) *bufio.Scanner {
+func (i *File) createBufioReader(filename string) *bufio.Scanner {
 	file, err := os.Open(filename)
 	if err != nil {
 		Critical("open %s: %v", filename, err)
@@ -58,41 +58,41 @@ func (self *File) createBufioReader(filename string) *bufio.Scanner {
 	return bufio.NewScanner(file)
 }
 
-func (self *File) GetLine() string {
-	if !self.empty && self.scan() {
-		return self.files[self.current].Text()
+func (i *File) GetLine() string {
+	if !i.empty && i.scan() {
+		return i.files[i.current].Text()
 	}
 
 	return ""
 }
 
-func (self *File) GetRecord() intf.Record {
-	line := self.GetLine()
+func (i *File) GetRecord() intf.Record {
+	line := i.GetLine()
 	if line != "" {
-		return self.format.Parse(line)
+		return i.format.Parse(line)
 	}
 
 	return nil
 }
 
-func (self *File) scan() bool {
-	if !self.files[self.current].Scan() {
-		self.current++
+func (i *File) scan() bool {
+	if !i.files[i.current].Scan() {
+		i.current++
 
-		if self.current >= len(self.files) {
-			self.eof = true
+		if i.current >= len(i.files) {
+			i.eof = true
 			return false
 		}
 
-		return self.scan()
+		return i.scan()
 	}
 
 	return true
 }
 
-func (self *File) IsEOF() bool {
-	return self.eof
+func (i *File) IsEOF() bool {
+	return i.eof
 }
 
-func (self *File) Teardown() {
+func (i *File) Teardown() {
 }

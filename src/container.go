@@ -20,7 +20,7 @@ func GetContainer() *Container {
 	return containerInstance
 }
 
-func (self *Container) GetFormat(key string) intf.Format {
+func (c *Container) GetFormat(key string) intf.Format {
 	jsonConfig, ok := GetConfig().Format_JSON[key]
 	if ok {
 		return format.NewJSON(jsonConfig)
@@ -50,16 +50,16 @@ func (self *Container) GetFormat(key string) intf.Format {
 	return nil
 }
 
-func (self *Container) GetInput(key string) intf.Input {
+func (c *Container) GetInput(key string) intf.Input {
 	fileConfig, ok := GetConfig().Input_File[key]
 	if ok {
-		format := self.GetFormat(fileConfig.Format)
+		format := c.GetFormat(fileConfig.Format)
 		return input.NewFile(fileConfig, format)
 	}
 
 	tailConfig, ok := GetConfig().Input_Tail[key]
 	if ok {
-		format := self.GetFormat(tailConfig.Format)
+		format := c.GetFormat(tailConfig.Format)
 		return input.NewTail(tailConfig, format)
 	}
 
@@ -67,7 +67,7 @@ func (self *Container) GetInput(key string) intf.Input {
 	return nil
 }
 
-func (self *Container) GetReader(key string) *Reader {
+func (c *Container) GetReader(key string) *Reader {
 	config, ok := GetConfig().Reader[key]
 	if !ok {
 		return nil
@@ -75,12 +75,12 @@ func (self *Container) GetReader(key string) *Reader {
 
 	inputs := make([]intf.Input, len(config.Input))
 	for i, key := range config.Input {
-		inputs[i] = self.GetInput(key)
+		inputs[i] = c.GetInput(key)
 	}
 
 	processors := make([]intf.PostProcessor, len(config.Processor))
 	for i, key := range config.Processor {
-		processors[i] = self.GetPostProcessor(key)
+		processors[i] = c.GetPostProcessor(key)
 	}
 
 	reader := NewReader()
@@ -90,7 +90,7 @@ func (self *Container) GetReader(key string) *Reader {
 	return reader
 }
 
-func (self *Container) GetOutput(key string) intf.Output {
+func (c *Container) GetOutput(key string) intf.Output {
 	httpConfig, ok := GetConfig().Output_HTTP[key]
 	if ok {
 		return output.NewHTTP(httpConfig)
@@ -115,7 +115,7 @@ func (self *Container) GetOutput(key string) intf.Output {
 	return nil
 }
 
-func (self *Container) GetPostProcessor(key string) intf.PostProcessor {
+func (c *Container) GetPostProcessor(key string) intf.PostProcessor {
 	anonConfig, ok := GetConfig().Processor_Anonymize[key]
 	if ok {
 		return processor.NewAnonymize(anonConfig)
@@ -130,7 +130,7 @@ func (self *Container) GetPostProcessor(key string) intf.PostProcessor {
 	return nil
 }
 
-func (self *Container) GetWriter(key string) *Writer {
+func (c *Container) GetWriter(key string) *Writer {
 	config, ok := GetConfig().Writer[key]
 	if !ok {
 		return nil
@@ -139,7 +139,7 @@ func (self *Container) GetWriter(key string) *Writer {
 	outputsFactory := func() []intf.Output {
 		outputs := make([]intf.Output, len(config.Output))
 		for i, key := range config.Output {
-			outputs[i] = self.GetOutput(key)
+			outputs[i] = c.GetOutput(key)
 		}
 
 		return outputs
@@ -147,7 +147,7 @@ func (self *Container) GetWriter(key string) *Writer {
 
 	readers := make([]*Reader, len(config.Reader))
 	for i, key := range config.Reader {
-		readers[i] = self.GetReader(key)
+		readers[i] = c.GetReader(key)
 	}
 
 	writer := NewWriter()
@@ -158,12 +158,12 @@ func (self *Container) GetWriter(key string) *Writer {
 	return writer
 }
 
-func (self *Container) GetWriterGroup() *WriterGroup {
+func (c *Container) GetWriterGroup() *WriterGroup {
 	writers := make([]intf.Writer, len(GetConfig().Writer))
 
 	i := 0
 	for key, _ := range GetConfig().Writer {
-		writers[i] = self.GetWriter(key)
+		writers[i] = c.GetWriter(key)
 		i++
 	}
 

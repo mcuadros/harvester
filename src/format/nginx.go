@@ -18,7 +18,7 @@ func NewNginx(config *NginxConfig) *Nginx {
 	return format
 }
 
-func (self *Nginx) TransformConfig(config *NginxConfig) *RegExpConfig {
+func (f *Nginx) TransformConfig(config *NginxConfig) *RegExpConfig {
 
 	var pattern, format string
 	switch config.Type {

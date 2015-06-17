@@ -10,7 +10,7 @@ harvesterd/processor \
 harvesterd/processor/metric
 
 COMMANDS =	tool/harvesterd.go
-DEPENDENCIES = launchpad.net/gocheck \
+DEPENDENCIES = gopkg.in/check.v1 \
 code.google.com/p/go.tools/cmd/cover \
 code.google.com/p/gcfg \
 github.com/jarod/log4go \

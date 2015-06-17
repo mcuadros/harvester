@@ -1,6 +1,6 @@
 package format
 
-import . "launchpad.net/gocheck"
+import . "gopkg.in/check.v1"
 
 type FormatJSONSuite struct{}
 

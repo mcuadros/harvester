@@ -22,38 +22,38 @@ func NewHistogram(field string) *Histogram {
 	return counter
 }
 
-func (self *Histogram) Process(record Record) {
+func (m *Histogram) Process(record Record) {
 	var value float64
 
-	switch record[self.field].(type) {
+	switch record[m.field].(type) {
 	case int:
-		value = float64(record[self.field].(int))
+		value = float64(record[m.field].(int))
 	case float64:
-		value = record[self.field].(float64)
+		value = record[m.field].(float64)
 	default:
 		return
 	}
 
-	self.histogram.Update(int64(value * float64(self.precision)))
+	m.histogram.Update(int64(value * float64(m.precision)))
 
 }
 
-func (self *Histogram) GetField() string {
-	return self.field
+func (m *Histogram) GetField() string {
+	return m.field
 }
 
-func (self *Histogram) GetValue() interface{} {
+func (m *Histogram) GetValue() interface{} {
 	result := make(map[string]interface{})
-	result["count"] = self.histogram.Count()
-	result["min"] = float64(self.histogram.Min()) / float64(self.precision)
-	result["max"] = float64(self.histogram.Max()) / float64(self.precision)
-	result["mean"] = self.histogram.Mean() / float64(self.precision)
-	result["sum"] = float64(self.histogram.Count()) * result["mean"].(float64)
-	result["stddev"] = self.histogram.StdDev() / float64(self.precision)
+	result["count"] = m.histogram.Count()
+	result["min"] = float64(m.histogram.Min()) / float64(m.precision)
+	result["max"] = float64(m.histogram.Max()) / float64(m.precision)
+	result["mean"] = m.histogram.Mean() / float64(m.precision)
+	result["sum"] = float64(m.histogram.Count()) * result["mean"].(float64)
+	result["stddev"] = m.histogram.StdDev() / float64(m.precision)
 
 	return result
 }
 
-func (self *Histogram) Reset() {
-	self.histogram.Clear()
+func (m *Histogram) Reset() {
+	m.histogram.Clear()
 }

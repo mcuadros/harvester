@@ -26,70 +26,70 @@ func NewReader() *Reader {
 	return reader
 }
 
-func (self *Reader) SetInputs(inputs []intf.Input) {
-	self.inputs = inputs
+func (r *Reader) SetInputs(inputs []intf.Input) {
+	r.inputs = inputs
 }
 
-func (self *Reader) SetProcessors(processors []intf.PostProcessor) {
+func (r *Reader) SetProcessors(processors []intf.PostProcessor) {
 	if len(processors) > 0 {
-		self.hasProcessors = true
+		r.hasProcessors = true
 	}
 
-	self.processors = processors
+	r.processors = processors
 }
 
-func (self *Reader) SetChannels(recordsChan RecordsChan, closeChan CloseChan) {
-	self.recordsChan = recordsChan
-	self.closeChan = closeChan
+func (r *Reader) SetChannels(recordsChan RecordsChan, closeChan CloseChan) {
+	r.recordsChan = recordsChan
+	r.closeChan = closeChan
 }
 
-func (self *Reader) GoRead() {
-	self.setChannelToProcessors()
-	go self.doReadIntoChannel()
+func (r *Reader) GoRead() {
+	r.setChannelToProcessors()
+	go r.doReadIntoChannel()
 }
 
-func (self *Reader) doReadIntoChannel() {
-	for _, input := range self.inputs {
-		self.wait.Add(1)
-		go self.readInputIntoChannel(input)
+func (r *Reader) doReadIntoChannel() {
+	for _, input := range r.inputs {
+		r.wait.Add(1)
+		go r.readInputIntoChannel(input)
 	}
 
-	self.wait.Wait()
+	r.wait.Wait()
 
-	self.teardownProcessors()
-	self.closeChan <- true
+	r.teardownProcessors()
+	r.closeChan <- true
 }
 
-func (self *Reader) readInputIntoChannel(input intf.Input) {
+func (r *Reader) readInputIntoChannel(input intf.Input) {
 	for !input.IsEOF() {
 		record := input.GetRecord()
-		self.emitRecord(record)
+		r.emitRecord(record)
 	}
 
-	self.wait.Done()
+	r.wait.Done()
 }
 
-func (self *Reader) emitRecord(record intf.Record) {
+func (r *Reader) emitRecord(record intf.Record) {
 	if len(record) > 0 {
-		if self.applyProcessors(record) {
-			self.recordsChan <- record
+		if r.applyProcessors(record) {
+			r.recordsChan <- record
 		}
 
-		self.counter++
+		r.counter++
 	}
 }
 
-func (self *Reader) setChannelToProcessors() {
-	if self.hasProcessors {
-		for _, proc := range self.processors {
-			proc.SetChannel(self.recordsChan)
+func (r *Reader) setChannelToProcessors() {
+	if r.hasProcessors {
+		for _, proc := range r.processors {
+			proc.SetChannel(r.recordsChan)
 		}
 	}
 }
 
-func (self *Reader) applyProcessors(record intf.Record) bool {
-	if self.hasProcessors {
-		for _, proc := range self.processors {
+func (r *Reader) applyProcessors(record intf.Record) bool {
+	if r.hasProcessors {
+		for _, proc := range r.processors {
 			if proc.Do(record) == false {
 				return false
 			}
@@ -99,18 +99,18 @@ func (self *Reader) applyProcessors(record intf.Record) bool {
 	return true
 }
 
-func (self *Reader) teardownProcessors() {
-	for _, proc := range self.processors {
+func (r *Reader) teardownProcessors() {
+	for _, proc := range r.processors {
 		proc.Teardown()
 	}
 }
 
-func (self *Reader) teardownInputs() {
-	for _, input := range self.inputs {
+func (r *Reader) teardownInputs() {
+	for _, input := range r.inputs {
 		input.Teardown()
 	}
 }
 
-func (self *Reader) Teardown() {
-	self.teardownInputs()
+func (r *Reader) Teardown() {
+	r.teardownInputs()
 }

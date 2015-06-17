@@ -4,7 +4,7 @@ import (
 	"harvesterd/intf"
 )
 
-import . "launchpad.net/gocheck"
+import . "gopkg.in/check.v1"
 
 type WriterGroupSuite struct {
 	wg *WriterGroup

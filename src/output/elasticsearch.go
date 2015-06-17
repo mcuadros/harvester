@@ -27,9 +27,9 @@ func NewElasticsearch(config *ElasticsearchConfig) *Elasticsearch {
 	return output
 }
 
-func (self *Elasticsearch) TransformConfig(config *ElasticsearchConfig) *HTTPConfig {
+func (o *Elasticsearch) TransformConfig(config *ElasticsearchConfig) *HTTPConfig {
 	dest := &HTTPConfig{
-		Url:         self.getIndexURL(config),
+		Url:         o.getIndexURL(config),
 		Method:      "POST",
 		Format:      "json",
 		ContentType: "application/json",
@@ -39,7 +39,7 @@ func (self *Elasticsearch) TransformConfig(config *ElasticsearchConfig) *HTTPCon
 	return dest
 }
 
-func (self *Elasticsearch) getIndexURL(config *ElasticsearchConfig) string {
+func (o *Elasticsearch) getIndexURL(config *ElasticsearchConfig) string {
 	return fmt.Sprintf("http://%s:%d/%s/%s",
 		config.Host,
 		config.Port,

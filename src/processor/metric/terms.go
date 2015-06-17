@@ -29,23 +29,23 @@ func NewTerms(field string) *Terms {
 	return counter
 }
 
-func (self *Terms) Boot() {
-	go self.syncronized()
+func (m *Terms) Boot() {
+	go m.syncronized()
 }
 
-func (self *Terms) syncronized() {
+func (m *Terms) syncronized() {
 	for {
 		select {
-		case ci := <-self.writeChannel:
+		case ci := <-m.writeChannel:
 			if len(ci.key) == 0 {
 				return
 			}
 
-			self.count[ci.key] += ci.value
+			m.count[ci.key] += ci.value
 			break
-		case cl := <-self.readChannel:
+		case cl := <-m.readChannel:
 			nm := make(map[string]int)
-			for k, v := range self.count {
+			for k, v := range m.count {
 				nm[k] = v
 			}
 			cl <- nm
@@ -54,25 +54,25 @@ func (self *Terms) syncronized() {
 	}
 }
 
-func (self *Terms) Process(record Record) {
-	switch record[self.field].(type) {
+func (m *Terms) Process(record Record) {
+	switch record[m.field].(type) {
 	case string:
-		key := record[self.field].(string)
-		self.writeChannel <- counterIncrement{key, 1}
+		key := record[m.field].(string)
+		m.writeChannel <- counterIncrement{key, 1}
 	}
 }
 
-func (self *Terms) GetField() string {
-	return self.field
+func (m *Terms) GetField() string {
+	return m.field
 }
 
-func (self *Terms) GetValue() interface{} {
+func (m *Terms) GetValue() interface{} {
 	reply := make(chan map[string]int)
-	self.readChannel <- reply
+	m.readChannel <- reply
 
 	return <-reply
 }
 
-func (self *Terms) Reset() {
-	self.count = make(map[string]int)
+func (m *Terms) Reset() {
+	m.count = make(map[string]int)
 }

@@ -42,32 +42,32 @@ func NewTail(config *TailConfig, format intf.Format) *Tail {
 	return input
 }
 
-func (self *Tail) Boot() {
-	self.goKeepPosition()
+func (i *Tail) Boot() {
+	i.goKeepPosition()
 }
 
-func (self *Tail) SetFormat(format intf.Format) {
-	self.format = format
+func (i *Tail) SetFormat(format intf.Format) {
+	i.format = format
 }
 
-func (self *Tail) SetConfig(config *TailConfig) {
-	self.file = config.File
-	Info(self.file)
-	self.posFile = fmt.Sprintf("%s/.%s.pos", path.Dir(self.file), path.Base(self.file))
+func (i *Tail) SetConfig(config *TailConfig) {
+	i.file = config.File
+	Info(i.file)
+	i.posFile = fmt.Sprintf("%s/.%s.pos", path.Dir(i.file), path.Base(i.file))
 
-	self.createTailReader(self.translateConfig(config))
+	i.createTailReader(i.translateConfig(config))
 }
 
-func (self *Tail) createTailReader(config tail.Config) {
-	tail, err := tail.TailFile(self.file, config)
+func (i *Tail) createTailReader(config tail.Config) {
+	tail, err := tail.TailFile(i.file, config)
 	if err != nil {
-		Critical("tail %s: %v", self.file, err)
+		Critical("tail %s: %v", i.file, err)
 	}
 
-	self.tail = tail
+	i.tail = tail
 }
 
-func (self *Tail) translateConfig(original *TailConfig) tail.Config {
+func (i *Tail) translateConfig(original *TailConfig) tail.Config {
 	config := tail.Config{Follow: true, ReOpen: true}
 
 	if original.MustExist {
@@ -85,7 +85,7 @@ func (self *Tail) translateConfig(original *TailConfig) tail.Config {
 		)
 	}
 
-	position := self.readPosition()
+	position := i.readPosition()
 	if position > 0 {
 		config.Location = &tail.SeekInfo{Offset: position, Whence: 0}
 	}
@@ -93,79 +93,79 @@ func (self *Tail) translateConfig(original *TailConfig) tail.Config {
 	return config
 }
 
-func (self *Tail) readPosition() int64 {
-	_, err := os.Stat(self.posFile)
+func (i *Tail) readPosition() int64 {
+	_, err := os.Stat(i.posFile)
 	if os.IsNotExist(err) {
 		return 0
 	}
 
-	positionRaw, err := ioutil.ReadFile(self.posFile)
+	positionRaw, err := ioutil.ReadFile(i.posFile)
 	if err != nil {
-		Critical("read %s: %v", self.posFile, err)
+		Critical("read %s: %v", i.posFile, err)
 	}
 
 	position, err := strconv.ParseInt(string(positionRaw), 10, 0)
 	if err != nil {
-		Critical("malformed content %s: %v", self.posFile, err)
+		Critical("malformed content %s: %v", i.posFile, err)
 	}
 
 	return position
 }
 
-func (self *Tail) GetLine() string {
-	line, ok := (<-self.tail.Lines)
+func (i *Tail) GetLine() string {
+	line, ok := (<-i.tail.Lines)
 	if ok {
-		self.needSavePos = true
+		i.needSavePos = true
 		return line.Text
 	} else {
-		self.eof = true
+		i.eof = true
 		return ""
 	}
 }
 
-func (self *Tail) GetRecord() intf.Record {
-	line := self.GetLine()
+func (i *Tail) GetRecord() intf.Record {
+	line := i.GetLine()
 	if line != "" {
-		return self.format.Parse(line)
+		return i.format.Parse(line)
 	}
 
 	return nil
 }
 
-func (self *Tail) goKeepPosition() {
-	self.savePosTicker = time.NewTicker(1 * time.Second)
-	self.stopChannel = make(chan struct{})
+func (i *Tail) goKeepPosition() {
+	i.savePosTicker = time.NewTicker(1 * time.Second)
+	i.stopChannel = make(chan struct{})
 
 	go func() {
 		for {
 			select {
-			case <-self.savePosTicker.C:
-				if self.needSavePos {
-					self.keepPosition()
-					self.needSavePos = false
+			case <-i.savePosTicker.C:
+				if i.needSavePos {
+					i.keepPosition()
+					i.needSavePos = false
 				}
-			case <-self.stopChannel:
-				self.savePosTicker.Stop()
+			case <-i.stopChannel:
+				i.savePosTicker.Stop()
 				return
 			}
 		}
 	}()
 }
 
-func (self *Tail) keepPosition() {
-	position, _ := self.tail.Tell()
-	ioutil.WriteFile(self.posFile, []byte(strconv.FormatInt(position, 10)), 0755)
+func (i *Tail) keepPosition() {
+	position, _ := i.tail.Tell()
+	ioutil.WriteFile(i.posFile, []byte(strconv.FormatInt(position, 10)), 0755)
 }
 
-func (self *Tail) IsEOF() bool {
-	return self.eof
+func (i *Tail) IsEOF() bool {
+	return i.eof
 }
 
-func (self *Tail) Stop() {
-	self.keepPosition()
-	self.tail.Stop()
+func (i *Tail) Stop() {
+	i.keepPosition()
+	i.tail.Stop()
 }
 
-func (self *Tail) Teardown() {
-	close(self.stopChannel)
+func (i *Tail) Teardown() {
+	close(i.stopChannel)
 }

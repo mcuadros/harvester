@@ -19,12 +19,12 @@ func NewDummy(config *DummyConfig) *Dummy {
 	return output
 }
 
-func (self *Dummy) SetConfig(config *DummyConfig) {
-	self.printInfo = config.Print
+func (o *Dummy) SetConfig(config *DummyConfig) {
+	o.printInfo = config.Print
 }
 
-func (self *Dummy) PutRecord(record intf.Record) bool {
-	if self.printInfo {
+func (o *Dummy) PutRecord(record intf.Record) bool {
+	if o.printInfo {
 		fmt.Println(record)
 	}
 

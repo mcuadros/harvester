@@ -14,24 +14,24 @@ func NewWriterGroup() *WriterGroup {
 	return writerGroup
 }
 
-func (self *WriterGroup) SetWriters(writers []intf.Writer) {
-	self.writers = writers
+func (wg *WriterGroup) SetWriters(writers []intf.Writer) {
+	wg.writers = writers
 }
 
-func (self *WriterGroup) Setup() {
-	for _, writer := range self.writers {
+func (wg *WriterGroup) Setup() {
+	for _, writer := range wg.writers {
 		writer.Setup()
 	}
 }
 
-func (self *WriterGroup) Boot() {
-	for _, writer := range self.writers {
+func (wg *WriterGroup) Boot() {
+	for _, writer := range wg.writers {
 		writer.Boot()
 	}
 }
 
-func (self *WriterGroup) IsAlive() bool {
-	for _, writer := range self.writers {
+func (wg *WriterGroup) IsAlive() bool {
+	for _, writer := range wg.writers {
 		if writer.IsAlive() {
 			return true
 		}
@@ -40,9 +40,9 @@ func (self *WriterGroup) IsAlive() bool {
 	return false
 }
 
-func (self *WriterGroup) GetCounters() (int32, int32, int32, int32) {
+func (wg *WriterGroup) GetCounters() (int32, int32, int32, int32) {
 	var created, failed, transferred, threads int32
-	for _, writer := range self.writers {
+	for _, writer := range wg.writers {
 		c, f, t, h := writer.GetCounters()
 
 		created += c
@@ -54,14 +54,14 @@ func (self *WriterGroup) GetCounters() (int32, int32, int32, int32) {
 	return created, failed, transferred, threads
 }
 
-func (self *WriterGroup) ResetCounters() {
-	for _, writer := range self.writers {
+func (wg *WriterGroup) ResetCounters() {
+	for _, writer := range wg.writers {
 		writer.ResetCounters()
 	}
 }
 
-func (self *WriterGroup) Teardown() {
-	for _, writer := range self.writers {
+func (wg *WriterGroup) Teardown() {
+	for _, writer := range wg.writers {
 		writer.Teardown()
 	}
 }

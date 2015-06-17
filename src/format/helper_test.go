@@ -3,7 +3,7 @@ package format
 import (
 	"time"
 )
-import . "launchpad.net/gocheck"
+import . "gopkg.in/check.v1"
 
 type FormatHelperSuite struct{}
 

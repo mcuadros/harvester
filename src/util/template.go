@@ -24,40 +24,40 @@ func NewTemplate(template string) *Template {
 	return tmpl
 }
 
-func (self *Template) ParseTokens() {
-	tokens := tokenRegexp.FindAll([]byte(self.template), -1)
-	self.tokens = make([]string, len(tokens))
+func (t *Template) ParseTokens() {
+	tokens := tokenRegexp.FindAll([]byte(t.template), -1)
+	t.tokens = make([]string, len(tokens))
 
 	if len(tokens) == 0 {
-		self.isEmpty = true
+		t.isEmpty = true
 	}
 
 	for index, token := range tokens {
-		self.tokens[index] = string(token[2 : len(token)-1])
+		t.tokens[index] = string(token[2 : len(token)-1])
 	}
 }
 
-func (self *Template) Apply(record intf.Record) string {
-	if self.isEmpty {
-		return self.template
+func (t *Template) Apply(record intf.Record) string {
+	if t.isEmpty {
+		return t.template
 	}
 
-	return self.replaceTokens(record)
+	return t.replaceTokens(record)
 }
 
-func (self *Template) replaceTokens(record intf.Record) string {
-	output := self.template
+func (t *Template) replaceTokens(record intf.Record) string {
+	output := t.template
 	mapper := objx.Map(record)
 
-	for _, token := range self.tokens {
-		value := self.castValueToString(mapper.Get(token))
+	for _, token := range t.tokens {
+		value := t.castValueToString(mapper.Get(token))
 		output = strings.Replace(output, `%{`+token+`}`, value, -1)
 	}
 
 	return output
 }
 
-func (self *Template) castValueToString(value *objx.Value) string {
+func (t *Template) castValueToString(value *objx.Value) string {
 	switch {
 	case value.IsStr():
 		return value.Str()
