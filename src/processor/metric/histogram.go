@@ -1,10 +1,10 @@
 package metric
 
 import (
-	. "harvesterd/intf"
-)
+	. "github.com/mcuadros/harvesterd/src/intf"
 
-import "github.com/rcrowley/go-metrics"
+	"github.com/rcrowley/go-metrics"
+)
 
 type Histogram struct {
 	field     string

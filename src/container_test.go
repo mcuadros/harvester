@@ -1,10 +1,10 @@
 package harvesterd
 
 import (
-	"harvesterd/format"
-	"harvesterd/input"
-	"harvesterd/output"
-	"harvesterd/processor"
+	"github.com/mcuadros/harvesterd/src/format"
+	"github.com/mcuadros/harvesterd/src/input"
+	"github.com/mcuadros/harvesterd/src/output"
+	"github.com/mcuadros/harvesterd/src/processor"
 )
 
 import . "gopkg.in/check.v1"
@@ -70,7 +70,7 @@ func (s *ContainerSuite) TestGetOutput(c *C) {
 		host = foo
 
 		[output-mongo "mongo"]
-		url = mongodb://localhost
+		url = localhost
 
 		[output-http "http"]
 		url = http://localhost

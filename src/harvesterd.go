@@ -1,12 +1,13 @@
 package harvesterd
 
 import (
-	. "harvesterd/logger"
 	"os"
 	"os/signal"
 	"runtime"
 	"syscall"
 	"time"
+
+	. "github.com/mcuadros/harvesterd/src/logger"
 )
 
 type Harvesterd struct {

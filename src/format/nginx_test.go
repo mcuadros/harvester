@@ -2,9 +2,9 @@ package format
 
 import (
 	"time"
-)
 
-import . "gopkg.in/check.v1"
+	. "gopkg.in/check.v1"
+)
 
 type NginxSuite struct{}
 

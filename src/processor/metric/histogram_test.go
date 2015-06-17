@@ -2,14 +2,15 @@ package metric
 
 import (
 	"flag"
-	. "harvesterd/intf"
 	"math"
 	"runtime"
 	"sync"
 	"time"
-)
 
-import . "gopkg.in/check.v1"
+	. "github.com/mcuadros/harvesterd/src/intf"
+
+	. "gopkg.in/check.v1"
+)
 
 type HistogramSuite struct{}
 

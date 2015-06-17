@@ -2,13 +2,14 @@ package input
 
 import (
 	"fmt"
-	"harvesterd/intf"
-	. "harvesterd/logger"
 	"io/ioutil"
 	"os"
 	"path"
 	"strconv"
 	"time"
+
+	"github.com/mcuadros/harvesterd/src/intf"
+	. "github.com/mcuadros/harvesterd/src/logger"
 
 	"github.com/ActiveState/tail"
 	"github.com/ActiveState/tail/ratelimiter"

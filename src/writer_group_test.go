@@ -1,10 +1,10 @@
 package harvesterd
 
 import (
-	"harvesterd/intf"
-)
+	"github.com/mcuadros/harvesterd/src/intf"
 
-import . "gopkg.in/check.v1"
+	. "gopkg.in/check.v1"
+)
 
 type WriterGroupSuite struct {
 	wg *WriterGroup

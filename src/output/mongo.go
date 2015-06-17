@@ -1,14 +1,14 @@
 package output
 
 import (
-	"harvesterd/intf"
-	. "harvesterd/logger"
+	"github.com/mcuadros/harvesterd/src/intf"
+	. "github.com/mcuadros/harvesterd/src/logger"
 
-	"labix.org/v2/mgo"
+	"gopkg.in/mgo.v2"
 )
 
 type MongoConfig struct {
-	Url        string //Format: http://godoc.org/labix.org/v2/mgo#Dial
+	Url        string
 	Database   string
 	Collection string
 	Safe       bool

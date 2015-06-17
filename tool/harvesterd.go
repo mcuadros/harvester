@@ -3,9 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	. "harvesterd"
 	"os"
 	"text/template"
+
+	. "github.com/mcuadros/harvesterd/src"
 )
 
 // Define a template.

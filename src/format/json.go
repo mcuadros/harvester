@@ -2,8 +2,9 @@ package format
 
 import (
 	"encoding/json"
-	"harvesterd/intf"
-	. "harvesterd/logger"
+
+	"github.com/mcuadros/harvesterd/src/intf"
+	. "github.com/mcuadros/harvesterd/src/logger"
 )
 
 type JSONConfig struct {

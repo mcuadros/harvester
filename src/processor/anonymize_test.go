@@ -1,11 +1,12 @@
 package processor
 
 import (
-	"harvesterd/intf"
 	"testing"
-)
 
-import . "gopkg.in/check.v1"
+	"github.com/mcuadros/harvesterd/src/intf"
+
+	. "gopkg.in/check.v1"
+)
 
 // Hook up gocheck into the "go test" runner.
 func Test(t *testing.T) { TestingT(t) }

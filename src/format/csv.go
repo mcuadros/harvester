@@ -2,8 +2,9 @@ package format
 
 import (
 	"bytes"
-	"harvesterd/intf"
 	"strings"
+
+	"github.com/mcuadros/harvesterd/src/intf"
 )
 
 type CSVConfig struct {

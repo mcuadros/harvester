@@ -1,13 +1,14 @@
 package processor
 
 import (
-	"harvesterd/intf"
-	. "harvesterd/logger"
-	. "harvesterd/processor/metric"
 	"regexp"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/mcuadros/harvesterd/src/intf"
+	. "github.com/mcuadros/harvesterd/src/logger"
+	. "github.com/mcuadros/harvesterd/src/processor/metric"
 )
 
 type MetricsConfig struct {

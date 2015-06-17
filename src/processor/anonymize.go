@@ -7,8 +7,9 @@ import (
 	_ "crypto/sha256"
 	_ "crypto/sha512"
 	"encoding/hex"
-	"harvesterd/intf"
 	"strings"
+
+	"github.com/mcuadros/harvesterd/src/intf"
 )
 
 type AnonymizeConfig struct {

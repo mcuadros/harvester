@@ -1,11 +1,12 @@
 package format
 
 import (
-	. "harvesterd/logger"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	. "github.com/mcuadros/harvesterd/src/logger"
 )
 
 var validFormats = []string{"int", "float", "bool", "string", "time"}

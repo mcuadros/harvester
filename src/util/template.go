@@ -1,10 +1,11 @@
 package util
 
 import (
-	"harvesterd/intf"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/mcuadros/harvesterd/src/intf"
 
 	"github.com/stretchr/objx"
 )

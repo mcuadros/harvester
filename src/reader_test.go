@@ -2,11 +2,12 @@ package harvesterd
 
 import (
 	"fmt"
-	"harvesterd/intf"
 	"strconv"
-)
 
-import . "gopkg.in/check.v1"
+	"github.com/mcuadros/harvesterd/src/intf"
+
+	. "gopkg.in/check.v1"
+)
 
 type ReaderSuite struct{}
 

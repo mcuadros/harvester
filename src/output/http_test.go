@@ -1,12 +1,12 @@
 package output
 
 import (
-	"harvesterd/intf"
 	"io/ioutil"
 	"net/http"
-)
 
-import . "gopkg.in/check.v1"
+	"github.com/mcuadros/harvesterd/src/intf"
+	. "gopkg.in/check.v1"
+)
 
 type HTTPSuite struct{}
 

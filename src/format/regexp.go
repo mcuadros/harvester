@@ -1,8 +1,9 @@
 package format
 
 import (
-	"harvesterd/intf"
 	"regexp"
+
+	"github.com/mcuadros/harvesterd/src/intf"
 )
 
 type RegExpConfig struct {

@@ -2,10 +2,11 @@ package input
 
 import (
 	"bufio"
-	"harvesterd/intf"
-	. "harvesterd/logger"
 	"os"
 	"path/filepath"
+
+	"github.com/mcuadros/harvesterd/src/intf"
+	. "github.com/mcuadros/harvesterd/src/logger"
 )
 
 type FileConfig struct {
