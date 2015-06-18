@@ -15,17 +15,12 @@ type FileConfig struct {
 }
 
 type File struct {
-	files   []*bufio.Scanner
-	format  intf.Format
-	current int
-	empty   bool
-	eof     bool
+	*helper
 }
 
 func NewFile(config *FileConfig, format intf.Format) *File {
-	input := new(File)
+	input := &File{newHelper(format)}
 	input.SetConfig(config)
-	input.SetFormat(format)
 
 	return input
 }
