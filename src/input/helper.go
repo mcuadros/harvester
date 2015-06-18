@@ -5,12 +5,15 @@ import (
 	"io"
 
 	"github.com/mcuadros/harvesterd/src/intf"
+	. "github.com/mcuadros/harvesterd/src/logger"
 )
 
 type ReaderFactory func() io.Reader
+type ReaderEOFNotifier func() error
 
 type helper struct {
 	factories []ReaderFactory
+	readerEOF ReaderEOFNotifier
 	format    intf.Format
 	current   *bufio.Scanner
 	empty     bool
@@ -51,9 +54,21 @@ func (h *helper) scan() bool {
 		return false
 	}
 
-	h.current = bufio.NewScanner(h.factories[0]())
+	if h.readerEOF != nil {
+		err := h.readerEOF()
+		if err != nil {
+			Error("Error finalizing reader: %s", err)
+		}
+	}
+
+	reader := h.factories[0]()
 	h.factories = h.factories[1:]
 
+	if reader == nil {
+		return h.scan()
+	}
+
+	h.current = bufio.NewScanner(reader)
 	return h.scan()
 }
 
