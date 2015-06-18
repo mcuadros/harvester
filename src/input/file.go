@@ -1,7 +1,8 @@
 package input
 
 import (
-	"bufio"
+	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 
@@ -36,59 +37,19 @@ func (i *File) SetConfig(config *FileConfig) {
 	}
 
 	for _, file := range files {
-		i.files = append(i.files, i.createBufioReader(file))
+		i.factories = append(i.factories, i.createReaderFactory(file))
 	}
 
-	if len(i.files) == 0 {
-		i.empty = true
-		i.eof = true
-	}
 }
 
-func (i *File) createBufioReader(filename string) *bufio.Scanner {
-	file, err := os.Open(filename)
-	if err != nil {
-		Critical("open %s: %v", filename, err)
-	}
-
-	return bufio.NewScanner(file)
-}
-
-func (i *File) GetLine() string {
-	if !i.empty && i.scan() {
-		return i.files[i.current].Text()
-	}
-
-	return ""
-}
-
-func (i *File) GetRecord() intf.Record {
-	line := i.GetLine()
-	if line != "" {
-		return i.format.Parse(line)
-	}
-
-	return nil
-}
-
-func (i *File) scan() bool {
-	if !i.files[i.current].Scan() {
-		i.current++
-
-		if i.current >= len(i.files) {
-			i.eof = true
-			return false
+func (i *File) createReaderFactory(filename string) ReaderFactory {
+	return func() io.Reader {
+		fmt.Println(filename)
+		file, err := os.Open(filename)
+		if err != nil {
+			Critical("open %s: %v", filename, err)
 		}
 
-		return i.scan()
+		return file
 	}
-
-	return true
-}
-
-func (i *File) IsEOF() bool {
-	return i.eof
-}
-
-func (i *File) Teardown() {
 }

@@ -63,6 +63,12 @@ func (c *Container) GetInput(key string) intf.Input {
 		return input.NewTail(tailConfig, format)
 	}
 
+	s3Config, ok := GetConfig().Input_S3[key]
+	if ok {
+		format := c.GetFormat(s3Config.Format)
+		return input.NewS3(s3Config, format)
+	}
+
 	Critical("Unable to find '%s' input definition", key)
 	return nil
 }
@@ -152,7 +158,15 @@ func (c *Container) GetWriter(key string) *Writer {
 
 	writer := NewWriter()
 	writer.SetOutputsFactory(outputsFactory)
+
+	if len(readers) == 0 {
+		Critical("Invalid writer config: alteast one reader should be provided.")
+	}
 	writer.SetReaders(readers)
+
+	if config.Threads == 0 {
+		Critical("Invalid writer config: num. of threads should be >0.")
+	}
 	writer.SetThreads(config.Threads)
 
 	return writer

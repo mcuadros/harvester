@@ -24,6 +24,7 @@ type Config struct {
 	Format_Nginx         map[string]*format.NginxConfig
 	Input_File           map[string]*input.FileConfig
 	Input_Tail           map[string]*input.TailConfig
+	Input_S3             map[string]*input.S3Config
 	Output_HTTP          map[string]*output.HTTPConfig
 	Output_Elasticsearch map[string]*output.ElasticsearchConfig
 	Output_Mongo         map[string]*output.MongoConfig

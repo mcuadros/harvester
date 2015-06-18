@@ -1,8 +1,8 @@
 package input
 
 import (
-	"bufio"
-	"fmt"
+	"compress/gzip"
+	"io"
 
 	"github.com/mcuadros/harvesterd/src/intf"
 	. "github.com/mcuadros/harvesterd/src/logger"
@@ -21,6 +21,7 @@ type S3Config struct {
 	Delimiter string `description:"A delimiter is a character you use to group keys."`
 	Marker    string `description:"Specifies the key to start with when listing objects in a bucket."`
 	MaxKeys   int    `description:"Sets the maximum number of keys returned."`
+	Gzip      bool
 }
 
 type S3 struct {
@@ -45,21 +46,26 @@ func (i *S3) SetConfig(c *S3Config) {
 	}
 
 	for _, key := range r.Contents {
-		i.createBufioReader(key)
-	}
-
-	if len(i.files) == 0 {
-		i.empty = true
-		i.eof = true
+		i.factories = append(i.factories, i.createReaderFactory(key, c.Gzip))
 	}
 }
 
-func (i *S3) createBufioReader(key s3.Key) *bufio.Scanner {
-	reader, err := i.bucket.GetReader(key.Key)
-	fmt.Println(key)
-	if err != nil {
-		Critical("open %s: %v", key.Key, err)
-	}
+func (i *S3) createReaderFactory(key s3.Key, isGzip bool) ReaderFactory {
+	return func() io.Reader {
+		var reader io.Reader
+		var err error
+		reader, err = i.bucket.GetReader(key.Key)
+		if err != nil {
+			Critical("open %s: %v", key.Key, err)
+		}
 
-	return bufio.NewScanner(reader)
+		if isGzip {
+			reader, err = gzip.NewReader(reader)
+			if err != nil {
+				Critical("gzip open %s: %v", key.Key, err)
+			}
+		}
+
+		return reader
+	}
 }

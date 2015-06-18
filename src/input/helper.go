@@ -2,28 +2,31 @@ package input
 
 import (
 	"bufio"
+	"io"
 
 	"github.com/mcuadros/harvesterd/src/intf"
 )
 
+type ReaderFactory func() io.Reader
+
 type helper struct {
-	files   []*bufio.Scanner
-	format  intf.Format
-	current int
-	empty   bool
-	eof     bool
+	factories []ReaderFactory
+	format    intf.Format
+	current   *bufio.Scanner
+	empty     bool
+	eof       bool
 }
 
 func newHelper(format intf.Format) *helper {
 	return &helper{
-		format: format,
-		files:  make([]*bufio.Scanner, 0),
+		format:    format,
+		factories: make([]ReaderFactory, 0),
 	}
 }
 
 func (h *helper) GetLine() string {
-	if !h.empty && h.scan() {
-		return h.files[h.current].Text()
+	if h.scan() {
+		return h.current.Text()
 	}
 
 	return ""
@@ -39,18 +42,19 @@ func (h *helper) GetRecord() intf.Record {
 }
 
 func (h *helper) scan() bool {
-	if !h.files[h.current].Scan() {
-		h.current++
-
-		if h.current >= len(h.files) {
-			h.eof = true
-			return false
-		}
-
-		return h.scan()
+	if h.current != nil && h.current.Scan() {
+		return true
 	}
 
-	return true
+	if len(h.factories) == 0 {
+		h.eof = true
+		return false
+	}
+
+	h.current = bufio.NewScanner(h.factories[0]())
+	h.factories = h.factories[1:]
+
+	return h.scan()
 }
 
 func (h *helper) IsEOF() bool {

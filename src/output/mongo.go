@@ -1,6 +1,8 @@
 package output
 
 import (
+	"time"
+
 	"github.com/mcuadros/harvesterd/src/intf"
 	. "github.com/mcuadros/harvesterd/src/logger"
 
@@ -43,9 +45,9 @@ func (o *Mongo) SetConfig(config *MongoConfig) {
 
 func (o *Mongo) Connect() {
 	Debug("Connecting to mongo server '%s' ...", o.url)
-	session, err := mgo.Dial(o.url)
+	session, err := mgo.DialWithTimeout(o.url, time.Second)
 	if err != nil {
-		Critical("Can't connect to mongo, go error %v\n", err)
+		Critical("Can't connect to mongo: %v\n", err)
 	}
 
 	o.session = session

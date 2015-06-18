@@ -1,8 +1,6 @@
 package harvesterd
 
-import (
-	"github.com/mcuadros/harvesterd/src/intf"
-)
+import "github.com/mcuadros/harvesterd/src/intf"
 
 type WriterGroup struct {
 	writers []intf.Writer
