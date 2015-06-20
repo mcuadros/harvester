@@ -86,7 +86,7 @@ func (i *S3) isCurrentKeyProcessed() bool {
 		return false
 	}
 
-	if _, err := os.Stat(i.getTrackFilename()); err != nil {
+	if _, err := os.Stat(i.getTrackFilename()); err == nil {
 		return true
 	}
 
