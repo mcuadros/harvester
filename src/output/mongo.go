@@ -1,6 +1,7 @@
 package output
 
 import (
+	"strings"
 	"time"
 
 	"github.com/mcuadros/harvesterd/src/intf"
@@ -10,10 +11,11 @@ import (
 )
 
 type MongoConfig struct {
-	Url        string
-	Database   string
-	Collection string
-	Safe       bool
+	Url         string `description:"server urls following the format from: http://godoc.org/labix.org/v2/mgo#Dial"`
+	Database    string `description:"database name"`
+	Collection  string `description:"collection name"`
+	Safe        bool   `description:"sets the session safe mode: http://godoc.org/labix.org/v2/mgo#Session.SetSafe"`
+	KillOnError bool   `description:"if true the server will die on any error, excep duplicate key error."`
 }
 
 type Mongo struct {
@@ -23,6 +25,7 @@ type Mongo struct {
 	collection     *mgo.Collection
 	session        *mgo.Session
 	safe           bool
+	killOnError    bool
 	failed         int
 	created        int
 	transferred    int
@@ -41,6 +44,7 @@ func (o *Mongo) SetConfig(config *MongoConfig) {
 	o.dbName = config.Database
 	o.collectionName = config.Collection
 	o.safe = config.Safe
+	o.killOnError = config.KillOnError
 }
 
 func (o *Mongo) Connect() {
@@ -51,8 +55,12 @@ func (o *Mongo) Connect() {
 	}
 
 	o.session = session
+	o.session.SetSocketTimeout(0)
+
 	if o.safe {
 		o.session.SetSafe(&mgo.Safe{})
+	} else {
+		o.session.SetSafe(nil)
 	}
 
 	o.collection = o.session.DB(o.dbName).C(o.collectionName)
@@ -61,7 +69,12 @@ func (o *Mongo) Connect() {
 func (o *Mongo) PutRecord(record intf.Record) bool {
 	err := o.collection.Insert(record)
 	if err != nil {
-		Error("Can't insert record in mogo: %v\n", err)
+		if !o.killOnError || strings.Contains(err.Error(), "duplicate key") {
+			Error("Can't insert record in mogo: %v\n", err)
+		} else {
+			Critical("Can't insert record in mogo: %v\n", err)
+		}
+
 		return false
 	}
 
