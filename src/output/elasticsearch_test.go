@@ -25,6 +25,16 @@ func (s *ElasticsearchSuite) TestGetRecordDefault(c *C) {
 	c.Assert(output.PutRecord(record), Equals, true)
 }
 
+func (s *ElasticsearchSuite) TestGetRecordDefaultField(c *C) {
+	config := ElasticsearchConfig{Index: "foo", Type: "foo", IdField: "foo"}
+
+	output := NewElasticsearch(&config)
+	record := intf.Record{"foo": "bar"}
+
+	go dummyServer(c, ":9200", "/foo/foo", "application/json", "POST", "{\n     \"_id\": \"bar\",\n     \"foo\": \"bar\"\n }")
+	c.Assert(output.PutRecord(record), Equals, true)
+}
+
 func (s *ElasticsearchSuite) TestGetRecordConfig(c *C) {
 	config := ElasticsearchConfig{Host: "127.0.0.1", Port: 9300, Index: "foo", Type: "bar"}
 
