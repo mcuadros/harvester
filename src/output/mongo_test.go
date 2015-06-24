@@ -1,8 +1,6 @@
 package output
 
 import (
-	"fmt"
-
 	"github.com/mcuadros/harvesterd/src/intf"
 
 	"gopkg.in/mgo.v2"
@@ -47,7 +45,6 @@ func (s *MongoSuite) TestGetRecord(c *C) {
 }
 
 func (s *MongoSuite) connect() {
-	fmt.Println("foo", s.url)
 	s.session, _ = mgo.Dial(s.url)
 	s.collection = s.session.DB(s.dbName).C(s.collectionName)
 }

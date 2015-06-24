@@ -54,10 +54,16 @@ func (o *Elasticsearch) PutRecord(record intf.Record) bool {
 }
 
 func (o *Elasticsearch) getIndexURL(config *ElasticsearchConfig) string {
-	return fmt.Sprintf("http://%s:%d/%s/%s",
+	url := fmt.Sprintf("http://%s:%d/%s/%s",
 		config.Host,
 		config.Port,
 		config.Index,
 		config.Type,
 	)
+
+	if o.idField != "" {
+		url = fmt.Sprintf("%s/%%{%s}", url, o.idField)
+	}
+
+	return url
 }

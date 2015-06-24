@@ -31,7 +31,7 @@ func (s *ElasticsearchSuite) TestGetRecordDefaultField(c *C) {
 	output := NewElasticsearch(&config)
 	record := intf.Record{"foo": "bar"}
 
-	go dummyServer(c, ":9200", "/foo/foo", "application/json", "POST", "{\n     \"_id\": \"bar\",\n     \"foo\": \"bar\"\n }")
+	go dummyServer(c, ":9200", "/foo/foo/bar", "application/json", "POST", "{\n     \"_id\": \"bar\",\n     \"foo\": \"bar\"\n }")
 	c.Assert(output.PutRecord(record), Equals, true)
 }
 
