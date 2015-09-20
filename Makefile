@@ -3,7 +3,6 @@ PROJECT = harvesterd
 COMMANDS = tool/harvesterd
 DEPENDENCIES =
 
-
 # Environment
 BASE_PATH := $(shell pwd)
 BUILD_PATH := $(BASE_PATH)/build

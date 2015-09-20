@@ -49,6 +49,8 @@ func (s *TailFileSuite) TestTailFile(c *C) {
 		tail.Stop()
 	}(tail)
 
+	time.Sleep(3000 * time.Microsecond)
+
 	lines := make([]string, 0)
 	for !tail.IsEOF() {
 		line := tail.GetLine()
@@ -82,6 +84,8 @@ func (s *TailFileSuite) TestTailFileWithPos(c *C) {
 		time.Sleep(10000 * time.Microsecond)
 		tail.Stop()
 	}(tail)
+
+	time.Sleep(1000 * time.Microsecond)
 
 	lines := make([]string, 0)
 	for !tail.IsEOF() {
@@ -120,6 +124,8 @@ func (s *TailFileSuite) TestTailFileDelete(c *C) {
 
 		tail.Stop()
 	}(tail)
+
+	time.Sleep(1000 * time.Microsecond)
 
 	lines := make([]string, 0)
 	for !tail.IsEOF() {

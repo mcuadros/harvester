@@ -89,13 +89,15 @@ func (s *ContainerSuite) TestGetOutput(c *C) {
 
 func (s *ContainerSuite) TestGetReader(c *C) {
 	var raw = string(`
+		[format-csv "myformat"]
+		fields = fo
+
 		[input-tail "bar"]
 		file = foo
 		format = myformat
 
 		[reader]
 		input = bar
-
 	`)
 
 	GetConfig().Load(raw)
@@ -110,6 +112,10 @@ func (s *ContainerSuite) TestGetWriter(c *C) {
 
 		[writer "bar"]
 		output = bar
+		threads = 1
+		reader = myreader
+
+		[reader "myreader"]
 	`)
 
 	GetConfig().Load(raw)
@@ -121,9 +127,15 @@ func (s *ContainerSuite) TestGetWriterGroup(c *C) {
 	var raw = string(`
 		[writer "foo"]
 		output = bar
+		reader = myreader
+		threads = 1
 
 		[writer "bar"]
 		output = bar
+		reader = myreader
+		threads = 1
+
+		[reader "myreader"]
 	`)
 
 	GetConfig().Load(raw)
