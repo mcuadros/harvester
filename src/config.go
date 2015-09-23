@@ -31,6 +31,7 @@ type Config struct {
 	Output_Dummy         map[string]*output.DummyConfig
 	Processor_Anonymize  map[string]*processor.AnonymizeConfig
 	Processor_Metrics    map[string]*processor.MetricsConfig
+	Processor_Mutate     map[string]*processor.MutateConfig
 }
 
 type Definition struct {

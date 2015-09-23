@@ -132,6 +132,11 @@ func (c *Container) GetPostProcessor(key string) intf.PostProcessor {
 		return processor.NewMetrics(metricsConfig)
 	}
 
+	mConfig, ok := GetConfig().Processor_Mutate[key]
+	if ok {
+		return processor.NewMutate(mConfig)
+	}
+
 	Critical("Unable to find '%s' processor definition", key)
 	return nil
 }
