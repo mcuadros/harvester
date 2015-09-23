@@ -55,14 +55,14 @@ func GetConfig() *Config {
 func (c *Config) Load(ini string) {
 	err := gcfg.ReadStringInto(c, ini)
 	if err != nil {
-		logger.Critical("error: cannot parse config", err)
+		logger.Critical("error parsing config:", err)
 	}
 }
 
 func (c *Config) LoadFile(filename string) {
 	err := gcfg.ReadFileInto(c, filename)
 	if err != nil {
-		logger.Critical("erro:", err)
+		logger.Critical("error parsing config:", err)
 	}
 }
 
