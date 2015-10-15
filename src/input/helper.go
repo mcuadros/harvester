@@ -15,7 +15,7 @@ type helper struct {
 	factories []ReaderFactory
 	readerEOF ReaderEOFNotifier
 	format    intf.Format
-	current   *bufio.Scanner
+	current   *bufio.Reader
 	empty     bool
 	eof       bool
 }
@@ -27,14 +27,6 @@ func newHelper(format intf.Format) *helper {
 	}
 }
 
-func (h *helper) GetLine() string {
-	if h.scan() {
-		return h.current.Text()
-	}
-
-	return ""
-}
-
 func (h *helper) GetRecord() intf.Record {
 	line := h.GetLine()
 	if line != "" {
@@ -44,19 +36,35 @@ func (h *helper) GetRecord() intf.Record {
 	return nil
 }
 
-func (h *helper) scan() bool {
-	if h.current != nil && h.current.Scan() {
-		return true
+func (h *helper) GetLine() string {
+	if h.current == nil && !h.next() {
+		return ""
 	}
 
+	line, err := h.current.ReadString('\n')
+	if err == io.EOF {
+		h.current = nil
+		if line != "" {
+			return line
+		}
+
+		return h.GetLine()
+	} else if err != nil {
+		Error("Error readering: %s", err)
+		return ""
+	}
+
+	return line[:len(line)-1]
+}
+
+func (h *helper) next() bool {
 	if len(h.factories) == 0 {
 		h.eof = true
 		return false
 	}
 
 	if h.readerEOF != nil {
-		err := h.readerEOF()
-		if err != nil {
+		if err := h.readerEOF(); err != nil {
 			Error("Error finalizing reader: %s", err)
 		}
 	}
@@ -65,11 +73,11 @@ func (h *helper) scan() bool {
 	h.factories = h.factories[1:]
 
 	if reader == nil {
-		return h.scan()
+		return h.next()
 	}
 
-	h.current = bufio.NewScanner(reader)
-	return h.scan()
+	h.current = bufio.NewReader(reader)
+	return true
 }
 
 func (h *helper) IsEOF() bool {

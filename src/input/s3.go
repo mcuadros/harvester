@@ -69,6 +69,7 @@ func (i *S3) SetConfig(c *S3Config) {
 		}
 
 		track := i.getTrackFilename()
+		fmt.Println(track)
 		if err := os.MkdirAll(filepath.Dir(track), 0644); err != nil {
 			return err
 		}
