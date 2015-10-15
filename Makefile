@@ -7,8 +7,12 @@ DEPENDENCIES =
 BASE_PATH := $(shell pwd)
 BUILD_PATH := $(BASE_PATH)/build
 INSTALL_PATH := /usr/local/bin/
-VERSION ?= $(shell git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
+VERSION := $(shell git rev-parse --abbrev-ref HEAD)
 BUILD ?= $(shell date)
+
+ifneq ($(origin TRAVIS_TAG), undefined)
+	VERSION := $(TRAVIS_TAG)
+endif
 
 # PACKAGES
 PKG_OS = darwin linux
@@ -23,7 +27,6 @@ GOCLEAN = $(GOCMD) clean
 GOGET = $(GOCMD) get
 GOTEST = $(GOCMD) test
 
-.PHONY: dependencies $(DEPENDENCIES) packages $(PACKAGES)
 
 all: test build
 

@@ -11,8 +11,8 @@ import (
 	"github.com/mcuadros/harvesterd/src/intf"
 	. "github.com/mcuadros/harvesterd/src/logger"
 
-	"github.com/ActiveState/tail"
-	"github.com/ActiveState/tail/ratelimiter"
+	"github.com/hpcloud/tail"
+	"github.com/hpcloud/tail/ratelimiter"
 )
 
 type TailConfig struct {
