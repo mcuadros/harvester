@@ -24,6 +24,11 @@ func (s *CastSuite) TestCastINT(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(value, Equals, 1234)
 
+	value = "int 1234 that will be stripped"
+	value, err = cast(value, INT, "strip")
+	c.Assert(err, IsNil)
+	c.Assert(value, Equals, 1234)
+
 	value = "not int"
 	value, err = cast(value, INT)
 	c.Assert(err, NotNil)
@@ -38,6 +43,7 @@ func (s *CastSuite) TestCastINT(c *C) {
 func (s *CastSuite) TestCastDATE(c *C) {
 	var value interface{}
 	var err error
+	var t0 time.Time
 	var t time.Time
 
 	value = "2015-09-16T09:15:30"
@@ -58,10 +64,23 @@ func (s *CastSuite) TestCastDATE(c *C) {
 	t = value.(time.Time)
 	c.Assert(t.Unix(), Equals, int64(1442394930))
 
-	value = "not date"
+	value = "Present"
+	t0 = time.Now()
+	value, err = cast(value, DATE, "2006-01-02T15:04:05", "present")
+	c.Assert(err, IsNil)
+	t = value.(time.Time)
+	c.Assert(t.Unix() >= t0.Unix(), Equals, true)
+	c.Assert(t.Unix() <= time.Now().Unix(), Equals, true)
+
+	value = "bad nullable date"
+	value, err = cast(value, DATE, "2006-01-02T15:04:05", "null")
+	c.Assert(err, IsNil)
+	c.Assert(value, IsNil)
+
+	value = "bad date"
 	value, err = cast(value, DATE, "2006-01-02T15:04:05")
 	c.Assert(err, NotNil)
-	c.Assert(value, Equals, "not date")
+	c.Assert(value, Equals, "bad date")
 
 	value = struct{}{}
 	value, err = cast(value, DATE, "2006-01-02T15:04:05")
