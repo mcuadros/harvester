@@ -3,7 +3,7 @@ package format
 import (
 	"regexp"
 
-	"github.com/mcuadros/harvesterd/src/intf"
+	"github.com/mcuadros/harvester/src/intf"
 )
 
 type RegExpConfig struct {

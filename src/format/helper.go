@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	. "github.com/mcuadros/harvesterd/src/logger"
+	. "github.com/mcuadros/harvester/src/logger"
 )
 
 var validFormats = []string{"int", "float", "bool", "string", "time"}

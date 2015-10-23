@@ -3,7 +3,7 @@ package output
 import (
 	"fmt"
 
-	"github.com/mcuadros/harvesterd/src/intf"
+	"github.com/mcuadros/harvester/src/intf"
 )
 
 type DummyConfig struct {

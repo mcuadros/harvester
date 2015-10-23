@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	. "github.com/mcuadros/harvesterd/src/intf"
+	. "github.com/mcuadros/harvester/src/intf"
 
 	. "gopkg.in/check.v1"
 )

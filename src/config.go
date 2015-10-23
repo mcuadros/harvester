@@ -1,14 +1,14 @@
-package harvesterd
+package harvester
 
 import (
 	"reflect"
 	"strings"
 
-	"github.com/mcuadros/harvesterd/src/format"
-	"github.com/mcuadros/harvesterd/src/input"
-	"github.com/mcuadros/harvesterd/src/logger"
-	"github.com/mcuadros/harvesterd/src/output"
-	"github.com/mcuadros/harvesterd/src/processor"
+	"github.com/mcuadros/harvester/src/format"
+	"github.com/mcuadros/harvester/src/input"
+	"github.com/mcuadros/harvester/src/logger"
+	"github.com/mcuadros/harvester/src/output"
+	"github.com/mcuadros/harvester/src/processor"
 
 	"code.google.com/p/gcfg"
 )

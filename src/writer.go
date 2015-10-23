@@ -1,10 +1,10 @@
-package harvesterd
+package harvester
 
 import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/mcuadros/harvesterd/src/intf"
+	"github.com/mcuadros/harvester/src/intf"
 )
 
 type RecordsChan chan intf.Record

@@ -1,4 +1,4 @@
-package harvesterd
+package harvester
 
 import (
 	"testing"

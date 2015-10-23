@@ -10,9 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mcuadros/harvesterd/src/intf"
-	. "github.com/mcuadros/harvesterd/src/logger"
-	"github.com/mcuadros/harvesterd/src/util"
+	"github.com/mcuadros/harvester/src/intf"
+	. "github.com/mcuadros/harvester/src/logger"
+	"github.com/mcuadros/harvester/src/util"
 
 	"github.com/ajg/form"
 	"github.com/mcuadros/go-defaults"

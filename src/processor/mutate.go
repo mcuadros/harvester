@@ -4,9 +4,9 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/mcuadros/harvesterd/src/intf"
-	. "github.com/mcuadros/harvesterd/src/logger"
-	"github.com/mcuadros/harvesterd/src/processor/mutate"
+	"github.com/mcuadros/harvester/src/intf"
+	. "github.com/mcuadros/harvester/src/logger"
+	"github.com/mcuadros/harvester/src/processor/mutate"
 )
 
 const FIELDSEP = '.'

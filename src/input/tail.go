@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/mcuadros/harvesterd/src/intf"
-	. "github.com/mcuadros/harvesterd/src/logger"
+	"github.com/mcuadros/harvester/src/intf"
+	. "github.com/mcuadros/harvester/src/logger"
 
 	"github.com/hpcloud/tail"
 	"github.com/hpcloud/tail/ratelimiter"

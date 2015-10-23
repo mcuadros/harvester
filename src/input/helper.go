@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"io"
 
-	"github.com/mcuadros/harvesterd/src/intf"
-	. "github.com/mcuadros/harvesterd/src/logger"
+	"github.com/mcuadros/harvester/src/intf"
+	. "github.com/mcuadros/harvester/src/logger"
 )
 
 type ReaderFactory func() io.Reader
