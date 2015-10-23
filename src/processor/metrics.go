@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mcuadros/harvesterd/src/intf"
-	. "github.com/mcuadros/harvesterd/src/logger"
-	. "github.com/mcuadros/harvesterd/src/processor/metric"
+	"github.com/mcuadros/harvester/src/intf"
+	. "github.com/mcuadros/harvester/src/logger"
+	. "github.com/mcuadros/harvester/src/processor/metric"
 )
 
 type MetricsConfig struct {

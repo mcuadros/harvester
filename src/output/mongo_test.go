@@ -1,7 +1,7 @@
 package output
 
 import (
-	"github.com/mcuadros/harvesterd/src/intf"
+	"github.com/mcuadros/harvester/src/intf"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"

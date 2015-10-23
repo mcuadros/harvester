@@ -4,8 +4,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mcuadros/harvesterd/src/intf"
-	. "github.com/mcuadros/harvesterd/src/logger"
+	"github.com/mcuadros/harvester/src/intf"
+	. "github.com/mcuadros/harvester/src/logger"
 
 	"gopkg.in/mgo.v2"
 )

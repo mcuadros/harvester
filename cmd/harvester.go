@@ -6,7 +6,7 @@ import (
 	"os"
 	"text/template"
 
-	. "github.com/mcuadros/harvesterd/src"
+	. "github.com/mcuadros/harvester/src"
 )
 
 // Define a template.
@@ -27,7 +27,7 @@ var version string
 var options Options
 
 func init() {
-	flag.StringVar(&options.configFile, "config", "/etc/harvesterd.conf", "config filename")
+	flag.StringVar(&options.configFile, "config", "/etc/harvester.conf", "config filename")
 	flag.BoolVar(&options.verbose, "verbose", false, "raise log level to verbose")
 	flag.BoolVar(&options.debug, "debug", false, "raise log level to debug")
 	flag.BoolVar(&options.help, "help", false, "display this help")
@@ -50,7 +50,7 @@ func main() {
 }
 
 func help() {
-	fmt.Printf("\033[1mharvesterd (%s)\033[0m\n", version)
+	fmt.Printf("\033[1mharvester (%s)\033[0m\n", version)
 	fmt.Printf("Low footprint collector and parser for events and logs\n")
 	fmt.Printf("Máximo Cuadros Ortiz <mcuadros@gmail.com>\n\n")
 
@@ -85,8 +85,8 @@ func spec(group string) {
 }
 
 func run() {
-	harvesterd := NewHarvesterd()
-	harvesterd.Configure(options.configFile)
-	harvesterd.Boot()
-	harvesterd.Run()
+	harvester := NewHarvester()
+	harvester.Configure(options.configFile)
+	harvester.Boot()
+	harvester.Run()
 }

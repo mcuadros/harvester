@@ -9,7 +9,7 @@ import (
 	"encoding/hex"
 	"strings"
 
-	"github.com/mcuadros/harvesterd/src/intf"
+	"github.com/mcuadros/harvester/src/intf"
 )
 
 type AnonymizeConfig struct {

@@ -1,26 +1,26 @@
 #!/bin/bash
 
-# harvesterd - Startup script for harvesterd
+# harvester - Startup script for harvester
 
 # chkconfig: 35 85 15
-# description: low footprint harvesterd and parser for events and logs
-# processname: harvesterd
-# config: /etc/harvesterd.conf
-# pidfile: /var/run/harvesterd.pid
+# description: low footprint harvester and parser for events and logs
+# processname: harvester
+# config: /etc/harvester.conf
+# pidfile: /var/run/harvester.pid
 
 . /etc/rc.d/init.d/functions
 
-CONFIGFILE="/etc/harvesterd.conf"
+CONFIGFILE="/etc/harvester.conf"
 OPTIONS=" -f $CONFIGFILE"
-PIDFILE=/var/run/harvesterd.pid
-LOCKFILE=/var/lock/subsys/harvesterd
-USER=harvesterd
-exec=/usr/bin/harvesterd
+PIDFILE=/var/run/harvester.pid
+LOCKFILE=/var/lock/subsys/harvester
+USER=harvester
+exec=/usr/bin/harvester
 
 
 start()
 {
-  echo -n $"Starting harvesterd: "
+  echo -n $"Starting harvester: "
   daemon --pidfile="$PIDFILE" --user "$USER" $exec $OPTIONS
   RETVAL=$?
   echo
@@ -29,7 +29,7 @@ start()
 
 stop()
 {
-  echo -n $"Stopping harvesterd: "
+  echo -n $"Stopping harvester: "
   killproc -p "$PIDFILE" $exec
   RETVAL=$?
   echo

@@ -1,6 +1,6 @@
 package metric
 
-import . "github.com/mcuadros/harvesterd/src/intf"
+import . "github.com/mcuadros/harvester/src/intf"
 
 type Terms struct {
 	field        string

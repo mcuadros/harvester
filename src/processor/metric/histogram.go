@@ -1,7 +1,7 @@
 package metric
 
 import (
-	. "github.com/mcuadros/harvesterd/src/intf"
+	. "github.com/mcuadros/harvester/src/intf"
 
 	"github.com/rcrowley/go-metrics"
 )

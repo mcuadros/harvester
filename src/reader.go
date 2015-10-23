@@ -1,9 +1,9 @@
-package harvesterd
+package harvester
 
 import (
 	"sync"
 
-	"github.com/mcuadros/harvesterd/src/intf"
+	"github.com/mcuadros/harvester/src/intf"
 )
 
 type ReaderConfig struct {

@@ -1,12 +1,12 @@
-package harvesterd
+package harvester
 
 import (
-	"github.com/mcuadros/harvesterd/src/format"
-	"github.com/mcuadros/harvesterd/src/input"
-	"github.com/mcuadros/harvesterd/src/intf"
-	. "github.com/mcuadros/harvesterd/src/logger"
-	"github.com/mcuadros/harvesterd/src/output"
-	"github.com/mcuadros/harvesterd/src/processor"
+	"github.com/mcuadros/harvester/src/format"
+	"github.com/mcuadros/harvester/src/input"
+	"github.com/mcuadros/harvester/src/intf"
+	. "github.com/mcuadros/harvester/src/logger"
+	"github.com/mcuadros/harvester/src/output"
+	"github.com/mcuadros/harvester/src/processor"
 )
 
 type OutputsFactory func() []intf.Output

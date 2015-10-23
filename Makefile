@@ -1,6 +1,6 @@
 # Package configuration
-PROJECT = harvesterd
-COMMANDS = tool/harvesterd
+PROJECT = harvester
+COMMANDS = cmd/harvester
 DEPENDENCIES =
 
 # Environment

@@ -1,8 +1,8 @@
 package processor
 
 import (
-	"github.com/mcuadros/harvesterd/src/intf"
-	"github.com/mcuadros/harvesterd/src/processor/mutate"
+	"github.com/mcuadros/harvester/src/intf"
+	"github.com/mcuadros/harvester/src/processor/mutate"
 	. "gopkg.in/check.v1"
 )
 

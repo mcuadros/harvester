@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/mcuadros/go-defaults"
-	"github.com/mcuadros/harvesterd/src/intf"
+	"github.com/mcuadros/harvester/src/intf"
 )
 
 const ESIdField = "_id"
