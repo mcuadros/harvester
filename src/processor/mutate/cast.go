@@ -2,7 +2,9 @@ package mutate
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -16,6 +18,13 @@ func cast(value interface{}, fn string, params ...string) (interface{}, error) {
 	case INT:
 		switch value.(type) {
 		case string:
+			for _, param := range params {
+				switch param {
+				case "strip":
+					re := regexp.MustCompile("[0-9]+")
+					value = re.FindString(value.(string))
+				}
+			}
 			result, err := strconv.Atoi(value.(string))
 			if err != nil {
 				return value, err
@@ -35,6 +44,12 @@ func cast(value interface{}, fn string, params ...string) (interface{}, error) {
 			var err error
 			var result time.Time
 			for _, format := range params {
+				if format == "null" {
+					return nil, nil
+				}
+				if format == "present" && strings.ToLower(value.(string)) == "present" {
+					return time.Now(), nil
+				}
 				result, err = time.Parse(format, value.(string))
 				if err == nil {
 					break
