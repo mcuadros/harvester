@@ -28,7 +28,7 @@ func newHelper(format intf.Format) *helper {
 }
 
 func (h *helper) GetRecord() intf.Record {
-	line := h.GetLine()
+	line := h.getLine()
 	if line != "" {
 		return h.format.Parse(line)
 	}
@@ -36,7 +36,7 @@ func (h *helper) GetRecord() intf.Record {
 	return nil
 }
 
-func (h *helper) GetLine() string {
+func (h *helper) getLine() string {
 	if h.current == nil && !h.next() {
 		return ""
 	}
@@ -48,7 +48,7 @@ func (h *helper) GetLine() string {
 			return line
 		}
 
-		return h.GetLine()
+		return h.getLine()
 	} else if err != nil {
 		Error("Error readering: %s", err)
 		return ""

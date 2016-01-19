@@ -36,7 +36,7 @@ func (s *S3FileSuite) TestGetRecord(c *C) {
 	s3 := NewS3(&config, new(MockFormat))
 
 	testServer.Response(200, nil, "content")
-	c.Assert(s3.GetLine(), Equals, "content")
+	c.Assert(s3.getLine(), Equals, "content")
 }
 
 func (s *S3FileSuite) TearDownSuite(c *C) {

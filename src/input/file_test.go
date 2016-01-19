@@ -51,7 +51,7 @@ func (s *InputFileSuite) TestGetLineWithPatternGlob(c *C) {
 
 func testReader(c *C, file *File, count int) {
 	for i := 0; i <= count; i++ {
-		line := file.GetLine()
+		line := file.getLine()
 		if i < count {
 			c.Assert(line, Not(HasLen), 0)
 		}
@@ -69,6 +69,6 @@ func (s *InputFileSuite) TestGetLineWithMissingFile(c *C) {
 
 	file := NewFile(&config, new(MockFormat))
 
-	c.Assert(file.GetLine(), Equals, "")
+	c.Assert(file.getLine(), Equals, "")
 	c.Assert(file.IsEOF(), Equals, true)
 }

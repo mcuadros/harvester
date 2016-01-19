@@ -20,9 +20,9 @@ func (s *HelperSuite) TestGetRecord(c *C) {
 		},
 	}
 
-	c.Assert(h.GetLine(), Equals, "a")
-	c.Assert(h.GetLine(), Equals, "b")
-	c.Assert(h.GetLine(), Equals, "")
+	c.Assert(h.getLine(), Equals, "a")
+	c.Assert(h.getLine(), Equals, "b")
+	c.Assert(h.getLine(), Equals, "")
 	c.Assert(h.IsEOF(), Equals, true)
 }
 
@@ -40,15 +40,15 @@ func (s *HelperSuite) TestGetRecordMultipleFactgories(c *C) {
 		},
 	}
 
-	c.Assert(h.GetLine(), Equals, "a")
+	c.Assert(h.getLine(), Equals, "a")
 	c.Assert(h.IsEOF(), Equals, false)
-	c.Assert(h.GetLine(), Equals, "b")
+	c.Assert(h.getLine(), Equals, "b")
 	c.Assert(h.IsEOF(), Equals, false)
-	c.Assert(h.GetLine(), Equals, "c")
+	c.Assert(h.getLine(), Equals, "c")
 	c.Assert(h.IsEOF(), Equals, false)
-	c.Assert(h.GetLine(), Equals, "d")
+	c.Assert(h.getLine(), Equals, "d")
 	c.Assert(h.IsEOF(), Equals, false)
-	c.Assert(h.GetLine(), Equals, "")
+	c.Assert(h.getLine(), Equals, "")
 	c.Assert(h.IsEOF(), Equals, true)
 }
 
@@ -63,15 +63,15 @@ func (s *HelperSuite) TestGetRecordNonNewLineTerminated(c *C) {
 		},
 	}
 
-	c.Assert(h.GetLine(), Equals, "a")
+	c.Assert(h.getLine(), Equals, "a")
 	c.Assert(h.IsEOF(), Equals, false)
-	c.Assert(h.GetLine(), Equals, "b")
+	c.Assert(h.getLine(), Equals, "b")
 	c.Assert(h.IsEOF(), Equals, false)
-	c.Assert(h.GetLine(), Equals, "c")
+	c.Assert(h.getLine(), Equals, "c")
 	c.Assert(h.IsEOF(), Equals, false)
-	c.Assert(h.GetLine(), Equals, "d")
+	c.Assert(h.getLine(), Equals, "d")
 	c.Assert(h.IsEOF(), Equals, false)
-	c.Assert(h.GetLine(), Equals, "")
+	c.Assert(h.getLine(), Equals, "")
 	c.Assert(h.IsEOF(), Equals, true)
 }
 
@@ -84,6 +84,6 @@ func (s *HelperSuite) TestGetRecordLongTokens(c *C) {
 		},
 	}
 
-	c.Assert(len(h.GetLine()), Equals, len(long))
-	c.Assert(h.GetLine(), Equals, "b")
+	c.Assert(len(h.getLine()), Equals, len(long))
+	c.Assert(h.getLine(), Equals, "b")
 }

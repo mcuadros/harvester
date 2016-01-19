@@ -1,7 +1,6 @@
 package input
 
 import (
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -44,7 +43,6 @@ func (i *File) SetConfig(config *FileConfig) {
 
 func (i *File) createReaderFactory(filename string) ReaderFactory {
 	return func() io.Reader {
-		fmt.Println(filename)
 		file, err := os.Open(filename)
 		if err != nil {
 			Critical("open %s: %v", filename, err)
