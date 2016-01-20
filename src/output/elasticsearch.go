@@ -44,7 +44,15 @@ func (o *Elasticsearch) TransformConfig(config *ElasticsearchConfig) *HTTPConfig
 }
 
 func (o *Elasticsearch) PutRecord(record intf.Record) bool {
+	o.fixMappingIDfield(record)
 	return o.HTTP.PutRecord(record)
+}
+
+func (o *Elasticsearch) fixMappingIDfield(record intf.Record) {
+	if _, ok := record["_id"]; ok {
+		record["id"] = record["_id"]
+		delete(record, "_id")
+	}
 }
 
 func (o *Elasticsearch) getIndexURL(config *ElasticsearchConfig) string {
