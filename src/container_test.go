@@ -25,6 +25,9 @@ func (s *ContainerSuite) TestGetInput(c *C) {
 		[input-file "foo"]
 		pattern = foo
 		format = myformat
+
+		[input-mongo "foo"]
+		url = foo
 	`)
 
 	GetConfig().Load(raw)

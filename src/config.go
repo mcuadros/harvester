@@ -25,6 +25,7 @@ type Config struct {
 	Input_File           map[string]*input.FileConfig
 	Input_Tail           map[string]*input.TailConfig
 	Input_S3             map[string]*input.S3Config
+	Input_Mongo          map[string]*input.MongoConfig
 	Output_HTTP          map[string]*output.HTTPConfig
 	Output_Elasticsearch map[string]*output.ElasticsearchConfig
 	Output_Mongo         map[string]*output.MongoConfig

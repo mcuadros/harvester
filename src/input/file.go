@@ -25,10 +25,6 @@ func NewFile(config *FileConfig, format intf.Format) *File {
 	return input
 }
 
-func (i *File) SetFormat(format intf.Format) {
-	i.format = format
-}
-
 func (i *File) SetConfig(config *FileConfig) {
 	files, err := filepath.Glob(config.Pattern)
 	if err != nil {
@@ -38,7 +34,6 @@ func (i *File) SetConfig(config *FileConfig) {
 	for _, file := range files {
 		i.factories = append(i.factories, i.createReaderFactory(file))
 	}
-
 }
 
 func (i *File) createReaderFactory(filename string) ReaderFactory {

@@ -25,7 +25,7 @@ type MongoSuite struct {
 
 var _ = Suite(&MongoSuite{
 	url:            "localhost",
-	dbName:         "test_foo",
+	dbName:         "test_harvester_output",
 	collectionName: "bar",
 })
 

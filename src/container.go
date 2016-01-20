@@ -69,6 +69,11 @@ func (c *Container) GetInput(key string) intf.Input {
 		return input.NewS3(s3Config, format)
 	}
 
+	mongoConfig, ok := GetConfig().Input_Mongo[key]
+	if ok {
+		return input.NewMongo(mongoConfig)
+	}
+
 	Critical("Unable to find '%s' input definition", key)
 	return nil
 }
